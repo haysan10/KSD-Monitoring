@@ -3,7 +3,7 @@
  * Caches static shell, scripts, styles, and font icons for offline operation in plant areas.
  */
 
-const CACHE_NAME = 'ksd-monitor-v2.5';
+const CACHE_NAME = 'ksd-monitor-v2.7';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

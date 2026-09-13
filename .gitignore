@@ -5,4 +5,5 @@ Thumbs.db
 # PocketBase runtime artifacts (buffers/journals)
 *.db-shm
 *.db-wal
+*.log
 pb_data/storage/cache

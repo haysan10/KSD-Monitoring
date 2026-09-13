@@ -20,13 +20,30 @@ routerAdd("POST", "/api/custom/login", (e) => {
         try {
             record = $app.findAuthRecordByEmail("users", username);
         } catch (err) {
+            // Coba berbagai alias fallback
+            const candidates = [];
             if (username.indexOf("@") === -1) {
-                try {
-                    record = $app.findAuthRecordByEmail("users", username + "@ksd.com");
-                } catch (errFallback) {
-                    return utils.sendJSON(e, 401, { success: false, error: "Username atau password salah!" });
-                }
+                candidates.push(username + "@ksd.com");
+                candidates.push(username + "@kontraktor.ksd.com");
+                if (username === "kontraktor_tali") candidates.push("tali@kontraktor.ksd.com");
+                if (username === "kontraktor_hjg") candidates.push("hjg@kontraktor.ksd.com");
+                if (username === "tali") candidates.push("tali@kontraktor.ksd.com");
+                if (username === "hjg") candidates.push("hjg@kontraktor.ksd.com");
+                if (username === "admin") candidates.push("admin@ksd.com");
+                if (username === "manager") candidates.push("manager@ksd.com");
             } else {
+                if (username === "kontraktor_tali@ksd.com") candidates.push("tali@kontraktor.ksd.com");
+                if (username === "kontraktor_hjg@ksd.com") candidates.push("hjg@kontraktor.ksd.com");
+            }
+
+            for (let cand of candidates) {
+                try {
+                    record = $app.findAuthRecordByEmail("users", cand);
+                    if (record) break;
+                } catch (eCand) {}
+            }
+
+            if (!record) {
                 return utils.sendJSON(e, 401, { success: false, error: "Username atau password salah!" });
             }
         }
@@ -113,7 +130,11 @@ function handleExportBackup(e) {
             return utils.sendJSON(e, 403, { success: false, error: "Akses ditolak. Hanya Admin/Manager yang berhak mengekspor backup." });
         }
 
-        const collections = ["projects", "iacs", "subs", "dailyProgress", "materialLogs", "manpowerLogs", "validations", "pts", "users", "notifications", "castable_records"];
+        const collections = [
+            "projects", "iacs", "subs", "daily_progress", "progress_log",
+            "material_logs", "manpower_logs", "validations", "pt", "users",
+            "notifications", "castable_checks"
+        ];
         const backupData = {
             exportTimestamp: new Date().toISOString(),
             exportedBy: user.name,
@@ -124,8 +145,8 @@ function handleExportBackup(e) {
         collections.forEach(colName => {
             try {
                 const records = $app.findAllRecords(colName);
-                backupData.collections[colName] = records.map(r => {
-                    const obj = {};
+                const mapped = records.map(r => {
+                    const obj = { id: r.id };
                     r.collection().fields.forEach(f => {
                         if (f.name !== "password" && f.name !== "tokenKey") {
                             obj[f.name] = r.get(f.name);
@@ -133,6 +154,14 @@ function handleExportBackup(e) {
                     });
                     return obj;
                 });
+                backupData.collections[colName] = mapped;
+
+                // Sediakan alias CamelCase agar kompatibel 100% dengan Google Apps Script backup
+                if (colName === "daily_progress") backupData.collections["dailyProgress"] = mapped;
+                if (colName === "material_logs") backupData.collections["materialLogs"] = mapped;
+                if (colName === "manpower_logs") backupData.collections["manpowerLogs"] = mapped;
+                if (colName === "pt") backupData.collections["pts"] = mapped;
+                if (colName === "castable_checks") backupData.collections["castable_records"] = mapped;
             } catch (err) {
                 backupData.collections[colName] = [];
             }
@@ -344,15 +373,23 @@ routerAdd("POST", "/api/custom/project-data", (e) => {
 
         // === MULTI-TENANT FILTERING ===
         if (user.role === "kontraktor_admin") {
+            const ptCodeClean = (user.pt || "").replace(/^PT[_\s]+/i, "").toUpperCase();
+            const ptNameClean = (user.pt_name || "").toUpperCase();
             const userPtKode = (user.pt_name || user.pt || "").toUpperCase();
             const userScope = user.jobdesk_scope || [];
+            const hasCustomScope = Array.isArray(userScope) && userScope.length > 0 && !userScope.includes("ALL");
 
             // Filter subs strictly to contractor scope
             subs = subs.filter(s => {
                 const sContractor = (s.contractor || "").toUpperCase();
-                const matchPt = sContractor.includes(userPtKode) || userPtKode.includes(sContractor);
-                const matchScope = userScope.length === 0 || userScope.includes(s.id);
-                return matchPt || matchScope;
+                const matchPt = (ptNameClean && sContractor.includes(ptNameClean)) ||
+                                (ptCodeClean && sContractor.includes(ptCodeClean)) ||
+                                (userPtKode && (sContractor.includes(userPtKode) || userPtKode.includes(sContractor)));
+
+                if (hasCustomScope) {
+                    return userScope.includes(s.id);
+                }
+                return !!matchPt;
             });
 
             // Filter IACs strictly to those containing contractor subs
@@ -613,11 +650,22 @@ routerAdd("POST", "/api/custom/projects-summary", (e) => {
             }));
 
             if (user.role === "kontraktor_admin") {
+                const ptCodeClean = (user.pt || "").replace(/^PT[_\s]+/i, "").toUpperCase();
+                const ptNameClean = (user.pt_name || "").toUpperCase();
                 const userPtKode = (user.pt_name || user.pt || "").toUpperCase();
                 const userScope = user.jobdesk_scope || [];
+                const hasCustomScope = Array.isArray(userScope) && userScope.length > 0 && !userScope.includes("ALL");
+
                 subs = subs.filter(s => {
                     const sContractor = (s.contractor || "").toUpperCase();
-                    return sContractor.includes(userPtKode) || userPtKode.includes(sContractor) || userScope.includes(s.id);
+                    const matchPt = (ptNameClean && sContractor.includes(ptNameClean)) ||
+                                    (ptCodeClean && sContractor.includes(ptCodeClean)) ||
+                                    (userPtKode && (sContractor.includes(userPtKode) || userPtKode.includes(sContractor)));
+
+                    if (hasCustomScope) {
+                        return userScope.includes(s.id);
+                    }
+                    return !!matchPt;
                 });
                 const activeSubIds = new Set(subs.map(s => s.id));
                 dailyProgress = dailyProgress.filter(p => activeSubIds.has(p.subId));
@@ -714,18 +762,20 @@ routerAdd("POST", "/api/custom/save-progress", (e) => {
             return utils.sendJSON(e, 400, { success: false, error: "Persentase progres harus berada di antara 0% dan 100%." });
         }
 
-        // 3. Validasi Progres Kumulatif Monotonik (Tidak boleh turun dari progres tanggal sebelumnya)
+        // 3. Validasi Progres Kumulatif Monotonik (Hanya dihitung dari progres yang sah / tidak ditolak)
         try {
-            const priorRecords = $app.findRecordsByFilter("daily_progress", "projectId = {:pId} && subId = {:subId} && date < {:date}", "", 50, 0, { pId, subId, date });
+            const priorRecords = $app.findRecordsByFilter("daily_progress", "projectId = {:pId} && subId = {:subId} && date < {:date} && status != 'rejected'", "", 50, 0, { pId, subId, date });
             let maxPrior = 0;
             priorRecords.forEach(r => {
-                const rp = r.getFloat("progress") || 0;
-                if (rp > maxPrior) maxPrior = rp;
+                if (r.get("status") !== "rejected") {
+                    const rp = r.getFloat("progress") || 0;
+                    if (rp > maxPrior) maxPrior = rp;
+                }
             });
             if (progress < maxPrior) {
                 return utils.sendJSON(e, 400, {
                     success: false,
-                    error: `Progres kumulatif tidak boleh turun (${progress}%). Capaian tanggal sebelumnya sudah mencapai ${maxPrior}%.`
+                    error: `Progres kumulatif tidak boleh turun (${progress}%). Capaian tanggal sebelumnya yang valid sudah mencapai ${maxPrior}%.`
                 });
             }
         } catch(priorErr) {}
@@ -740,9 +790,18 @@ routerAdd("POST", "/api/custom/save-progress", (e) => {
         } catch (err) {}
 
         if (user.role === "kontraktor_admin") {
+            const ptCodeClean = (user.pt || "").replace(/^PT[_\s]+/i, "").toUpperCase();
+            const ptNameClean = (user.pt_name || "").toUpperCase();
             const userPtKode = (user.pt_name || user.pt || "").toUpperCase();
             const userScope = user.jobdesk_scope || [];
-            const isMatch = subContractor.toUpperCase().includes(userPtKode) || userPtKode.includes(subContractor.toUpperCase()) || userScope.includes(subId);
+            const hasCustomScope = Array.isArray(userScope) && userScope.length > 0 && !userScope.includes("ALL");
+
+            const sContractor = (subContractor || "").toUpperCase();
+            const matchPt = (ptNameClean && sContractor.includes(ptNameClean)) ||
+                            (ptCodeClean && sContractor.includes(ptCodeClean)) ||
+                            (userPtKode && (sContractor.includes(userPtKode) || userPtKode.includes(sContractor)));
+            const isMatch = hasCustomScope ? userScope.includes(subId) : matchPt;
+
             if (!isMatch) {
                 return utils.sendJSON(e, 403, { success: false, error: "Anda tidak memiliki hak akses untuk melaporkan Sub-Jobdesk ini." });
             }
@@ -974,6 +1033,9 @@ routerAdd("POST", "/api/custom/approve-validation", (e) => {
             return utils.sendJSON(e, 400, { success: false, error: "Validation ID wajib disertakan." });
         }
 
+        let updatedAny = false;
+
+        // 1. Coba cari di daily_progress
         try {
             const dRec = $app.findFirstRecordByFilter("daily_progress", "id = {:valId}", { valId });
             if (dRec) {
@@ -982,9 +1044,42 @@ routerAdd("POST", "/api/custom/approve-validation", (e) => {
                 dRec.set("validated_by_name", user.name);
                 dRec.set("catatan_validasi", notes);
                 $app.save(dRec);
+                updatedAny = true;
             }
         } catch(e1) {}
 
+        // 2. Coba cari di progress_log (karena notifikasi menyimpan ID dari progress_log)
+        try {
+            const pRec = $app.findFirstRecordByFilter("progress_log", "id = {:valId}", { valId });
+            if (pRec) {
+                pRec.set("status", "validated");
+                pRec.set("validated_by", user.id);
+                pRec.set("validated_by_name", user.name);
+                pRec.set("validated_at", new Date().toISOString());
+                pRec.set("catatan_validasi", notes);
+                $app.save(pRec);
+
+                // Sinkronkan ke daily_progress agar persentase resmi proyek bertambah
+                const pId = pRec.get("projectId");
+                const subId = pRec.get("subId");
+                const date = pRec.get("date");
+                if (pId && subId && date) {
+                    try {
+                        const dailyRecs = $app.findRecordsByFilter("daily_progress", "projectId = {:pId} && subId = {:subId} && date = {:date}", "", 10, 0, { pId, subId, date });
+                        for (let dr of dailyRecs) {
+                            dr.set("status", "validated");
+                            dr.set("validated_by", user.id);
+                            dr.set("validated_by_name", user.name);
+                            dr.set("catatan_validasi", notes);
+                            $app.save(dr);
+                            updatedAny = true;
+                        }
+                    } catch(drErr) {}
+                }
+            }
+        } catch(eProg) {}
+
+        // 3. Coba cari di validations
         try {
             const vRec = $app.findFirstRecordByFilter("validations", "id = {:valId}", { valId });
             if (vRec) {
@@ -992,8 +1087,18 @@ routerAdd("POST", "/api/custom/approve-validation", (e) => {
                 vRec.set("comment", notes);
                 vRec.set("user", user.name);
                 $app.save(vRec);
+                updatedAny = true;
             }
         } catch(e2) {}
+
+        // 4. Update notifikasi terkait agar is_read = true
+        try {
+            const notifs = $app.findRecordsByFilter("notifications", "progress_log = {:valId} || id = {:valId}", "", 10, 0, { valId });
+            for (let n of notifs) {
+                n.set("is_read", true);
+                $app.save(n);
+            }
+        } catch(nErr) {}
 
         return utils.sendJSON(e, 200, { success: true, message: "Validasi progres berhasil disetujui." });
     } catch(err) {
@@ -1500,7 +1605,10 @@ routerAdd("POST", "/api/custom/add-sub", (e) => {
 routerAdd("POST", "/api/custom/save-baseline", (e) => {
     const utils = require(`${__hooks}/utils.js`);
     try {
-        utils.validateSession(e);
+        const user = utils.validateSession(e);
+        if (user.role !== "superadmin" && user.role !== "internal_admin") {
+            return utils.sendJSON(e, 403, { success: false, error: "Hanya Admin / Superadmin yang berhak mengubah baseline jadwal." });
+        }
         const body = utils.getRequestBody(e);
         const pId = body.projectId || "";
         const subId = body.subId || "";
@@ -1509,6 +1617,14 @@ routerAdd("POST", "/api/custom/save-baseline", (e) => {
         const duration = parseInt(body.plannedDuration || body.duration) || 0;
         const pred = body.predecessorSubId || body.pred || "";
         const isCritical = body.criticalFlag || body.isCritical ? 1 : 0;
+
+        // Cek status kunci baseline
+        try {
+            const pRec = $app.findFirstRecordByFilter("projects", "projectId = {:pId}", { pId });
+            if (pRec && pRec.get("baselineLocked")) {
+                return utils.sendJSON(e, 400, { success: false, error: `Baseline proyek '${pId}' telah dikunci (Locked) dan tidak dapat diubah.` });
+            }
+        } catch (lockErr) {}
 
         try {
             $app.db().newQuery("UPDATE subs SET predecessorSubId = {:pred}, criticalFlag = {:crit} WHERE projectId = {:pId} AND subId = {:subId}")
@@ -1958,7 +2074,28 @@ routerAdd("POST", "/api/custom/submit-castable", (e) => {
         const remarks = payload.remarks || "";
         const photoUrl = payload.photoBase64 || "";
 
-        const wf = 1.1, pctCast = 80, pctIns = 20, densitas = 2.45;
+        let wf = 1.1, pctCast = 80, pctIns = 20, densitas = 2.45;
+
+        // Ambil pengaturan master castable dinamis dari database
+        try {
+            const setRecs = $app.findRecordsByFilter("castable_settings", "", "", 0, 1);
+            if (setRecs.length > 0) {
+                wf = setRecs[0].getFloat("wasteFactor") || 1.1;
+                pctCast = setRecs[0].getFloat("persenCastable") || 80;
+                pctIns = setRecs[0].getFloat("persenInsulating") || 20;
+            }
+        } catch (eSet) {}
+
+        // Ambil densitas jenis material yang dipilih
+        if (typeId) {
+            try {
+                const tRec = $app.findFirstRecordByFilter("castable_types", "typeId = {:typeId} || id = {:typeId}", { typeId });
+                if (tRec && tRec.getFloat("densitas") > 0) {
+                    densitas = tRec.getFloat("densitas");
+                }
+            } catch (eType) {}
+        }
+
         const vol = (lebar / 1000) * (panjang / 1000) * (panjangAngkur / 1000) * wf;
         const tonAkhir = vol * densitas;
         const tonCast = tonAkhir * (pctCast / 100);

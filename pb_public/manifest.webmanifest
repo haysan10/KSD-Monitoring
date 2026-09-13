@@ -1,7 +1,7 @@
 {
   "name": "KSD Monitor — Kiln Shutdown Dashboard",
   "short_name": "KSD Monitor",
-  "description": "Sistem Informasi Manajemen Proyek Overhaul Kiln Plant 8",
+  "description": "Sistem Informasi Manajemen Proyek Kiln Shutdown & Overhaul — Kiln Support Division",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#090d16",

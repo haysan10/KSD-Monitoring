@@ -413,6 +413,24 @@ function initExtraCollections() {
             }
         }
     } catch (e) {}
+
+    // 4. Seed default manager user (manager@ksd.com)
+    try {
+        const usersCol = $app.findCollectionByNameOrId("users");
+        let mgrUser = null;
+        try { mgrUser = $app.findFirstRecordByFilter("users", "email = 'manager@ksd.com'"); } catch (e) {}
+        if (!mgrUser) {
+            const u3 = new Record(usersCol);
+            u3.set("email", "manager@ksd.com");
+            u3.set("name", "Manager Lapangan");
+            u3.set("role", "internal_viewer");
+            u3.set("emailVisibility", true);
+            u3.set("verified", true);
+            u3.setPassword("manager123");
+            $app.save(u3);
+            console.log("Seeded default user: manager@ksd.com");
+        }
+    } catch (e) {}
 }
 
 module.exports = {
