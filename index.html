@@ -6208,6 +6208,10 @@
             renderDashboardVariance();
             renderValidationsQueue();
             renderProjectsManagementTable();
+            // NOTE: renderReportsView is NOT called here intentionally.
+            // It is only called when the user explicitly opens the Reports tab (switchTab),
+            // after verifying there is an active project with data. Calling it here would
+            // render empty charts before any project is loaded.
         }
 
         function renderDashboardVariance() {
@@ -7311,6 +7315,27 @@ function renderAlertNotifications() {
         function closeCalendarDayDetails() { document.getElementById("calendarDayDetails").classList.remove("open"); }
 
         function renderReportsView() {
+            // GUARD: Do not render charts if no project is active or no IAC/sub data exists
+            const noProject = !state.projects || state.projects.length === 0 || state.noProjects;
+            const noActiveProject = !state.activeProjectId || state.activeProjectId === "ALL" || state.activeProjectId === "";
+            const noIacs = !state.iacs || state.iacs.length === 0;
+
+            if (noProject || noActiveProject || noIacs) {
+                // Show empty state for report log
+                const inputLog = document.getElementById("inputLogTableBody");
+                if (inputLog) inputLog.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-tertiary);padding:var(--sp-8);">Pilih proyek aktif terlebih dahulu untuk melihat laporan.</td></tr>`;
+                // Show empty state for S-curve table
+                const tbody = document.getElementById("reportsTableBody");
+                if (tbody) tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-tertiary);padding:var(--sp-8);">Belum ada proyek aktif. Buat proyek di Tab Setup terlebih dahulu.</td></tr>`;
+                // Clear charts gracefully
+                if (charts.trend) { charts.trend.destroy(); charts.trend = null; }
+                if (charts.iacDist) { charts.iacDist.destroy(); charts.iacDist = null; }
+                if (charts.contractorPerf) { charts.contractorPerf.destroy(); charts.contractorPerf = null; }
+                const forecastBody = document.getElementById("forecastRecommendationBody");
+                if (forecastBody) forecastBody.innerHTML = `<div style="text-align:center;color:var(--text-tertiary);padding:var(--sp-6);">Tidak ada data proyek untuk dianalisis.</div>`;
+                return;
+            }
+
             const inputLog = document.getElementById("inputLogTableBody");
             const sorted = [...(state.dailyProgress || [])].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 10);
             inputLog.innerHTML = sorted.length ? sorted.map(log => {
