@@ -779,15 +779,15 @@
 
         .field input {
             width: 100%;
-            padding: 12px 16px 12px 42px;
+            padding: 11px 14px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border-dark-medium);
             border-radius: var(--r-md);
             color: #fff;
-            font-size: 14px;
+            font-size: 13.5px;
             transition: border-color 200ms, background 200ms, box-shadow 200ms;
             outline: none;
-            min-height: 44px;
+            min-height: 40px;
         }
 
         .field input::placeholder {
@@ -802,11 +802,12 @@
 
         .btn-primary {
             width: 100%;
-            padding: 13px 24px;
+            padding: 11px 20px;
             background: var(--accent);
             color: var(--accent-fg);
-            font-size: 14px;
-            font-weight: 700;
+            font-size: 13.5px;
+            font-weight: 600;
+            letter-spacing: 0.01em;
             border-radius: var(--r-md);
             border: none;
             cursor: pointer;
@@ -816,7 +817,7 @@
             gap: var(--sp-2);
             transition: background 200ms, box-shadow 200ms, transform 100ms;
             box-shadow: var(--shadow-accent);
-            min-height: 44px;
+            min-height: 40px;
         }
 
         .btn-primary:hover {
@@ -2499,25 +2500,25 @@
         .mobile-menu-btn {
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid var(--border-dark);
-            border-radius: 12px;
-            padding: 12px 6px;
+            border-radius: 10px;
+            padding: 10px 8px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 4px;
             color: var(--text-on-dark);
-            font-size: 11px;
-            font-weight: 600;
+            font-size: 12px;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.15s ease;
-            min-height: 68px;
+            min-height: 50px;
             text-align: center;
         }
 
         .mobile-menu-btn:active {
             background: rgba(255, 255, 255, 0.1);
-            transform: scale(0.96);
+            transform: scale(0.97);
         }
 
         /* ============================================================
@@ -2894,7 +2895,6 @@
                     <div class="field">
                         <label for="loginUsername">Nama Pengguna / Email</label>
                         <div class="input-wrap">
-                            <i data-lucide="at-sign" class="input-icon"></i>
                             <input type="text" id="loginUsername" required autocomplete="username"
                                 placeholder="name@company.com" />
                         </div>
@@ -2902,13 +2902,12 @@
                     <div class="field">
                         <label for="loginPassword">Kata Sandi</label>
                         <div class="input-wrap">
-                            <i data-lucide="lock" class="input-icon"></i>
                             <input type="password" id="loginPassword" required autocomplete="current-password"
                                 placeholder="••••••••" />
                         </div>
                     </div>
                     <button type="submit" class="btn-primary" id="loginBtnSubmit" style="margin-top:4px;">
-                        <i data-lucide="log-in" style="width:15px;height:15px;"></i> Masuk Sistem
+                        Masuk Sistem
                     </button>
                 </form>
             </div>
@@ -2916,26 +2915,26 @@
             <!-- Mode Demonstrasi & Utilitas Pengujian (hanya tampil dengan ?dev=1) -->
             <div class="dev-panel-wrap hidden" style="width:100%;">
                 <button type="button" class="dev-panel-toggle" onclick="toggleDevPanel()" style="width:100%; display:flex; align-items:center; justify-content:center; gap:8px; padding:12px; background:rgba(255,255,255,0.02); border:1px dashed rgba(255,255,255,0.12); border-radius:12px; color:var(--text-on-dark-dim); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; transition:all 200ms; cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.05)'; this.style.borderColor='rgba(59,130,246,0.4)';" onmouseout="this.style.background='rgba(255,255,255,0.02)'; this.style.borderColor='rgba(255,255,255,0.12)';">
-                    <i data-lucide="sliders" style="width:14px; height:14px;"></i> Mode Uji Coba &amp; Dev Tools <i data-lucide="chevron-down" id="devPanelToggleIcon" style="width:14px; height:14px; transition:transform 0.2s;"></i>
+                    Mode Uji Coba &amp; Dev Tools
                 </button>
                 <div id="devPanelContent" class="hidden" style="margin-top:12px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:16px; padding:16px; display:flex; flex-direction:column; gap:16px; transition:all 0.2s;">
                     <div>
                         <div style="font-size:10px; font-weight:700; color:var(--text-on-dark-dim); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px; text-align:center;">Akses Cepat Akun Demo</div>
                         <div class="quick-login-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(80px, 1fr)); gap:6px;">
                             <button class="quick-btn" onclick="quickLogin('superadmin')" style="font-size:10px; padding:8px 4px; display:flex; flex-direction:column; align-items:center; gap:4px; border-color:rgba(220,38,38,0.4); background:rgba(220,38,38,0.08);">
-                                <i data-lucide="crown" style="width:14px;height:14px;color:#ef4444;"></i> Superadmin
+                                Superadmin
                             </button>
                             <button class="quick-btn" onclick="quickLogin('internal_admin')" style="font-size:10px; padding:8px 4px; display:flex; flex-direction:column; align-items:center; gap:4px;">
-                                <i data-lucide="shield-check" style="width:14px;height:14px;color:var(--accent);"></i> Admin
+                                Admin
                             </button>
                             <button class="quick-btn" onclick="quickLogin('internal_viewer')" style="font-size:10px; padding:8px 4px; display:flex; flex-direction:column; align-items:center; gap:4px;">
-                                <i data-lucide="eye" style="width:14px;height:14px;color:var(--success);"></i> Viewer
+                                Viewer
                             </button>
                             <button class="quick-btn" onclick="quickLogin('kontraktor_tali')" style="font-size:10px; padding:8px 4px; display:flex; flex-direction:column; align-items:center; gap:4px;">
-                                <i data-lucide="hard-hat" style="width:14px;height:14px;color:var(--warning);"></i> PT TALI
+                                PT TALI
                             </button>
                             <button class="quick-btn" onclick="quickLogin('kontraktor_hjg')" style="font-size:10px; padding:8px 4px; display:flex; flex-direction:column; align-items:center; gap:4px;">
-                                <i data-lucide="building-2" style="width:14px;height:14px;color:#f43f5e;"></i> PT HJG
+                                PT HJG
                             </button>
                         </div>
                     </div>
@@ -2943,10 +2942,10 @@
                         <div style="font-size:10px; font-weight:700; color:var(--text-on-dark-dim); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px; text-align:center;">Inisialisasi Database Sistem</div>
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                             <button type="button" class="quick-btn" onclick="startAppMode('demo')" style="flex-direction:row; justify-content:center; align-items:center; padding:10px; border-color:rgba(59,130,246,0.3); background:rgba(59,130,246,0.1); font-size:11px;">
-                                <i data-lucide="play-circle" style="width:14px;height:14px;color:var(--accent);margin-right:6px;"></i> Load Data Demo
+                                Load Data Demo
                             </button>
                             <button type="button" class="quick-btn" onclick="startAppMode('production')" style="flex-direction:row; justify-content:center; align-items:center; padding:10px; border-color:rgba(16,185,129,0.3); background:rgba(16,185,129,0.1); font-size:11px;">
-                                <i data-lucide="sparkles" style="width:14px;height:14px;color:var(--success);margin-right:6px;"></i> Mode Produksi
+                                Mode Produksi
                             </button>
                         </div>
                     </div>
@@ -2958,7 +2957,6 @@
 
     <div id="forceChangePasswordModal" class="modal-overlay hidden" aria-modal="true" role="dialog">
         <div class="modal-box">
-            <div class="modal-icon"><i data-lucide="shield-alert" style="width:22px;height:22px;"></i></div>
             <h3>Ubah Sandi Bawaan</h3>
             <p>Demi keamanan, Anda wajib mengganti kata sandi default sebelum mengakses dashboard.</p>
             <form onsubmit="handleForceChangePassword(event)" class="form-grid">
@@ -2983,19 +2981,16 @@
                 <span class="hide-mobile ksd-system-badge"><span class="ksd-badge-dot"></span>KILN SHUTDOWN SYSTEM</span>
             </div>
             <div class="project-selector-wrap">
-                <i data-lucide="folder-open" style="width:13px;height:13px;"></i>
                 <select id="projectSelector" onchange="switchProject(this.value)" aria-label="Pilih proyek aktif">
                     <option>-- Memuat Proyek --</option>
                 </select>
             </div>
             <!-- Tenant Contractor Header Badge -->
             <div id="contractorBadgeWrap" style="display:none;background:rgba(29,78,216,0.15);border:1px solid rgba(59,130,246,0.4);border-radius:var(--r-md);padding:4px 10px;font-size:12px;font-weight:700;color:#93c5fd;align-items:center;gap:6px;">
-                <i data-lucide="building" style="width:14px;height:14px;color:#60a5fa;"></i>
                 <span id="contractorBadgeTxt">PT. Kontraktor</span>
             </div>
             <!-- Internal Admin PT Filter Selector -->
             <div id="ptFilterWrap" style="display:none;align-items:center;gap:4px;margin-left:4px;">
-                <i data-lucide="building" style="width:13px;height:13px;color:var(--text-on-dark-dim);"></i>
                 <select id="ptFilterSelector" onchange="switchPtFilter(this.value)" aria-label="Filter Kontraktor PT" style="background:var(--surface-sidebar-alt);color:var(--text-on-dark);border:1px solid var(--border-dark);border-radius:var(--r-md);padding:4px 8px;font-size:12px;font-weight:600;cursor:pointer;">
                     <option value="ALL">🏢 Semua Kontraktor (PT)</option>
                 </select>
@@ -3012,7 +3007,7 @@
                     <i data-lucide="wifi-off" style="width:13px;height:13px;"></i> <span id="offlineCountTxt">Offline (0)</span>
                 </button>
                 <button class="btn btn-ghost btn-sm topbar-guide-btn" onclick="switchTab('guide')" title="Panduan & Documentation" style="padding:4px 10px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;border-radius:var(--r-md);margin-right:4px;">
-                    <i data-lucide="help-circle" style="width:15px;height:15px;color:var(--warning);"></i> <span class="hide-mobile">Panduan User</span>
+                    <span class="hide-mobile">Panduan User</span>
                 </button>
                 <div class="notif-bell-wrap">
                     <button class="icon-btn notif-bell-btn" id="notifBellBtn" onclick="toggleNotifPanel(event)"
@@ -3023,29 +3018,29 @@
                     <div class="notif-panel" id="notifPanel">
                         <div class="notif-panel-header">
                             <div class="notif-header-top">
-                                <h4><i data-lucide="bell-ring" style="width:15px;height:15px;color:var(--accent);"></i> Pusat Notifikasi
+                                <h4>Pusat Notifikasi
                                     <span class="notif-count-pill hidden" id="notifCountPill">0</span></h4>
                                 <button class="notif-mark-all" id="notifMarkAllBtn" onclick="dismissAllAlerts()">Tandai dibaca</button>
                             </div>
                             <div class="notif-tab-nav">
                                 <button class="notif-tab-btn active" id="notifTabActionBtn" onclick="switchNotifTab('action')">
-                                    <i data-lucide="zap" style="width:12px;height:12px;"></i> Perlu Tindakan <span class="notif-tab-badge" id="notifActionTabBadge">0</span>
+                                    Perlu Tindakan <span class="notif-tab-badge" id="notifActionTabBadge">0</span>
                                 </button>
                                 <button class="notif-tab-btn" id="notifTabUpdatesBtn" onclick="switchNotifTab('updates')">
-                                    <i data-lucide="bell" style="width:12px;height:12px;"></i> Riwayat
+                                    Riwayat
                                 </button>
                             </div>
                         </div>
                         <div class="notif-list custom-scroll" id="notifList"></div>
                         <div class="notif-panel-footer">
-                            <button onclick="closeNotifPanel(); switchTab('dashboard');"><i data-lucide="layout-dashboard" style="width:12px;height:12px;display:inline;"></i> Dashboard</button>
-                            <button onclick="closeNotifPanel(); switchTab('validations');" id="notifFooterValidBtn" style="color:#34d399;font-weight:700;"><i data-lucide="shield-check" style="width:12px;height:12px;display:inline;"></i> Antrean Validasi &rarr;</button>
+                            <button onclick="closeNotifPanel(); switchTab('dashboard');">Dashboard</button>
+                            <button onclick="closeNotifPanel(); switchTab('validations');" id="notifFooterValidBtn" style="color:#34d399;font-weight:700;">Antrean Validasi &rarr;</button>
                         </div>
                     </div>
                 </div>
                 <button class="btn-primary" id="installPwaBtn"
                     style="display: none; padding: 6px 12px; font-size: 12px; min-height: unset; margin-right: 8px;">
-                    <i data-lucide="download" style="width:14px;height:14px;"></i> Install App
+                    Install App
                 </button>
                 <button class="icon-btn topbar-sync-btn" onclick="triggerSync()" title="Sinkronisasi Data"
                     aria-label="Sinkronisasi data"><i data-lucide="refresh-cw"
@@ -3124,13 +3119,10 @@
                             <p class="banner-meta" id="bannerProjectMeta">Area: — | Durasi: —</p>
                         </div>
                         <div class="banner-actions">
-                            <div id="validationStatusBadge" class="badge warning hidden"><i data-lucide="shield-check"
-                                    style="width:11px;height:11px;"></i> Butuh Validasi</div>
+                            <div id="validationStatusBadge" class="badge warning hidden">Butuh Validasi</div>
                             <button onclick="handleArchiveProject()" class="btn btn-ghost btn-sm" id="btnArchiveProject"
-                                style="display:none;"><i data-lucide="archive" style="width:13px;height:13px;"></i>
-                                Arsipkan</button>
-                            <button onclick="triggerSync()" class="btn btn-ghost btn-sm"><i data-lucide="refresh-cw"
-                                    style="width:13px;height:13px;"></i> Sinkronisasi</button>
+                                style="display:none;">Arsipkan</button>
+                            <button onclick="triggerSync()" class="btn btn-ghost btn-sm">Sinkronisasi</button>
                         </div>
                     </div>
                 </div>
@@ -3316,8 +3308,7 @@
                                 <button id="btnDownloadAllReports" class="btn btn-ghost btn-sm"
                                     onclick="handleGenerateAllReports()"
                                     style="display:none;align-items:center;gap:var(--sp-2);">
-                                    <i data-lucide="download-cloud" style="width:13px;height:13px;"></i> Download Semua
-                                    Laporan (ZIP)
+                                    Download Semua Laporan (ZIP)
                                 </button>
                             </div>
                             <div class="card-body">
@@ -3328,13 +3319,9 @@
                                         dibuat.</div>
                                     <div style="display:flex;gap:var(--sp-4);align-items:center;flex-wrap:wrap;">
                                         <a id="allReportsFolderLink" href="#" target="_blank"
-                                            style="color:var(--accent);font-weight:700;display:flex;align-items:center;gap:4px;text-decoration:none;"><i
-                                                data-lucide="folder" style="width:14px;height:14px;"></i> Buka Folder
-                                            Drive</a>
+                                            style="color:var(--accent);font-weight:700;display:flex;align-items:center;gap:4px;text-decoration:none;">Buka Folder Drive</a>
                                         <a id="allReportsZipLink" href="#" target="_blank"
-                                            style="color:var(--accent);font-weight:700;display:flex;align-items:center;gap:4px;text-decoration:none;"><i
-                                                data-lucide="file-archive" style="width:14px;height:14px;"></i> Download
-                                            File ZIP</a>
+                                            style="color:var(--accent);font-weight:700;display:flex;align-items:center;gap:4px;text-decoration:none;">Download File ZIP</a>
                                     </div>
                                     <div id="allReportsFailedTxt" class="hidden"
                                         style="color:var(--danger);font-size:11px;font-weight:700;margin-top:4px;">
@@ -3375,12 +3362,8 @@
                                     <p>Laporan harian S-Curve komprehensif dengan progres terbobot per sub-pekerjaan</p>
                                 </div>
                                 <div style="display:flex;gap:var(--sp-2);flex-wrap:wrap;">
-                                    <button onclick="downloadExcel()" class="btn btn-ghost btn-sm"><i
-                                            data-lucide="file-spreadsheet" style="width:13px;height:13px;"></i> Excel
-                                        (.xlsx)</button>
-                                    <button onclick="downloadPDF()" class="btn btn-ghost btn-sm"><i
-                                            data-lucide="file-text" style="width:13px;height:13px;"></i> PDF
-                                        (A4)</button>
+                                    <button onclick="downloadExcel()" class="btn btn-ghost btn-sm">Excel (.xlsx)</button>
+                                    <button onclick="downloadPDF()" class="btn btn-ghost btn-sm">PDF (A4)</button>
                                 </div>
                             </div>
                             <div class="card-body" style="padding:0;">
@@ -3390,10 +3373,10 @@
                                         <!-- View Mode Switcher -->
                                         <div style="display:flex;background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:var(--r-md);padding:2px;">
                                             <button id="matrixModeWeeklyBtn" onclick="setMatrixViewMode('weekly')" class="btn btn-sm" style="padding:4px 10px;font-size:11.5px;font-weight:700;border:none;border-radius:var(--r-sm);cursor:pointer;background:var(--accent);color:#fff;">
-                                                <i data-lucide="calendar" style="width:12px;height:12px;display:inline;"></i> Mingguan (Ringkas)
+                                                Mingguan (Ringkas)
                                             </button>
                                             <button id="matrixModeDailyBtn" onclick="setMatrixViewMode('daily')" class="btn btn-sm btn-ghost" style="padding:4px 10px;font-size:11.5px;font-weight:700;border:none;border-radius:var(--r-sm);cursor:pointer;background:transparent;color:var(--text-secondary);">
-                                                <i data-lucide="clock" style="width:12px;height:12px;display:inline;"></i> Harian Penuh
+                                                Harian Penuh
                                             </button>
                                         </div>
                                         <!-- Filter IAC Dropdown -->
@@ -3407,7 +3390,7 @@
                                         </div>
                                     </div>
                                     <div id="matrixPerfBadge" style="font-size:11px;font-weight:700;color:var(--success);background:var(--success-bg);border:1px solid rgba(16,185,129,0.3);padding:4px 10px;border-radius:var(--r-md);display:flex;align-items:center;gap:6px;">
-                                        <i data-lucide="zap" style="width:12px;height:12px;"></i> <span id="matrixStatsTxt">30 IAC · 300 Sub-Jobdesk</span>
+                                        <span id="matrixStatsTxt">30 IAC · 300 Sub-Jobdesk</span>
                                     </div>
                                 </div>
                                 <div style="overflow-x:auto;" class="custom-scroll">
@@ -3446,15 +3429,12 @@
                         <div class="card section">
                             <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
                                 <div>
-                                    <h3 style="display:flex;align-items:center;gap:8px;">
-                                        <i data-lucide="shield-check" style="color:var(--accent);"></i>
-                                        Antrean Validasi Progres Kontraktor
-                                    </h3>
+                                    <h3>Antrean Validasi Progres Kontraktor</h3>
                                     <p>Tinjau dan setujui laporan progres harian yang diajukan mitra kontraktor sebelum dihitung resmi ke metrik proyek.</p>
                                 </div>
                                 <div style="display:flex;gap:8px;align-items:center;">
                                     <span class="badge warning" id="valQueueBadge" style="font-size:12px;padding:4px 10px;">0 Menunggu</span>
-                                    <button class="btn btn-ghost btn-sm" onclick="triggerSync()"><i data-lucide="refresh-cw" style="width:13px;height:13px;"></i> Muat Ulang</button>
+                                    <button class="btn btn-ghost btn-sm" onclick="triggerSync()">Muat Ulang</button>
                                 </div>
                             </div>
                             <div class="card-body">
@@ -3475,7 +3455,6 @@
                                         <tbody id="validationsQueueTableBody">
                                             <tr>
                                                 <td colspan="8" style="text-align:center;padding:var(--sp-8);color:var(--text-tertiary);">
-                                                    <i data-lucide="check-circle" style="width:32px;height:32px;color:var(--success);display:block;margin:0 auto 8px auto;"></i>
                                                     Semua laporan progres telah divalidasi. Tidak ada antrean.
                                                 </td>
                                             </tr>
@@ -3495,8 +3474,6 @@
                                             <h3>Form Lapor Harian</h3>
                                             <p>Masukkan data progres pekerjaan hari ini</p>
                                         </div>
-                                        <i data-lucide="sliders"
-                                            style="width:18px;height:18px;color:var(--accent);"></i>
                                     </div>
                                     <div class="card-body">
                                         <form id="progressForm" onsubmit="handleProgressSubmit(event)"
@@ -3575,8 +3552,7 @@
                                                         onchange="handlePhotoSelect(event)" />
                                                     <button type="button"
                                                         onclick="document.getElementById('inputPhoto').click()"
-                                                        class="btn btn-ghost btn-sm"><i data-lucide="camera"
-                                                            style="width:13px;height:13px;"></i> Pilih Foto</button>
+                                                        class="btn btn-ghost btn-sm">Pilih Foto</button>
                                                     <span id="photoFileName"
                                                         style="font-size:12px;color:var(--text-tertiary);font-style:italic;">Belum
                                                         ada foto</span>
@@ -3632,8 +3608,7 @@
                                             </div>
                                             <div style="grid-column:1/-1;">
                                                 <button type="submit" class="btn btn-accent" id="inputProgressSubmitBtn"
-                                                    style="width:100%;"><i data-lucide="send"
-                                                        style="width:14px;height:14px;"></i> Kirim Progres</button>
+                                                    style="width:100%;">Kirim Progres</button>
                                             </div>
                                         </form>
                                     </div>
@@ -3716,8 +3691,7 @@
                                     style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--sp-5);">
                                     <h4
                                         style="font-size:14px;font-weight:800;color:var(--text-primary);display:flex;align-items:center;gap:var(--sp-2);">
-                                        <i data-lucide="clipboard-list"
-                                            style="width:16px;height:16px;color:var(--accent);"></i> Laporan: <span
+                                        Laporan: <span
                                             id="calendarDetailDate"
                                             style="color:var(--accent);font-family:var(--font-mono);"></span>
                                     </h4>
@@ -3746,10 +3720,10 @@
                                         <option value="all">Semua Tanggal</option>
                                     </select>
                                     <button onclick="downloadInteractiveExcel()" class="btn btn-ghost btn-sm" style="border:1px solid var(--border-medium);background:var(--surface-1);color:var(--text-primary);padding:6px 12px;font-weight:700;font-size:12px;">
-                                        <i data-lucide="file-spreadsheet" style="width:14px;height:14px;color:#10b981;"></i> Ekspor Excel (.xlsx)
+                                        Ekspor Excel (.xlsx)
                                     </button>
                                     <button onclick="downloadPDF()" class="btn btn-accent btn-sm" style="padding:6px 12px;font-weight:700;font-size:12px;">
-                                        <i data-lucide="file-text" style="width:14px;height:14px;"></i> Unduh PDF Resmi
+                                        Unduh PDF Resmi
                                     </button>
                                 </div>
                             </div>
@@ -3762,7 +3736,6 @@
                         <div id="scurveForecastWidget" class="card section" style="background:#ffffff;border:1px solid #c7d2fe;border-radius:12px;margin-top:var(--sp-4);">
                             <div class="card-header" style="background:#eff6ff;border-bottom:1px solid #bfdbfe;display:flex;justify-content:space-between;align-items:center;">
                                 <div style="display:flex;align-items:center;gap:8px;">
-                                    <div style="width:28px;height:28px;border-radius:6px;background:#8b5cf6;color:#fff;display:flex;align-items:center;justify-content:center;"><i data-lucide="sparkles" style="width:16px;height:16px;"></i></div>
                                     <h3 style="color:#1e3a8a;font-size:14px;font-weight:800;margin:0;">Smart S-Curve Forecasting &amp; Rekomendasi Alokasi Tim</h3>
                                 </div>
                                 <span id="forecastBadgeStatus" class="badge accent" style="font-weight:800;">Analisis Real-Time</span>
@@ -3778,7 +3751,7 @@
                             <div class="card" style="margin:0;">
                                 <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
                                     <div>
-                                        <h3 style="font-size:13.5px;font-weight:800;"><i data-lucide="bar-chart-3" style="width:14px;height:14px;color:#2563eb;display:inline;"></i> Progres &amp; Bobot per IAC</h3>
+                                        <h3 style="font-size:13.5px;font-weight:800;">Progres &amp; Bobot per IAC</h3>
                                         <p style="font-size:11px;color:var(--text-tertiary);">Realisasi fisik (%) vs Bobot IAC (%)</p>
                                     </div>
                                 </div>
@@ -3791,7 +3764,7 @@
                             <div class="card" style="margin:0;">
                                 <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
                                     <div>
-                                        <h3 style="font-size:13.5px;font-weight:800;"><i data-lucide="activity" style="width:14px;height:14px;color:#10b981;display:inline;"></i> Laju Kecepatan Harian (Daily Velocity)</h3>
+                                        <h3 style="font-size:13.5px;font-weight:800;">Laju Kecepatan Harian (Daily Velocity)</h3>
                                         <p style="font-size:11px;color:var(--text-tertiary);">Penambahan capaian harian (+% / hari) vs Target rata-rata</p>
                                     </div>
                                 </div>
@@ -3804,7 +3777,7 @@
                             <div class="card" style="margin:0;">
                                 <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
                                     <div>
-                                        <h3 style="font-size:13.5px;font-weight:800;"><i data-lucide="building" style="width:14px;height:14px;color:#f59e0b;display:inline;"></i> Performa Mitra Kontraktor</h3>
+                                        <h3 style="font-size:13.5px;font-weight:800;">Performa Mitra Kontraktor</h3>
                                         <p style="font-size:11px;color:var(--text-tertiary);">Rata-rata progres &amp; jumlah sub-jobdesk per kontraktor</p>
                                     </div>
                                 </div>
@@ -3817,7 +3790,7 @@
                             <div class="card" style="margin:0;">
                                 <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
                                     <div>
-                                        <h3 style="font-size:13.5px;font-weight:800;"><i data-lucide="alert-triangle" style="width:14px;height:14px;color:#ef4444;display:inline;"></i> Analisis Kendala &amp; Delay Codes</h3>
+                                        <h3 style="font-size:13.5px;font-weight:800;">Analisis Kendala &amp; Delay Codes</h3>
                                         <p style="font-size:11px;color:var(--text-tertiary);">Distribusi faktor penghambat pengerjaan di lapangan</p>
                                     </div>
                                 </div>
@@ -3910,8 +3883,6 @@
                                         <h3>Form Inspeksi Castable</h3>
                                         <p>Log pengecoran castable refractory independen</p>
                                     </div>
-                                    <i data-lucide="flask-conical"
-                                        style="width:18px;height:18px;color:var(--accent);"></i>
                                 </div>
                                 <div class="card-body">
                                     <form id="castableForm" onsubmit="handleCastableSubmit(event)"
@@ -3958,8 +3929,7 @@
                                                     onchange="handleCastablePhotoSelect(event)" />
                                                 <button type="button"
                                                     onclick="document.getElementById('castablePhoto').click()"
-                                                    class="btn btn-ghost btn-sm"><i data-lucide="camera"
-                                                        style="width:13px;height:13px;"></i> Pilih Foto</button>
+                                                    class="btn btn-ghost btn-sm">Pilih Foto</button>
                                                 <span id="castablePhotoName"
                                                     style="font-size:12px;color:var(--text-tertiary);font-style:italic;">Belum
                                                     ada foto</span>
@@ -4024,8 +3994,7 @@
 
                                         <div style="grid-column:1/-1;">
                                             <button type="submit" class="btn btn-accent" id="castableSubmitBtn"
-                                                style="width:100%;"><i data-lucide="save"
-                                                    style="width:14px;height:14px;"></i> Simpan Log Inspeksi</button>
+                                                style="width:100%;">Simpan Log Inspeksi</button>
                                         </div>
                                     </form>
                                 </div>
@@ -4037,9 +4006,7 @@
                                         <h3>Riwayat Inspeksi Castable</h3>
                                         <p>Daftar seluruh log historis pengecoran</p>
                                     </div>
-                                    <button onclick="loadCastableModule()" class="btn btn-ghost btn-sm"><i
-                                            data-lucide="refresh-cw" style="width:13px;height:13px;"></i>
-                                        Segarkan</button>
+                                    <button onclick="loadCastableModule()" class="btn btn-ghost btn-sm">Segarkan</button>
                                 </div>
                                 <div style="overflow-x:auto;" class="custom-scroll">
                                     <table class="data-table">
@@ -4178,23 +4145,18 @@
                         <!-- Excel Project Setup Generator & Importer -->
                         <div class="card section" style="background:#ffffff;border:2px solid #3b82f6;border-radius:14px;overflow:hidden;box-shadow:0 8px 24px rgba(59,130,246,0.1);margin-bottom:var(--sp-6);">
                             <div class="card-header" style="background:#0f172a;color:#ffffff;display:flex;justify-content:space-between;align-items:center;padding:16px 20px;flex-wrap:wrap;gap:10px;">
-                                <div style="display:flex;align-items:center;gap:10px;">
-                                    <div style="width:34px;height:34px;border-radius:8px;background:#10b981;color:#ffffff;display:flex;align-items:center;justify-content:center;">
-                                        <i data-lucide="file-spreadsheet" style="width:20px;height:20px;"></i>
-                                    </div>
-                                    <div>
-                                        <h3 style="color:#ffffff;font-size:15px;font-weight:800;margin:0;">Setup Proyek Penuh Melalui Excel (.xlsx)</h3>
-                                        <p style="color:#94a3b8;font-size:12px;margin:2px 0 0 0;">Isi template Excel tanpa perlu membuka web app, lalu unggah untuk membuat struktur proyek, IAC, Sub-Jobdesk &amp; Baseline secara instan.</p>
-                                    </div>
+                                <div>
+                                    <h3 style="color:#ffffff;font-size:15px;font-weight:800;margin:0;">Setup Proyek Penuh Melalui Excel (.xlsx)</h3>
+                                    <p style="color:#94a3b8;font-size:12px;margin:2px 0 0 0;">Isi template Excel tanpa perlu membuka web app, lalu unggah untuk membuat struktur proyek, IAC, Sub-Jobdesk &amp; Baseline secara instan.</p>
                                 </div>
                                 <button onclick="downloadSetupTemplateExcel()" class="btn btn-sm" style="background:#10b981;color:#ffffff;font-weight:800;border:none;padding:8px 14px;border-radius:8px;display:flex;align-items:center;gap:6px;cursor:pointer;">
-                                    <i data-lucide="download" style="width:15px;height:15px;"></i> Unduh Template Excel (.xlsx)
+                                    Unduh Template Excel (.xlsx)
                                 </button>
                             </div>
                             <div class="card-body" style="padding:20px;display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:20px;background:#f8fafc;">
                                 <div style="background:#ffffff;border:1px solid #cbd5e1;border-radius:10px;padding:16px;">
-                                    <h4 style="font-size:13px;font-weight:800;color:#0f172a;margin-bottom:8px;display:flex;align-items:center;gap:6px;">
-                                        <i data-lucide="info" style="width:15px;height:15px;color:#3b82f6;"></i> Panduan Format Template Excel
+                                    <h4 style="font-size:13px;font-weight:800;color:#0f172a;margin-bottom:8px;">
+                                        Panduan Format Template Excel
                                     </h4>
                                     <ul style="font-size:12px;color:#475569;line-height:1.6;margin:0;padding-left:18px;">
                                         <li><strong>Sheet 1 (Info_Proyek)</strong>: Kode Proyek, Nama Proyek, Area, Tanggal Mulai, Durasi Hari.</li>
@@ -4204,12 +4166,11 @@
                                     </ul>
                                 </div>
                                 <div style="border:2px dashed #3b82f6;border-radius:10px;padding:20px;text-align:center;background:#eff6ff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;">
-                                    <i data-lucide="upload-cloud" style="width:36px;height:36px;color:#2563eb;"></i>
                                     <div style="font-size:13px;font-weight:800;color:#1e3a8a;">Unggah File Excel Setup Proyek</div>
                                     <div style="font-size:11.5px;color:#64748b;">Pilih file .xlsx yang telah diisi sesuai template</div>
                                     <input type="file" id="excelProjectSetupFileInput" accept=".xlsx, .xls" style="display:none;" onchange="handleProjectExcelUpload(event)">
                                     <button onclick="document.getElementById('excelProjectSetupFileInput').click()" class="btn btn-accent" style="font-weight:800;padding:8px 18px;font-size:12px;">
-                                        <i data-lucide="file-plus" style="width:14px;height:14px;"></i> Pilih File Excel &amp; Terapkan
+                                        Pilih File Excel &amp; Terapkan
                                     </button>
                                 </div>
                             </div>
@@ -4222,9 +4183,7 @@
                             <div class="card-body" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:var(--sp-6);">
                                 <form id="createUserForm" onsubmit="handleCreateUser(event)"
                                     style="background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:var(--r-lg);padding:var(--sp-5);display:flex;flex-direction:column;gap:var(--sp-4);">
-                                    <div class="form-section-title"><i data-lucide="user-plus"
-                                            style="width:15px;height:15px;color:var(--accent);"></i> Daftarkan Akun &amp; Atur Akses
-                                    </div>
+                                    <div class="form-section-title">Daftarkan Akun &amp; Atur Akses</div>
                                     <div class="field-light"><label>Username / Email</label><input type="text"
                                             id="newUsername" required placeholder="name@ksd.com" /></div>
                                     <div class="field-light"><label>Nama Lengkap</label><input type="text" id="newName"
@@ -4447,17 +4406,12 @@
                         <!-- 👑 Superadmin CRUD Project Management Card -->
                         <div class="card section" id="superadminProjectsManagementSection">
                             <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
-                                <div style="display:flex;align-items:center;gap:10px;">
-                                    <div style="width:34px;height:34px;border-radius:8px;background:var(--accent);color:#ffffff;display:flex;align-items:center;justify-content:center;">
-                                        <i data-lucide="folder-kanban" style="width:18px;height:18px;"></i>
-                                    </div>
-                                    <div>
-                                        <h3 style="margin:0;font-size:15px;font-weight:800;">Daftar &amp; Manajemen Seluruh Proyek (Superadmin CRUD)</h3>
-                                        <p style="color:var(--text-tertiary);font-size:12px;margin:2px 0 0 0;">Ubah informasi detail proyek, buka dan aktifkan proyek, atau hapus proyek.</p>
-                                    </div>
+                                <div>
+                                    <h3 style="margin:0;font-size:15px;font-weight:800;">Daftar &amp; Manajemen Seluruh Proyek (Superadmin CRUD)</h3>
+                                    <p style="color:var(--text-tertiary);font-size:12px;margin:2px 0 0 0;">Ubah informasi detail proyek, buka dan aktifkan proyek, atau hapus proyek.</p>
                                 </div>
                                 <button onclick="document.getElementById('createProjectForm').scrollIntoView({behavior:'smooth'})" class="btn btn-accent btn-sm">
-                                    <i data-lucide="plus" style="width:14px;height:14px;"></i> Tambah Proyek Baru
+                                    Tambah Proyek Baru
                                 </button>
                             </div>
                             <div class="card-body">
@@ -4497,8 +4451,7 @@
                                     <div class="field-light"><label>Tanggal Mulai</label><input type="date"
                                             id="newProjStartDate" required /></div>
                                     <div style="grid-column:1/-1;"><button type="submit" class="btn btn-accent"
-                                            id="createProjectBtn"><i data-lucide="plus-circle"
-                                                style="width:14px;height:14px;"></i> Daftarkan Proyek</button></div>
+                                            id="createProjectBtn">Daftarkan Proyek</button></div>
                                 </form>
                             </div>
                         </div>
@@ -4622,17 +4575,13 @@
                                         Manager</div>
                                 </div>
                                 <div id="validationFormControls"
-                                    style="display:flex;gap:var(--sp-2);flex-wrap:wrap;align-items:center;">
+                                    style="display:flex;gap:var(--sp-2);flex-wrap:align-items:center;">
                                     <input type="text" id="validComment" placeholder="Komentar validasi..."
                                         style="background:rgba(255,255,255,0.08);border:1px solid var(--border-dark-medium);border-radius:var(--r-md);padding:10px 14px;font-size:12px;color:#fff;outline:none;min-height:44px;min-width:200px;font-family:var(--font-ui);" />
                                     <button onclick="executeValidation('Approved')" id="btnApproveValidation"
-                                        class="btn btn-success" style="background:var(--success);color:#fff;"><i
-                                            data-lucide="check-circle" style="width:14px;height:14px;"></i>
-                                        Approved</button>
+                                        class="btn btn-success" style="background:var(--success);color:#fff;">Approved</button>
                                     <button onclick="executeValidation('Rejected')" id="btnRejectValidation"
-                                        class="btn btn-danger" style="background:var(--danger);color:#fff;"><i
-                                            data-lucide="x-circle" style="width:14px;height:14px;"></i>
-                                        Rejected</button>
+                                        class="btn btn-danger" style="background:var(--danger);color:#fff;">Rejected</button>
                                 </div>
                             </div>
                         </div>
@@ -4641,21 +4590,18 @@
                         <div class="card section" style="margin-top:var(--sp-6);">
                             <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
                                 <div>
-                                    <h3 style="display:flex;align-items:center;gap:8px;">
-                                        <i data-lucide="database" style="width:20px;height:20px;color:var(--accent);"></i>
-                                        Database &amp; Cloud Backup Center
-                                    </h3>
+                                    <h3>Database &amp; Cloud Backup Center</h3>
                                     <p style="color:var(--text-secondary);font-size:12px;">Inspeksi seluruh koleksi database live, ekspor snapshot JSON, atau hubungkan ke Google Spreadsheet</p>
                                 </div>
                                 <div style="display:flex;gap:8px;flex-wrap:wrap;">
                                     <button onclick="downloadFullDatabaseBackup()" class="btn btn-sm btn-accent" style="display:inline-flex;align-items:center;gap:6px;">
-                                        <i data-lucide="download" style="width:14px;height:14px;"></i> Download Backup JSON
+                                        Download Backup JSON
                                     </button>
                                     <button onclick="openAppsScriptModal()" class="btn btn-sm btn-success" style="background:var(--success);color:#fff;display:inline-flex;align-items:center;gap:6px;">
-                                        <i data-lucide="file-spreadsheet" style="width:14px;height:14px;"></i> Sync Google Spreadsheet (Apps Script)
+                                        Sync Google Spreadsheet (Apps Script)
                                     </button>
                                     <a href="/_/" target="_blank" class="btn btn-sm btn-ghost" style="border:1px solid var(--border-medium);display:inline-flex;align-items:center;gap:6px;color:var(--text-primary);font-weight:700;">
-                                        <i data-lucide="external-link" style="width:14px;height:14px;"></i> PocketBase Admin UI (/_/)
+                                        PocketBase Admin UI (/_/)
                                     </a>
                                 </div>
                             </div>
@@ -4679,7 +4625,7 @@
                                     </div>
                                     <div style="display:flex;align-items:flex-end;gap:8px;">
                                         <button onclick="loadDatabaseExplorerTable(document.getElementById('dbExplorerCollectionSelect').value)" class="btn btn-sm btn-ghost" style="border:1px solid var(--border-medium);min-height:42px;display:inline-flex;align-items:center;gap:6px;">
-                                            <i data-lucide="refresh-cw" style="width:14px;height:14px;"></i> Segarkan Data
+                                            Segarkan Data
                                         </button>
                                         <span id="dbExplorerRowCount" style="font-size:12px;font-weight:700;color:var(--accent);background:var(--accent-glow);padding:10px 14px;border-radius:var(--r-md);border:1px solid var(--border-subtle);min-height:42px;display:inline-flex;align-items:center;">0 Data</span>
                                     </div>
@@ -4706,13 +4652,13 @@
                     <div id="view-guide" class="view-panel">
                         <div class="view-header">
                             <div>
-                                 <h1 class="view-title" style="color:var(--text-primary);">📖 Dokumentasi &amp; Panduan Pengguna</h1>
+                                 <h1 class="view-title" style="color:var(--text-primary);">Dokumentasi &amp; Panduan Pengguna</h1>
                                  <p class="view-subtitle" style="color:var(--text-secondary);">Portal Resmi Pedoman Operasional Sistem Monitoring Kiln Shutdown &amp; Overhaul (KSD Monitor)</p>
                             </div>
                             <div style="display:flex;gap:var(--sp-2);flex-wrap:wrap;">
-                                <button onclick="startTour('product')" class="btn btn-accent"><i data-lucide="compass" style="width:16px;height:16px;"></i> Product Tour</button>
-                                <button onclick="startTour('setup')" class="btn btn-success" style="background:var(--success);border-color:var(--success);color:#fff;"><i data-lucide="settings-2" style="width:16px;height:16px;"></i> Guided Setup Tour</button>
-                                <button onclick="window.print()" class="btn btn-ghost hide-mobile" style="border:1px solid var(--border-medium);color:var(--text-secondary);"><i data-lucide="printer" style="width:15px;height:15px;"></i> Cetak Panduan</button>
+                                <button onclick="startTour('product')" class="btn btn-accent">Product Tour</button>
+                                <button onclick="startTour('setup')" class="btn btn-success" style="background:var(--success);border-color:var(--success);color:#fff;">Guided Setup Tour</button>
+                                <button onclick="window.print()" class="btn btn-ghost hide-mobile" style="border:1px solid var(--border-medium);color:var(--text-secondary);">Cetak Panduan</button>
                             </div>
                         </div>
 
@@ -4720,7 +4666,7 @@
                         <div style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%);border:1px solid #334155;border-radius:var(--r-xl);padding:var(--sp-6) var(--sp-8);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--sp-5);box-shadow:0 10px 25px rgba(0,0,0,0.25);">
                             <div style="max-width:640px;">
                                 <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(245,158,11,0.2);color:#fbbf24;border:1px solid rgba(245,158,11,0.4);padding:5px 14px;border-radius:var(--r-full);font-size:11px;font-weight:800;letter-spacing:0.06em;margin-bottom:12px;">
-                                    <i data-lucide="flame" style="width:14px;height:14px;"></i> KSD MONITOR — SISTEM MONITORING KILN SHUTDOWN &amp; OVERHAUL
+                                    KSD MONITOR — SISTEM MONITORING KILN SHUTDOWN &amp; OVERHAUL
                                 </span>
                                 <h2 style="font-size:24px;font-weight:900;color:#FFFFFF;line-height:1.25;margin-bottom:10px;">Portal Dokumentasi &amp; Pedoman Operasional Kiln Shutdown</h2>
                                 <p style="font-size:13px;color:#E2E8F0;line-height:1.75;">Sistem informasi manajemen proyek khusus untuk operasional <strong>Kiln Shutdown &amp; Major Overhaul</strong> — mencakup kurva deviasi S-Curve rencana vs realisasi, pelaporan harian kontraktor dengan foto fisik, kalkulasi geometri &amp; tonase refraktori castable, hingga validasi handover mutu teknik secara bertingkat.</p>
@@ -4739,20 +4685,20 @@
 
                         <!-- Doc Nav Tabs -->
                         <div style="display:flex;gap:8px;flex-wrap:wrap;margin:6px 0;" id="docNavTabs">
-                            <button class="doc-tab active" onclick="showDocSection('doc-overview', this)"><i data-lucide="layout-dashboard" style="width:14px;height:14px;"></i> Ringkasan Sistem</button>
-                            <button class="doc-tab" onclick="showDocSection('doc-workflow', this)"><i data-lucide="git-branch" style="width:14px;height:14px;"></i> Siklus Proyek (Workflow)</button>
-                            <button class="doc-tab" onclick="showDocSection('doc-roles', this)"><i data-lucide="users" style="width:14px;height:14px;"></i> SOP Hak Akses &amp; Peran</button>
-                            <button class="doc-tab" onclick="showDocSection('doc-modules', this)"><i data-lucide="layers" style="width:14px;height:14px;"></i> Modul &amp; Fitur</button>
-                            <button class="doc-tab" onclick="showDocSection('doc-formulas', this)"><i data-lucide="calculator" style="width:14px;height:14px;"></i> Formulasi Matematika</button>
-                            <button class="doc-tab" onclick="showDocSection('doc-setup', this)"><i data-lucide="settings-2" style="width:14px;height:14px;"></i> Setup Proyek Baru</button>
-                            <button class="doc-tab" onclick="showDocSection('doc-faq', this)"><i data-lucide="help-circle" style="width:14px;height:14px;"></i> FAQ &amp; Solusi Kendala</button>
+                            <button class="doc-tab active" onclick="showDocSection('doc-overview', this)">Ringkasan Sistem</button>
+                            <button class="doc-tab" onclick="showDocSection('doc-workflow', this)">Siklus Proyek (Workflow)</button>
+                            <button class="doc-tab" onclick="showDocSection('doc-roles', this)">SOP Hak Akses &amp; Peran</button>
+                            <button class="doc-tab" onclick="showDocSection('doc-modules', this)">Modul &amp; Fitur</button>
+                            <button class="doc-tab" onclick="showDocSection('doc-formulas', this)">Formulasi Matematika</button>
+                            <button class="doc-tab" onclick="showDocSection('doc-setup', this)">Setup Proyek Baru</button>
+                            <button class="doc-tab" onclick="showDocSection('doc-faq', this)">FAQ &amp; Solusi Kendala</button>
                         </div>
 
                         <!-- ─── TAB 1: OVERVIEW ─── -->
                         <div id="doc-overview" class="doc-section">
                             <div class="card" style="background:var(--surface-2);border:1px solid var(--border-subtle);">
                                 <div class="card-header" style="background:var(--surface-1);border-bottom:1px solid var(--border-subtle);">
-                                    <h3 style="color:var(--text-primary);"><i data-lucide="info" style="width:18px;height:18px;color:var(--accent);margin-right:8px;"></i>Tentang Platform KSD Monitor — Kiln Shutdown Division</h3>
+                                    <h3 style="color:var(--text-primary);">Tentang Platform KSD Monitor — Kiln Shutdown Division</h3>
                                 </div>
                                 <div class="card-body">
                                     <p style="font-size:13.5px;color:var(--text-primary);line-height:1.8;margin-bottom:16px;">
@@ -4762,78 +4708,57 @@
                                     <!-- 4 Pilar Kunci -->
                                     <div style="font-size:12.5px;font-weight:800;color:var(--text-primary);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.05em;">🏛️ 4 Pilar Utama Sistem Kiln Shutdown:</div>
                                     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:20px;">
-                                        <div style="background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:10px;padding:14px;display:flex;gap:12px;align-items:flex-start;">
-                                            <div style="width:38px;height:38px;border-radius:8px;background:var(--accent-glow);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="flame" style="width:20px;height:20px;color:var(--accent);"></i></div>
-                                            <div>
-                                                <div style="font-size:13px;font-weight:800;color:var(--text-primary);">Spesialisasi Kiln Shutdown</div>
-                                                <div style="font-size:11.5px;color:var(--text-secondary);margin-top:3px;line-height:1.5;">Pengendalian menyeluruh sektor kiln: Shell, Burner, Preheater, Clinker Cooler, hingga Mechanical Workshop.</div>
-                                            </div>
+                                        <div style="background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:10px;padding:14px;">
+                                            <div style="font-size:13px;font-weight:800;color:var(--text-primary);">Spesialisasi Kiln Shutdown</div>
+                                            <div style="font-size:11.5px;color:var(--text-secondary);margin-top:3px;line-height:1.5;">Pengendalian menyeluruh sektor kiln: Shell, Burner, Preheater, Clinker Cooler, hingga Mechanical Workshop.</div>
                                         </div>
-                                        <div style="background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:10px;padding:14px;display:flex;gap:12px;align-items:flex-start;">
-                                            <div style="width:38px;height:38px;border-radius:8px;background:var(--success-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="trending-up" style="width:20px;height:20px;color:var(--success);"></i></div>
-                                            <div>
-                                                <div style="font-size:13px;font-weight:800;color:var(--text-primary);">Dual-Tracking S-Curve</div>
-                                                <div style="font-size:11.5px;color:var(--text-secondary);margin-top:3px;line-height:1.5;">Kurva kumulatif rencana vs aktual harian otomatis dengan kalkulasi pembobotan IAC &amp; Sub-jobdesk.</div>
-                                            </div>
+                                        <div style="background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:10px;padding:14px;">
+                                            <div style="font-size:13px;font-weight:800;color:var(--text-primary);">Dual-Tracking S-Curve</div>
+                                            <div style="font-size:11.5px;color:var(--text-secondary);margin-top:3px;line-height:1.5;">Kurva kumulatif rencana vs aktual harian otomatis dengan kalkulasi pembobotan IAC &amp; Sub-jobdesk.</div>
                                         </div>
-                                        <div style="background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:10px;padding:14px;display:flex;gap:12px;align-items:flex-start;">
-                                            <div style="width:38px;height:38px;border-radius:8px;background:var(--warning-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="shield-alert" style="width:20px;height:20px;color:var(--warning);"></i></div>
-                                            <div>
-                                                <div style="font-size:13px;font-weight:800;color:var(--text-primary);">Isolasi Kontraktor</div>
-                                                <div style="font-size:11.5px;color:var(--text-secondary);margin-top:3px;line-height:1.5;">Akses Terisolasi: Kontraktor rekanan hanya dapat mengakses dan mengupdate tugas miliknya sendiri.</div>
-                                            </div>
+                                        <div style="background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:10px;padding:14px;">
+                                            <div style="font-size:13px;font-weight:800;color:var(--text-primary);">Isolasi Kontraktor</div>
+                                            <div style="font-size:11.5px;color:var(--text-secondary);margin-top:3px;line-height:1.5;">Akses Terisolasi: Kontraktor rekanan hanya dapat mengakses dan mengupdate tugas miliknya sendiri.</div>
                                         </div>
-                                        <div style="background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:10px;padding:14px;display:flex;gap:12px;align-items:flex-start;">
-                                            <div style="width:38px;height:38px;border-radius:8px;background:rgba(168,85,247,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="clipboard-check" style="width:20px;height:20px;color:#a855f7;"></i></div>
-                                            <div>
-                                                <div style="font-size:13px;font-weight:800;color:var(--text-primary);">Audit Mutu &amp; Handover</div>
-                                                <div style="font-size:11.5px;color:var(--text-secondary);margin-top:3px;line-height:1.5;">Pemeriksaan refraktori, foto bukti lapangan, serta validasi milestone bertingkat sebelum serah terima.</div>
-                                            </div>
+                                        <div style="background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:10px;padding:14px;">
+                                            <div style="font-size:13px;font-weight:800;color:var(--text-primary);">Audit Mutu &amp; Handover</div>
+                                            <div style="font-size:11.5px;color:var(--text-secondary);margin-top:3px;line-height:1.5;">Pemeriksaan refraktori, foto bukti lapangan, serta validasi milestone bertingkat sebelum serah terima.</div>
                                         </div>
                                     </div>
 
                                     <!-- Interactive Tour Hub -->
                                     <div class="card" style="background:var(--surface-1);border:1px solid var(--border-subtle);margin-top:var(--sp-4);">
                                         <div class="card-header" style="background:var(--surface-2);border-bottom:1px solid var(--border-subtle);">
-                                            <h3 style="color:var(--text-primary);"><i data-lucide="compass" style="width:18px;height:18px;color:var(--accent);margin-right:8px;"></i>Pusat Onboarding &amp; Tur Interaktif</h3>
+                                            <h3 style="color:var(--text-primary);">Pusat Onboarding &amp; Tur Interaktif</h3>
                                         </div>
                                         <div class="card-body" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--sp-4);">
                                             <div style="background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:12px;padding:var(--sp-4);display:flex;flex-direction:column;justify-content:space-between;gap:12px;">
                                                 <div>
-                                                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                                                        <div style="width:26px;height:26px;border-radius:6px;background:var(--accent-glow);display:flex;align-items:center;justify-content:center;"><i data-lucide="monitor" style="width:15px;height:15px;color:var(--accent);"></i></div>
-                                                        <h4 style="font-size:13px;font-weight:800;color:var(--text-primary);">Product Tour</h4>
-                                                    </div>
+                                                    <h4 style="font-size:13px;font-weight:800;color:var(--text-primary);margin-bottom:6px;">Product Tour</h4>
                                                     <p style="font-size:11.5px;color:var(--text-secondary);line-height:1.6;">Panduan visual terarah (spotlight) ke seluruh elemen antarmuka, KPI dashboard, dan navigasi tab.</p>
                                                 </div>
-                                                <button onclick="startTour('product')" class="btn btn-accent btn-sm" style="width:100%;"><i data-lucide="play" style="width:12px;height:12px;"></i> Mulai Product Tour</button>
+                                                <button onclick="startTour('product')" class="btn btn-accent btn-sm" style="width:100%;">Mulai Product Tour</button>
                                             </div>
                                             <div style="background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:12px;padding:var(--sp-4);display:flex;flex-direction:column;justify-content:space-between;gap:12px;">
                                                 <div>
-                                                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                                                        <div style="width:26px;height:26px;border-radius:6px;background:var(--success-bg);display:flex;align-items:center;justify-content:center;"><i data-lucide="party-popper" style="width:15px;height:15px;color:var(--success);"></i></div>
-                                                        <h4 style="font-size:13px;font-weight:800;color:var(--text-primary);">Welcome Walkthrough</h4>
-                                                    </div>
+                                                    <h4 style="font-size:13px;font-weight:800;color:var(--text-primary);margin-bottom:6px;">Welcome Walkthrough</h4>
                                                     <p style="font-size:11.5px;color:var(--text-secondary);line-height:1.6;">Dialog selamat datang menyambut personil baru dan menjelaskan ringkasan kapabilitas sistem.</p>
                                                 </div>
-                                                <button onclick="showOnboardingWelcome()" class="btn btn-success btn-sm" style="width:100%;background:var(--success);border-color:var(--success);color:#fff;"><i data-lucide="sparkles" style="width:12px;height:12px;"></i> Buka Dialog Welcome</button>
+                                                <button onclick="showOnboardingWelcome()" class="btn btn-success btn-sm" style="width:100%;background:var(--success);border-color:var(--success);color:#fff;">Buka Dialog Welcome</button>
                                             </div>
                                             <div style="background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:12px;padding:var(--sp-4);display:flex;flex-direction:column;justify-content:space-between;gap:12px;">
                                                 <div>
-                                                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                                                        <div style="width:26px;height:26px;border-radius:6px;background:var(--warning-bg);display:flex;align-items:center;justify-content:center;"><i data-lucide="settings-2" style="width:15px;height:15px;color:var(--warning);"></i></div>
-                                                        <h4 style="font-size:13px;font-weight:800;color:var(--text-primary);">Guided Setup Tour</h4>
-                                                    </div>
+                                                    <h4 style="font-size:13px;font-weight:800;color:var(--text-primary);margin-bottom:6px;">Guided Setup Tour</h4>
                                                     <p style="font-size:11.5px;color:var(--text-secondary);line-height:1.6;">Panduan praktis langkah demi langkah untuk Superadmin mendaftarkan proyek baru dan menyusun IAC.</p>
                                                 </div>
-                                                <button onclick="startTour('setup')" class="btn btn-accent btn-sm" style="width:100%;"><i data-lucide="play" style="width:12px;height:12px;"></i> Mulai Setup Tour</button>
+                                                <button onclick="startTour('setup')" class="btn btn-accent btn-sm" style="width:100%;">Mulai Setup Tour</button>
                                             </div>
                                         </div>
                                     </div>
 
                                     <!-- Arsitektur Teknis -->
                                     <div style="background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:10px;padding:14px;font-size:12.5px;color:var(--text-primary);line-height:1.7;margin-top:14px;">
-                                        <div style="font-weight:800;color:var(--accent);margin-bottom:4px;display:flex;align-items:center;gap:6px;"><i data-lucide="cpu" style="width:15px;height:15px;"></i> Spesifikasi Arsitektur Sistem:</div>
+                                        <div style="font-weight:800;color:var(--accent);margin-bottom:4px;">Spesifikasi Arsitektur Sistem:</div>
                                         <span>Web App modern dengan arsitektur <strong>Client-Server Offline-Ready PWA</strong>. Berjalan super cepat tanpa build-step rumit. Backend ditenagai oleh <strong>PocketBase v0.28</strong> (engine Go murni + SQLite WAL embedded) yang tahan terhadap lonjakan transaksi lapangan dan terisolasi per deployment.</span>
                                     </div>
                                 </div>
@@ -4844,7 +4769,7 @@
                         <div id="doc-workflow" class="doc-section hidden">
                             <div class="card" style="background:var(--surface-2);border:1px solid var(--border-subtle);">
                                 <div class="card-header" style="background:var(--surface-1);border-bottom:1px solid var(--border-subtle);">
-                                    <h3 style="color:var(--text-primary);"><i data-lucide="git-branch" style="width:18px;height:18px;color:var(--accent);margin-right:8px;"></i>Siklus Hidup Proyek Overhaul (5-Phase Lifecycle)</h3>
+                                    <h3 style="color:var(--text-primary);">Siklus Hidup Proyek Overhaul (5-Phase Lifecycle)</h3>
                                 </div>
                                 <div class="card-body">
                                     <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;margin-bottom:16px;">
@@ -4930,19 +4855,16 @@
                         <div id="doc-roles" class="doc-section hidden">
                             <div class="card" style="background:var(--surface-2);border:1px solid var(--border-subtle);">
                                 <div class="card-header" style="background:var(--surface-1);border-bottom:1px solid var(--border-subtle);">
-                                    <h3 style="color:var(--text-primary);"><i data-lucide="users" style="width:18px;height:18px;color:var(--accent);margin-right:8px;"></i>Pedoman Standar Operasional Peran (Role SOP)</h3>
+                                    <h3 style="color:var(--text-primary);">Pedoman Standar Operasional Peran (Role SOP)</h3>
                                 </div>
                                 <div class="card-body" style="display:flex;flex-direction:column;gap:18px;">
 
                                     <!-- Superadmin Card -->
                                     <div style="border:1px solid var(--border-subtle);border-radius:12px;overflow:hidden;background:var(--surface-1);">
                                         <div style="background:var(--surface-2);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border-subtle);">
-                                            <div style="display:flex;align-items:center;gap:12px;">
-                                                <div style="width:38px;height:38px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;"><i data-lucide="shield-check" style="width:20px;height:20px;color:#fff;"></i></div>
-                                                <div>
-                                                    <div style="font-size:15px;font-weight:900;color:var(--text-primary);">👑 Superadmin (Full System Owner)</div>
-                                                    <div style="font-size:12px;font-weight:700;color:var(--accent);">admin@ksd.com &middot; Akses Penuh 100%</div>
-                                                </div>
+                                            <div>
+                                                <div style="font-size:15px;font-weight:900;color:var(--text-primary);">👑 Superadmin (Full System Owner)</div>
+                                                <div style="font-size:12px;font-weight:700;color:var(--accent);">admin@ksd.com &middot; Akses Penuh 100%</div>
                                             </div>
                                             <span class="badge accent">Superuser</span>
                                         </div>
@@ -4962,12 +4884,9 @@
                                     <!-- Manager Card -->
                                     <div style="border:1px solid var(--border-subtle);border-radius:12px;overflow:hidden;background:var(--surface-1);">
                                         <div style="background:var(--surface-2);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border-subtle);">
-                                            <div style="display:flex;align-items:center;gap:12px;">
-                                                <div style="width:38px;height:38px;border-radius:10px;background:var(--success);display:flex;align-items:center;justify-content:center;"><i data-lucide="briefcase" style="width:20px;height:20px;color:#fff;"></i></div>
-                                                <div>
-                                                    <div style="font-size:15px;font-weight:900;color:var(--text-primary);">🧑‍💼 Manager Lapangan (Field Operations Lead)</div>
-                                                    <div style="font-size:12px;font-weight:700;color:var(--success);">manager@ksd.com &middot; Monitoring &amp; Validasi</div>
-                                                </div>
+                                            <div>
+                                                <div style="font-size:15px;font-weight:900;color:var(--text-primary);">🧑‍💼 Manager Lapangan (Field Operations Lead)</div>
+                                                <div style="font-size:12px;font-weight:700;color:var(--success);">manager@ksd.com &middot; Monitoring &amp; Validasi</div>
                                             </div>
                                             <span class="badge success">Managerial</span>
                                         </div>
@@ -4987,12 +4906,9 @@
                                     <!-- Kontraktor Card -->
                                     <div style="border:1px solid var(--border-subtle);border-radius:12px;overflow:hidden;background:var(--surface-1);">
                                         <div style="background:var(--surface-2);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border-subtle);">
-                                            <div style="display:flex;align-items:center;gap:12px;">
-                                                <div style="width:38px;height:38px;border-radius:10px;background:var(--warning);display:flex;align-items:center;justify-content:center;"><i data-lucide="hard-hat" style="width:20px;height:20px;color:#fff;"></i></div>
-                                                <div>
-                                                    <div style="font-size:15px;font-weight:900;color:var(--text-primary);">👷 Kontraktor Pelaksana (Executing Partner)</div>
-                                                    <div style="font-size:12px;font-weight:700;color:var(--warning);">Akun Rekanan Terisolasi (Access Control)</div>
-                                                </div>
+                                            <div>
+                                                <div style="font-size:15px;font-weight:900;color:var(--text-primary);">👷 Kontraktor Pelaksana (Executing Partner)</div>
+                                                <div style="font-size:12px;font-weight:700;color:var(--warning);">Akun Rekanan Terisolasi (Access Control)</div>
                                             </div>
                                             <span class="badge warning">Tenant Khusus</span>
                                         </div>
@@ -5017,43 +4933,31 @@
                         <div id="doc-modules" class="doc-section hidden">
                             <div class="card" style="background:var(--surface-2);border:1px solid var(--border-subtle);">
                                 <div class="card-header" style="background:var(--surface-1);border-bottom:1px solid var(--border-subtle);">
-                                    <h3 style="color:var(--text-primary);"><i data-lucide="layers" style="width:18px;height:18px;color:var(--accent);margin-right:8px;"></i>Modul Utama &amp; Fitur Sistem</h3>
+                                    <h3 style="color:var(--text-primary);">Modul Utama &amp; Fitur Sistem</h3>
                                 </div>
                                 <div class="card-body" style="display:flex;flex-direction:column;gap:16px;">
                                     
                                     <!-- Modul 1: Dashboard -->
                                     <div style="background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:10px;padding:16px;">
-                                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                                            <div style="width:30px;height:30px;border-radius:6px;background:var(--accent-glow);display:flex;align-items:center;justify-content:center;"><i data-lucide="layout-dashboard" style="width:16px;height:16px;color:var(--accent);"></i></div>
-                                            <h4 style="font-size:14px;font-weight:800;color:var(--text-primary);">1. Executive Dashboard &amp; KPI Ring</h4>
-                                        </div>
+                                        <h4 style="font-size:14px;font-weight:800;color:var(--text-primary);margin-bottom:8px;">1. Executive Dashboard &amp; KPI Ring</h4>
                                         <p style="font-size:12.5px;color:var(--text-secondary);line-height:1.6;">Menyajikan Donut Chart persentase capaian kumulatif aktual vs target plan, kartu ringkasan KPI (Total IAC, Sub-Jobdesk, Sisa Hari), serta panel peringatan keterlambatan (Delay Risk &amp; Stuck pekerjaan).</p>
                                     </div>
 
                                     <!-- Modul 2: S-Curve -->
                                     <div style="background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:10px;padding:16px;">
-                                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                                            <div style="width:30px;height:30px;border-radius:6px;background:var(--success-bg);display:flex;align-items:center;justify-content:center;"><i data-lucide="trending-up" style="width:16px;height:16px;color:var(--success);"></i></div>
-                                            <h4 style="font-size:14px;font-weight:800;color:var(--text-primary);">2. S-Curve Matrix &amp; Daily Tracking Grid</h4>
-                                        </div>
+                                        <h4 style="font-size:14px;font-weight:800;color:var(--text-primary);margin-bottom:8px;">2. S-Curve Matrix &amp; Daily Tracking Grid</h4>
                                         <p style="font-size:12.5px;color:var(--text-secondary);line-height:1.6;">Visualisasi kurva kumulatif rencana (garis biru) vs realisasi lapangan (garis hijau) dengan filter per kontraktor PT, serta tabel matriks tanggal harian yang memetakan perkembangan progres tiap sub-jobdesk.</p>
                                     </div>
 
                                     <!-- Modul 3: Input Progres -->
                                     <div style="background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:10px;padding:16px;">
-                                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                                            <div style="width:30px;height:30px;border-radius:6px;background:var(--warning-bg);display:flex;align-items:center;justify-content:center;"><i data-lucide="pencil-line" style="width:16px;height:16px;color:var(--warning);"></i></div>
-                                            <h4 style="font-size:14px;font-weight:800;color:var(--text-primary);">3. Lapor Progres Cepat &amp; Kompresi Foto</h4>
-                                        </div>
+                                        <h4 style="font-size:14px;font-weight:800;color:var(--text-primary);margin-bottom:8px;">3. Lapor Progres Cepat &amp; Kompresi Foto</h4>
                                         <p style="font-size:12.5px;color:var(--text-secondary);line-height:1.6;">Formulir entri progres lapangan yang responsif smartphone. Dilengkapi slider persentase, pemilihan shift kerja, pencatatan kendala (Weather, Material, Equipment, Manpower), serta kompresi foto otomatis sebelum upload.</p>
                                     </div>
 
                                     <!-- Modul 4: Castable -->
                                     <div style="background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:10px;padding:16px;">
-                                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                                            <div style="width:30px;height:30px;border-radius:6px;background:rgba(168,85,247,0.12);display:flex;align-items:center;justify-content:center;"><i data-lucide="flask-conical" style="width:16px;height:16px;color:#a855f7;"></i></div>
-                                            <h4 style="font-size:14px;font-weight:800;color:var(--text-primary);">4. Kalkulator Refraktori &amp; Inspeksi Castable</h4>
-                                        </div>
+                                        <h4 style="font-size:14px;font-weight:800;color:var(--text-primary);margin-bottom:8px;">4. Kalkulator Refraktori &amp; Inspeksi Castable</h4>
                                         <p style="font-size:12.5px;color:var(--text-secondary);line-height:1.6;">Kalkulator teknik presisi untuk menghitung volume ($m^3$) dan tonase material berdasarkan densitas dinamis (Low Cement, Conventional, SiC) serta waste factor sebelum pengecoran.</p>
                                     </div>
 
@@ -5065,14 +4969,13 @@
                         <div id="doc-formulas" class="doc-section hidden">
                             <div class="card" style="background:var(--surface-2);border:1px solid var(--border-subtle);">
                                 <div class="card-header" style="background:var(--surface-1);border-bottom:1px solid var(--border-subtle);">
-                                    <h3 style="color:var(--text-primary);"><i data-lucide="calculator" style="width:18px;height:18px;color:var(--accent);margin-right:8px;"></i>Formulasi Matematika &amp; Logika Bisnis Sistem</h3>
+                                    <h3 style="color:var(--text-primary);">Formulasi Matematika &amp; Logika Bisnis Sistem</h3>
                                 </div>
                                 <div class="card-body" style="display:flex;flex-direction:column;gap:18px;">
 
                                     <!-- Rumus 1: S-Curve Weighted Progress -->
                                     <div style="background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:10px;padding:16px;">
-                                        <div style="font-size:14px;font-weight:800;color:var(--text-primary);margin-bottom:8px;display:flex;align-items:center;gap:8px;">
-                                            <i data-lucide="trending-up" style="width:16px;height:16px;color:var(--accent);"></i>
+                                        <div style="font-size:14px;font-weight:800;color:var(--text-primary);margin-bottom:8px;">
                                             1. Perhitungan Progres Kumulatif S-Curve (Weighted Cumulative Progress)
                                         </div>
                                         <p style="font-size:12.5px;color:var(--text-secondary);line-height:1.6;margin-bottom:10px;">
@@ -5090,8 +4993,7 @@
 
                                     <!-- Rumus 2: Castable Geometry & Tonase -->
                                     <div style="background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:10px;padding:16px;">
-                                        <div style="font-size:14px;font-weight:800;color:var(--text-primary);margin-bottom:8px;display:flex;align-items:center;gap:8px;">
-                                            <i data-lucide="flask-conical" style="width:16px;height:16px;color:var(--warning);"></i>
+                                        <div style="font-size:14px;font-weight:800;color:var(--text-primary);margin-bottom:8px;">
                                             2. Formulasi Volume &amp; Tonase Material Castable Refraktori
                                         </div>
                                         <p style="font-size:12.5px;color:var(--text-secondary);line-height:1.6;margin-bottom:10px;">
@@ -5109,8 +5011,7 @@
 
                                     <!-- Rumus 3: Monotonic Rule -->
                                     <div style="background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:10px;padding:16px;">
-                                        <div style="font-size:14px;font-weight:800;color:var(--text-primary);margin-bottom:8px;display:flex;align-items:center;gap:8px;">
-                                            <i data-lucide="shield-check" style="width:16px;height:16px;color:var(--success);"></i>
+                                        <div style="font-size:14px;font-weight:800;color:var(--text-primary);margin-bottom:8px;">
                                             3. Aturan Progres Monotonik (Monotonic Anti-Regression Rule)
                                         </div>
                                         <p style="font-size:12.5px;color:var(--text-secondary);line-height:1.6;">
@@ -5132,7 +5033,7 @@
                         <div id="doc-setup" class="doc-section hidden">
                             <div class="card" style="background:var(--surface-2);border:1px solid var(--border-subtle);">
                                 <div class="card-header" style="background:var(--surface-1);border-bottom:1px solid var(--border-subtle);">
-                                    <h3 style="color:var(--text-primary);"><i data-lucide="settings-2" style="width:18px;height:18px;color:var(--accent);margin-right:8px;"></i>Checklist 7 Langkah Inisialisasi Proyek Overhaul</h3>
+                                    <h3 style="color:var(--text-primary);">Checklist 7 Langkah Inisialisasi Proyek Overhaul</h3>
                                 </div>
                                 <div class="card-body">
                                     <div style="display:flex;flex-direction:column;gap:12px;">
@@ -5194,7 +5095,7 @@
                         <div id="doc-faq" class="doc-section hidden">
                             <div class="card" style="background:var(--surface-2);border:1px solid var(--border-subtle);">
                                 <div class="card-header" style="background:var(--surface-1);border-bottom:1px solid var(--border-subtle);">
-                                    <h3 style="color:var(--text-primary);"><i data-lucide="help-circle" style="width:18px;height:18px;color:var(--warning);margin-right:8px;"></i>FAQ &amp; Solusi Kendala Teknis Lapangan</h3>
+                                    <h3 style="color:var(--text-primary);">FAQ &amp; Solusi Kendala Teknis Lapangan</h3>
                                 </div>
                                 <div class="card-body" style="display:flex;flex-direction:column;gap:12px;">
 
@@ -5251,12 +5152,12 @@
                             <p style="font-size:11.5px;color:var(--text-tertiary);margin:0;font-weight:600;">&copy; 2026 Kiln Support Division &middot; <span style="color:var(--text-primary);font-weight:700;">KSD Kiln Shutdown &amp; Overhaul Management System</span></p>
                         </div>
                         <div style="display:flex;gap:16px;align-items:center;">
-                            <button onclick="switchTab('guide')" style="background:none;border:none;padding:0;font-size:11.5px;font-weight:700;color:var(--accent);cursor:pointer;display:flex;align-items:center;gap:5px;transition:color 150ms;">
-                                <i data-lucide="book-open" style="width:13px;height:13px;"></i> Dokumentasi
+                            <button onclick="switchTab('guide')" style="background:none;border:none;padding:0;font-size:11.5px;font-weight:700;color:var(--accent);cursor:pointer;transition:color 150ms;">
+                                Dokumentasi
                             </button>
                             <span style="color:var(--border-medium);">|</span>
-                            <button onclick="switchTab('guide'); setTimeout(() => { const b = document.querySelector(`[onclick*='doc-roles']`); if(b) b.click(); }, 100);" style="background:none;border:none;padding:0;font-size:11.5px;font-weight:700;color:var(--accent);cursor:pointer;display:flex;align-items:center;gap:5px;transition:color 150ms;">
-                                <i data-lucide="shield-check" style="width:13px;height:13px;"></i> Panduan Role
+                            <button onclick="switchTab('guide'); setTimeout(() => { const b = document.querySelector(`[onclick*='doc-roles']`); if(b) b.click(); }, 100);" style="background:none;border:none;padding:0;font-size:11.5px;font-weight:700;color:var(--accent);cursor:pointer;transition:color 150ms;">
+                                Panduan Role
                             </button>
                         </div>
                     </footer>
@@ -5299,48 +5200,40 @@
             </div>
             <div class="mobile-menu-grid" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:14px;">
                 <button class="mobile-menu-btn" onclick="closeMobileMenuModal(); switchTab('overview');">
-                    <i data-lucide="layout-grid" style="width:20px;height:20px;color:#60a5fa;"></i>
                     <span>Ringkasan</span>
                 </button>
                 <button class="mobile-menu-btn" onclick="closeMobileMenuModal(); switchTab('table');">
-                    <i data-lucide="list-tree" style="width:20px;height:20px;color:#38bdf8;"></i>
                     <span>Hierarki</span>
                 </button>
                 <button class="mobile-menu-btn" onclick="closeMobileMenuModal(); switchTab('calendar');">
-                    <i data-lucide="calendar-days" style="width:20px;height:20px;color:#34d399;"></i>
                     <span>Kalender</span>
                 </button>
                 <button class="mobile-menu-btn" onclick="closeMobileMenuModal(); switchTab('castable');">
-                    <i data-lucide="flask-conical" style="width:20px;height:20px;color:#a78bfa;"></i>
                     <span>Castable</span>
                 </button>
                 <button class="mobile-menu-btn" onclick="closeMobileMenuModal(); switchTab('logs');">
-                    <i data-lucide="clipboard-list" style="width:20px;height:20px;color:#f472b6;"></i>
                     <span>Logs</span>
                 </button>
                 <button class="mobile-menu-btn" onclick="closeMobileMenuModal(); switchTab('guide');">
-                    <i data-lucide="book-open" style="width:20px;height:20px;color:#fde047;"></i>
                     <span>Panduan</span>
                 </button>
                 <button class="mobile-menu-btn" id="mobileThemeToggleBtn" onclick="toggleTheme();">
-                    <i data-lucide="sun" id="mobileThemeIcon" style="width:20px;height:20px;color:#f59e0b;"></i>
+                    <i data-lucide="sun" id="mobileThemeIcon" style="width:18px;height:18px;color:#f59e0b;"></i>
                     <span id="mobileThemeText">Mode Terang</span>
                 </button>
                 <button class="mobile-menu-btn" id="mobileMenuValidationsBtn" onclick="closeMobileMenuModal(); switchTab('validations');" style="display:none;">
-                    <i data-lucide="shield-check" style="width:20px;height:20px;color:#ef4444;"></i>
                     <span>Validasi</span>
                 </button>
                 <button class="mobile-menu-btn" id="mobileMenuSetupBtn" onclick="closeMobileMenuModal(); switchTab('setup');" style="display:none;">
-                    <i data-lucide="settings" style="width:20px;height:20px;color:#fb923c;"></i>
                     <span>Setup</span>
                 </button>
             </div>
             <div style="border-top:1px solid var(--border-dark); padding-top:12px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
-                <button onclick="closeMobileMenuModal(); triggerSync();" style="flex:1; background:rgba(255,255,255,0.06); border:1px solid var(--border-dark); color:var(--text-on-dark); border-radius:10px; padding:10px 12px; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">
-                    <i data-lucide="refresh-cw" style="width:13px;height:13px;"></i> Sinkron
+                <button onclick="closeMobileMenuModal(); triggerSync();" style="flex:1; background:rgba(255,255,255,0.06); border:1px solid var(--border-dark); color:var(--text-on-dark); border-radius:10px; padding:10px 12px; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    Sinkron
                 </button>
-                <button onclick="closeMobileMenuModal(); handleLogout();" style="flex:1; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); color:#fca5a5; border-radius:10px; padding:10px 12px; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">
-                    <i data-lucide="log-out" style="width:13px;height:13px;"></i> Keluar
+                <button onclick="closeMobileMenuModal(); handleLogout();" style="flex:1; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); color:#fca5a5; border-radius:10px; padding:10px 12px; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    Keluar
                 </button>
             </div>
         </div>
@@ -5374,14 +5267,9 @@
     <div id="appsScriptModal" class="modal-overlay hidden" style="z-index:1200;">
         <div class="modal-box" style="max-width:850px;width:92vw;max-height:90vh;display:flex;flex-direction:column;background:var(--surface-0);border:1px solid var(--border-medium);border-radius:var(--r-xl);padding:24px;">
             <div class="modal-header" style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border-subtle);padding-bottom:14px;margin-bottom:16px;">
-                <div style="display:flex;align-items:center;gap:12px;">
-                    <div style="width:40px;height:40px;border-radius:10px;background:rgba(16,185,129,0.15);display:flex;align-items:center;justify-content:center;">
-                        <i data-lucide="file-spreadsheet" style="width:22px;height:22px;color:var(--success);"></i>
-                    </div>
-                    <div>
-                        <h3 style="font-size:16px;font-weight:800;color:var(--text-primary);margin:0;">Auto Backup ke Google Spreadsheet via Apps Script</h3>
-                        <p style="font-size:12px;color:var(--text-secondary);margin:0;">Sinkronisasi otomatis seluruh database KSD Monitor ke tab Google Sheets</p>
-                    </div>
+                <div>
+                    <h3 style="font-size:16px;font-weight:800;color:var(--text-primary);margin:0;">Auto Backup ke Google Spreadsheet via Apps Script</h3>
+                    <p style="font-size:12px;color:var(--text-secondary);margin:4px 0 0 0;">Sinkronisasi otomatis seluruh database KSD Monitor ke tab Google Sheets</p>
                 </div>
                 <button onclick="closeAppsScriptModal()" style="border:none;background:none;cursor:pointer;color:var(--text-secondary);padding:4px;"><i data-lucide="x" style="width:20px;height:20px;"></i></button>
             </div>
@@ -5397,15 +5285,15 @@
                     </ol>
                 </div>
                 <div style="position:relative;">
-                    <button onclick="copyAppsScriptCode()" id="btnCopyAppsScript" class="btn btn-sm btn-accent" style="position:absolute;top:12px;right:12px;z-index:10;display:inline-flex;align-items:center;gap:6px;">
-                        <i data-lucide="copy" style="width:13px;height:13px;"></i> Salin Kode Script
+                    <button onclick="copyAppsScriptCode()" id="btnCopyAppsScript" class="btn btn-sm btn-accent" style="position:absolute;top:12px;right:12px;z-index:10;">
+                        Salin Kode Script
                     </button>
                     <textarea id="appsScriptCodeText" readonly style="width:100%;height:320px;font-family:var(--font-mono);font-size:11px;line-height:1.5;background:#0F172A;color:#38BDF8;border:1px solid var(--border-dark);border-radius:var(--r-md);padding:14px;outline:none;resize:vertical;"></textarea>
                 </div>
             </div>
             <div class="modal-footer" style="border-top:1px solid var(--border-subtle);padding-top:14px;margin-top:16px;display:flex;justify-content:flex-end;gap:10px;">
                 <button onclick="closeAppsScriptModal()" class="btn btn-ghost">Tutup</button>
-                <button onclick="copyAppsScriptCode()" class="btn btn-success" style="background:var(--success);color:#fff;display:inline-flex;align-items:center;gap:6px;"><i data-lucide="check" style="width:14px;height:14px;"></i> Salin Kode Script</button>
+                <button onclick="copyAppsScriptCode()" class="btn btn-success" style="background:var(--success);color:#fff;">Salin Kode Script</button>
             </div>
         </div>
     </div>
@@ -5912,9 +5800,8 @@
             .then(res => res.json())
             .then(r => {
                 showLoading(false);
-                btn.innerHTML = `<i data-lucide="log-in" style="width:15px;height:15px;"></i> Masuk Sistem`;
+                btn.innerHTML = `Masuk Sistem`;
                 btn.disabled = false;
-                lucideRefresh();
                 if (r.success) {
                     window.sessionToken = r.token;
                     try { sessionStorage.setItem("ksd_session_token", r.token); } catch (se) { }
@@ -5926,9 +5813,8 @@
             })
             .catch(err => {
                 showLoading(false);
-                btn.innerHTML = `<i data-lucide="log-in" style="width:15px;height:15px;"></i> Masuk Sistem`;
+                btn.innerHTML = `Masuk Sistem`;
                 btn.disabled = false;
-                lucideRefresh();
                 showToast("Koneksi ke server gagal: " + err.message, "danger", "Error Koneksi");
             });
         }
@@ -6522,8 +6408,7 @@ function renderAlertNotifications() {
     if (!itemsToRender.length) {
         list.innerHTML = `
         <div class="notif-empty">
-            <div class="notif-empty-icon"><i data-lucide="shield-check" style="width:22px;height:22px;"></i></div>
-            <p>${currentNotifTab === 'action' ? 'Hebat! Tidak ada tindakan mendesak yang tertunda.' : 'Belum ada riwayat pembaruan baru.'}</p>
+            <p style="font-size:12px;color:var(--text-tertiary);">${currentNotifTab === 'action' ? 'Hebat! Tidak ada tindakan mendesak yang tertunda.' : 'Belum ada riwayat pembaruan baru.'}</p>
         </div>`;
         lucideRefresh();
         return;
@@ -6546,20 +6431,20 @@ function renderAlertNotifications() {
                 actionButtonsHtml = `
                 <div class="notif-action-row">
                     <button class="btn-notif-action approve" onclick="quickApproveFromNotif('${item.id || ''}', '${item.itemId || ''}', event)">
-                        <i data-lucide="check" style="width:12px;height:12px;"></i> Setujui Cepat
+                        Setujui Cepat
                     </button>
                     <button class="btn-notif-action review" onclick="closeNotifPanel(); switchTab('validations');">
-                        <i data-lucide="search" style="width:12px;height:12px;"></i> Tinjau Form
+                        Tinjau Form
                     </button>
                 </div>`;
             } else if (isDanger || item.isRiskAlert) {
                 actionButtonsHtml = `
                 <div class="notif-action-row">
                     <button class="btn-notif-action review" onclick="goToAlert('${item.itemId}')">
-                        <i data-lucide="trending-up" style="width:12px;height:12px;"></i> Lihat di S-Curve
+                        Lihat di S-Curve
                     </button>
                     <button class="btn-notif-action review" onclick="closeNotifPanel(); switchTab('input');">
-                        <i data-lucide="pencil-line" style="width:12px;height:12px;"></i> Rencana Recovery
+                        Rencana Recovery
                     </button>
                 </div>`;
             }
@@ -6672,14 +6557,14 @@ function renderAlertNotifications() {
         }
 
         function renderDashboardAlerts() {
-            const panel = document.getElementById("dashboardAlertsPanel");
+            const panel = document.getElementById("dashAlertsList");
             if (!panel) return;
-            
-            const allAlerts = Array.isArray(state.alerts) ? state.alerts : [];
-            const dismissed = JSON.parse(localStorage.getItem(`ksd_dismissed_alerts_${state.activeProjectId}`) || "[]");
-            const activeAlerts = allAlerts.filter(a => !dismissed.includes(a.id));
-            
-            if (activeAlerts.length === 0) {
+            const alerts = state.alerts || [];
+
+            const dismissed = getDismissedAlerts();
+            const activeAlerts = alerts.filter(a => !dismissed.includes(a.id));
+
+            if (!activeAlerts.length) {
                 let emptyHtml = `
                     <div class="empty-state empty-state--success">
                         <p>Tidak ada alert aktif saat ini.</p>
@@ -6688,7 +6573,7 @@ function renderAlertNotifications() {
                 if (dismissed.length > 0) {
                     emptyHtml += `
                         <button class="btn btn-ghost btn-sm" onclick="resetDismissedAlerts()" style="margin-top:var(--sp-3);font-size:11px;width:100%;justify-content:center;color:var(--text-tertiary);">
-                            <i data-lucide="rotate-ccw" style="width:12px;height:12px;margin-right:4px;"></i> Tampilkan Kembali Alert yang Ditutup
+                            Tampilkan Kembali Alert yang Ditutup
                         </button>
                     `;
                 }
@@ -6725,7 +6610,7 @@ function renderAlertNotifications() {
             if (dismissed.length > 0) {
                 html += `
                     <button class="btn btn-ghost btn-sm" onclick="resetDismissedAlerts()" style="margin-top:var(--sp-3);font-size:11.5px;width:100%;justify-content:center;color:var(--text-tertiary);">
-                        <i data-lucide="rotate-ccw" style="width:12px;height:12px;margin-right:4px;"></i> Tampilkan Kembali Alert yang Ditutup
+                        Tampilkan Kembali Alert yang Ditutup
                     </button>
                 `;
             }
@@ -7291,7 +7176,7 @@ function renderAlertNotifications() {
                 ? `<p style="text-align:center;color:var(--text-tertiary);padding:var(--sp-6);">Tidak ada pelaporan pada tanggal ini.</p>`
                 : reports.map(r => {
                     const sub = state.subs.find(s => s.id === r.subId); const t = sub ? sub.title : r.subId;
-                    const photo = r.photoUrl ? `<button onclick="openPhotoLightbox('${r.photoUrl}','${t}','${r.remarks}','${r.inputBy}','${r.date}')" class="btn btn-ghost btn-sm" style="margin-top:8px;"><i data-lucide="image" style="width:13px;height:13px;"></i> Lihat Foto</button>` : "";
+                    const photo = r.photoUrl ? `<button onclick="openPhotoLightbox('${r.photoUrl}','${t}','${r.remarks}','${r.inputBy}','${r.date}')" class="btn btn-ghost btn-sm" style="margin-top:8px;">Lihat Foto</button>` : "";
                     return `
               <div style="background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:var(--r-md);padding:var(--sp-4);">
                 <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
@@ -7305,7 +7190,7 @@ function renderAlertNotifications() {
                   <div style="display:flex;flex-direction:column;gap:2px;font-size:10px;color:var(--text-tertiary);">
                     <span>Oleh: ${r.inputBy}</span><span>${new Date(r.timestamp).toLocaleTimeString('id-ID')}</span>
                   </div>
-                  <button onclick="quickInputProgress('${r.iacId}', '${r.subId}', ${r.progress}, '${dateStr}')" class="btn btn-ghost btn-sm"><i data-lucide="edit-3" style="width:13px;height:13px;"></i> Update Progres</button>
+                  <button onclick="quickInputProgress('${r.iacId}', '${r.subId}', ${r.progress}, '${dateStr}')" class="btn btn-ghost btn-sm">Update Progres</button>
                 </div>
               </div>`;
                 }).join("");
@@ -8154,8 +8039,7 @@ function renderAlertNotifications() {
             }
 
             if (count === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:var(--sp-8);color:var(--text-tertiary);"><i data-lucide="check-circle" style="width:32px;height:32px;color:var(--success);display:block;margin:0 auto 8px auto;"></i>Semua laporan progres telah divalidasi. Tidak ada antrean pending.</td></tr>`;
-                lucideRefresh();
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:var(--sp-8);color:var(--text-tertiary);font-size:13px;">Semua laporan progres telah divalidasi. Tidak ada antrean pending.</td></tr>`;
                 return;
             }
 
@@ -8164,7 +8048,7 @@ function renderAlertNotifications() {
                 const subTitle = escapeHTML(sub ? sub.title : item.subId);
                 const ptBadge = item.pt_name || item.contractor || item.pt || "Kontraktor";
                 const photoBtn = item.photoUrl 
-                    ? `<button type="button" class="btn btn-ghost btn-sm" onclick="openPhotoLightbox('${item.photoUrl}', '${subTitle}', '${escapeHTML(item.remarks || '')}', '${escapeHTML(item.inputBy || '')}', '${item.date}')" style="color:var(--accent);"><i data-lucide="image" style="width:14px;height:14px;"></i></button>`
+                    ? `<button type="button" class="btn btn-ghost btn-sm" onclick="openPhotoLightbox('${item.photoUrl}', '${subTitle}', '${escapeHTML(item.remarks || '')}', '${escapeHTML(item.inputBy || '')}', '${item.date}')" style="color:var(--accent);font-weight:700;">Foto</button>`
                     : `<span style="color:var(--text-tertiary);font-size:11px;">—</span>`;
                 
                 const delayTag = item.delayReasonCode ? `<div style="font-size:11px;color:var(--danger);font-weight:700;margin-top:2px;">🚨 ${item.delayReasonCode}: ${escapeHTML(item.constraintDescription || '')}</div>` : '';
@@ -8172,7 +8056,7 @@ function renderAlertNotifications() {
 
                 return `<tr>
                     <td class="mono" style="font-size:12px;font-weight:700;">${item.date}</td>
-                    <td><span class="badge accent" style="font-size:11px;padding:3px 8px;"><i data-lucide="building" style="width:11px;height:11px;margin-right:3px;"></i>${escapeHTML(ptBadge)}</span></td>
+                    <td><span class="badge accent" style="font-size:11px;padding:3px 8px;">${escapeHTML(ptBadge)}</span></td>
                     <td><div style="font-weight:700;font-size:12px;">${subTitle}</div><div class="mono" style="font-size:10px;color:var(--text-tertiary);">${item.subId}</div></td>
                     <td><span class="badge warning" style="font-size:13px;font-weight:800;padding:4px 8px;">${item.progress}%</span></td>
                     <td><div style="font-weight:600;font-size:12px;">${escapeHTML(item.inputBy || '—')}</div><div style="font-size:10px;color:var(--text-tertiary);">${item.shift || 'Shift 1'} (${item.manpowerActual || 0} Org)</div></td>
@@ -8180,13 +8064,12 @@ function renderAlertNotifications() {
                     <td style="text-align:center;">${photoBtn}</td>
                     <td style="text-align:right;">
                         <div style="display:flex;gap:6px;justify-content:flex-end;">
-                            <button type="button" onclick="handleValidateProgress('${item.projectId || state.activeProjectId}', '${item.subId}', '${item.date}', 'approve')" class="btn btn-sm btn-accent" style="background:#10B981;border-color:#10B981;padding:4px 10px;font-size:11px;font-weight:700;"><i data-lucide="check" style="width:12px;height:12px;"></i> Setujui</button>
-                            <button type="button" onclick="handleValidateProgress('${item.projectId || state.activeProjectId}', '${item.subId}', '${item.date}', 'reject')" class="btn btn-sm btn-danger" style="padding:4px 10px;font-size:11px;font-weight:700;"><i data-lucide="x" style="width:12px;height:12px;"></i> Tolak</button>
+                            <button type="button" onclick="handleValidateProgress('${item.projectId || state.activeProjectId}', '${item.subId}', '${item.date}', 'approve')" class="btn btn-sm btn-accent" style="background:#10B981;border-color:#10B981;padding:4px 10px;font-size:11px;font-weight:700;">Setujui</button>
+                            <button type="button" onclick="handleValidateProgress('${item.projectId || state.activeProjectId}', '${item.subId}', '${item.date}', 'reject')" class="btn btn-sm btn-danger" style="padding:4px 10px;font-size:11px;font-weight:700;">Tolak</button>
                         </div>
                     </td>
                 </tr>`;
             }).join("");
-            lucideRefresh();
         }
 
         function handleValidateProgress(projectId, subId, date, action) {
@@ -8898,8 +8781,7 @@ function formatHeader(sheet) {
             navigator.clipboard.writeText(txt.value).then(() => {
                 showToast("Kode Apps Script berhasil disalin ke clipboard!", "check-circle");
                 const btn = document.getElementById("btnCopyAppsScript");
-                if (btn) btn.innerHTML = `<i data-lucide="check" style="width:13px;height:13px;"></i> Tersalin!`;
-                lucideRefresh();
+                if (btn) btn.innerHTML = `Tersalin!`;
             }).catch(() => {
                 txt.select();
                 document.execCommand('copy');
@@ -8935,13 +8817,12 @@ function formatHeader(sheet) {
                     <td>${p.startDate || '—'}</td>
                     <td><span class="badge ${statusCls}">${p.status || 'In Progress'}</span></td>
                     <td style="text-align:right;display:flex;gap:6px;justify-content:flex-end;">
-                        ${!isActive ? `<button onclick="switchProject('${p.id}')" class="btn btn-ghost btn-sm" title="Buka Proyek"><i data-lucide="folder-open" style="width:13px;height:13px;"></i> Buka</button>` : ''}
-                        <button onclick="triggerEditProjectModal('${p.id}')" class="btn btn-ghost btn-sm" title="Edit Informasi"><i data-lucide="edit-3" style="width:13px;height:13px;"></i> Edit</button>
-                        <button onclick="triggerDeleteProjectCascade('${p.id}', '${p.name}')" class="btn btn-danger btn-sm" title="Hapus Proyek"><i data-lucide="trash-2" style="width:13px;height:13px;"></i> Hapus</button>
+                        ${!isActive ? `<button onclick="switchProject('${p.id}')" class="btn btn-ghost btn-sm" title="Buka Proyek">Buka</button>` : ''}
+                        <button onclick="triggerEditProjectModal('${p.id}')" class="btn btn-ghost btn-sm" title="Edit Informasi">Edit</button>
+                        <button onclick="triggerDeleteProjectCascade('${p.id}', '${p.name}')" class="btn btn-danger btn-sm" title="Hapus Proyek">Hapus</button>
                     </td>
                 </tr>`;
             }).join("");
-            lucideRefresh();
         }
 
         function triggerEditProjectModal(projectId) {
@@ -10078,13 +9959,12 @@ function formatHeader(sheet) {
 
             const btn = document.getElementById("btnArchiveProject");
             btn.disabled = true;
-            btn.innerHTML = `<i data-lucide="loader" style="width:13px;height:13px;" class="spinner"></i> Memproses...`;
+            btn.innerHTML = `Memproses...`;
 
             google.script.run
                 .withSuccessHandler(r => {
                     btn.disabled = false;
-                    btn.innerHTML = `<i data-lucide="archive" style="width:13px;height:13px;"></i> Arsipkan`;
-                    lucideRefresh();
+                    btn.innerHTML = `Arsipkan`;
 
                     if (r.success) {
                         showToast("Arsip Excel berhasil dibuat. Membuka di tab baru...", "check-circle");
@@ -10095,8 +9975,7 @@ function formatHeader(sheet) {
                 })
                 .withFailureHandler(err => {
                     btn.disabled = false;
-                    btn.innerHTML = `<i data-lucide="archive" style="width:13px;height:13px;"></i> Arsipkan`;
-                    lucideRefresh();
+                    btn.innerHTML = `Arsipkan`;
                     showToast("Gagal: " + err.message, "alert-triangle");
                 })
                 .createProjectArchive(window.sessionToken, state.activeProjectId);
@@ -10109,7 +9988,7 @@ function formatHeader(sheet) {
 
             const btn = document.getElementById("btnDownloadAllReports");
             btn.disabled = true;
-            btn.innerHTML = `<i data-lucide="loader" style="width:14px;height:14px;" class="spinner"></i> Memproses ZIP...`;
+            btn.innerHTML = `Memproses ZIP...`;
 
             showLoading(true, "Mengunduh dan menyusun laporan ZIP...");
             google.script.run
@@ -10117,8 +9996,7 @@ function formatHeader(sheet) {
                     if (!res.success) {
                         showLoading(false);
                         btn.disabled = false;
-                        btn.innerHTML = `<i data-lucide="download-cloud" style="width:14px;height:14px;"></i> Download Semua Laporan (ZIP)`;
-                        lucideRefresh();
+                        btn.innerHTML = `Download Semua Laporan (ZIP)`;
                         showToast("Gagal menarik data: " + res.error, "alert-triangle");
                         return;
                     }
@@ -10144,8 +10022,7 @@ function formatHeader(sheet) {
                         if (count === 0) {
                             showLoading(false);
                             btn.disabled = false;
-                            btn.innerHTML = `<i data-lucide="download-cloud" style="width:14px;height:14px;"></i> Download Semua Laporan (ZIP)`;
-                            lucideRefresh();
+                            btn.innerHTML = `Download Semua Laporan (ZIP)`;
                             showToast("Tidak ada laporan yang berhasil dibuat.", "alert-triangle");
                             return;
                         }
@@ -10154,8 +10031,7 @@ function formatHeader(sheet) {
                             saveAs(content, `KSD_Semua_Laporan_${new Date().toISOString().slice(0, 10)}.zip`);
                             showLoading(false);
                             btn.disabled = false;
-                            btn.innerHTML = `<i data-lucide="download-cloud" style="width:14px;height:14px;"></i> Download Semua Laporan (ZIP)`;
-                            lucideRefresh();
+                            btn.innerHTML = `Download Semua Laporan (ZIP)`;
                             showToast(`Berhasil mengunduh ${count} laporan dalam ZIP!`, "check");
 
                             const resBox = document.getElementById("allReportsResultBox");
@@ -10170,23 +10046,20 @@ function formatHeader(sheet) {
                         }).catch(err => {
                             showLoading(false);
                             btn.disabled = false;
-                            btn.innerHTML = `<i data-lucide="download-cloud" style="width:14px;height:14px;"></i> Download Semua Laporan (ZIP)`;
-                            lucideRefresh();
+                            btn.innerHTML = `Download Semua Laporan (ZIP)`;
                             showToast("Gagal membungkus ZIP: " + err.message, "alert-triangle");
                         });
                     } catch (err) {
                         showLoading(false);
                         btn.disabled = false;
-                        btn.innerHTML = `<i data-lucide="download-cloud" style="width:14px;height:14px;"></i> Download Semua Laporan (ZIP)`;
-                        lucideRefresh();
+                        btn.innerHTML = `Download Semua Laporan (ZIP)`;
                         showToast("Kesalahan sistem saat memproses PDF: " + err.message, "alert-triangle");
                     }
                 })
                 .withFailureHandler(err => {
                     showLoading(false);
                     btn.disabled = false;
-                    btn.innerHTML = `<i data-lucide="download-cloud" style="width:14px;height:14px;"></i> Download Semua Laporan (ZIP)`;
-                    lucideRefresh();
+                    btn.innerHTML = `Download Semua Laporan (ZIP)`;
                     showToast("Error jaringan: " + err.message, "alert-triangle");
                 })
                 .getAllProjectsFullData(window.sessionToken);
@@ -10385,10 +10258,10 @@ function formatHeader(sheet) {
 
                 let actionsHtml = "";
                 if (log.photoUrl) {
-                    actionsHtml += `<button onclick="openPhotoLightbox('${log.photoUrl}','${log.idLog}','${escRemarks}','${escInspektor}','${log.tanggalInspeksi}')" class="btn btn-ghost btn-sm" style="padding:4px 8px;"><i data-lucide="image" style="width:13px;height:13px;"></i></button>`;
+                    actionsHtml += `<button onclick="openPhotoLightbox('${log.photoUrl}','${log.idLog}','${escRemarks}','${escInspektor}','${log.tanggalInspeksi}')" class="btn btn-ghost btn-sm" style="padding:4px 8px;font-size:11px;font-weight:700;">Foto</button>`;
                 }
                 if (isPrivileged) {
-                    actionsHtml += `<button onclick="triggerDeleteCastable('${log.idLog}')" class="btn btn-danger btn-sm" style="padding:4px 8px;margin-left:4px;"><i data-lucide="trash-2" style="width:13px;height:13px;"></i></button>`;
+                    actionsHtml += `<button onclick="triggerDeleteCastable('${log.idLog}')" class="btn btn-danger btn-sm" style="padding:4px 8px;margin-left:4px;font-size:11px;font-weight:700;">Hapus</button>`;
                 }
                 if (actionsHtml === "") actionsHtml = "—";
 
@@ -10721,21 +10594,16 @@ function formatHeader(sheet) {
             overlay.style.cssText = `position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;`;
             overlay.innerHTML = `
                 <div style="background:var(--surface-2,#1e293b);border:1px solid var(--border-subtle,rgba(255,255,255,0.1));border-radius:16px;max-width:440px;width:100%;padding:28px;">
-                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-                        <div style="width:44px;height:44px;border-radius:12px;background:rgba(16,185,129,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                            <i data-lucide="sparkles" style="width:22px;height:22px;color:#10b981;"></i>
-                        </div>
-                        <div>
-                            <div style="font-size:16px;font-weight:800;color:#fff;">Mode Produksi Bersih</div>
-                            <div style="font-size:12px;color:var(--text-tertiary,#94a3b8);margin-top:2px;">Setup proyek nyata dari awal</div>
-                        </div>
+                    <div style="margin-bottom:16px;">
+                        <div style="font-size:16px;font-weight:800;color:#fff;">Mode Produksi Bersih</div>
+                        <div style="font-size:12px;color:var(--text-tertiary,#94a3b8);margin-top:2px;">Setup proyek nyata dari awal</div>
                     </div>
                     <p style="font-size:13px;color:#cbd5e1;line-height:1.6;margin-bottom:8px;">Tindakan ini akan <strong style="color:#f87171;">menghapus seluruh data demo</strong> (14 proyek, 2.520 sub-jobdesk, dan semua progress log) dari database.</p>
                     <p style="font-size:12px;color:#94a3b8;line-height:1.5;margin-bottom:20px;">Setelah bersih, Anda akan masuk sebagai Superadmin dan diarahkan ke Setup Proyek untuk mulai konfigurasi dari nol.</p>
                     <div style="display:flex;gap:10px;">
                         <button onclick="document.getElementById('prodModeOverlay').remove()" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:#94a3b8;font-size:13px;font-weight:700;cursor:pointer;">Batal</button>
                         <button onclick="executeProductionMode()" id="confirmProdBtn" style="flex:1;padding:10px;border-radius:8px;border:none;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:13px;font-weight:700;cursor:pointer;">
-                            <i data-lucide="sparkles" style="width:14px;height:14px;display:inline;vertical-align:middle;"></i> Ya, Mulai Produksi
+                            Ya, Mulai Produksi
                         </button>
                     </div>
                 </div>
@@ -10850,48 +10718,33 @@ function formatHeader(sheet) {
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
 
-            <!-- Badge & Icon -->
-            <div style="width:62px; height:62px; border-radius:18px; background:linear-gradient(135deg, rgba(59,130,246,0.25), rgba(37,99,235,0.1)); border:1px solid rgba(59,130,246,0.35); display:flex; align-items:center; justify-content:center; margin:0 auto 12px; box-shadow:0 0 20px rgba(59,130,246,0.25);">
-                <i data-lucide="compass" style="width:32px; height:32px; color:#60a5fa;"></i>
-            </div>
-            
-            <div style="margin-bottom:8px;">
-                <span style="display:inline-block; font-size:10.5px; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; color:#93c5fd; background:rgba(59,130,246,0.15); padding:3px 10px; border-radius:20px; border:1px solid rgba(59,130,246,0.25);">
-                    ✨ PANDUAN PENGGUNA BARU
+            <div style="margin-bottom:12px; margin-top:4px;">
+                <span style="display:inline-block; font-size:10.5px; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; color:#93c5fd; background:rgba(59,130,246,0.15); padding:4px 12px; border-radius:20px; border:1px solid rgba(59,130,246,0.25);">
+                    PANDUAN PENGGUNA BARU
                 </span>
             </div>
 
-            <h2 style="font-size:20px; font-weight:800; color:#f8fafc; margin:0 0 8px; line-height:1.3;">Selamat Datang di KSD Monitor! 🚀</h2>
+            <h2 style="font-size:20px; font-weight:800; color:#f8fafc; margin:0 0 8px; line-height:1.3;">Selamat Datang di KSD Monitor</h2>
             <p style="font-size:12.5px; color:#94a3b8; line-height:1.6; margin:0 0 16px;">Sistem monitoring overhaul kiln siap memandu Anda memantau progres fisik, S-Curve, dan manajemen kendala proyek secara akurat.</p>
             
             <!-- 3 Highlights List -->
-            <div style="background:rgba(15,23,42,0.65); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:12px; margin-bottom:20px; text-align:left; display:flex; flex-direction:column; gap:9px;">
-                <div style="display:flex; align-items:center; gap:10px; font-size:12px; color:#e2e8f0;">
-                    <div style="width:24px; height:24px; border-radius:6px; background:rgba(59,130,246,0.2); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                        <i data-lucide="trending-up" style="width:13px; height:13px; color:#60a5fa;"></i>
-                    </div>
-                    <span><strong>S-Curve Matrix</strong> real-time dari progres tervalidasi</span>
+            <div style="background:rgba(15,23,42,0.65); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:14px; margin-bottom:20px; text-align:left; display:flex; flex-direction:column; gap:10px;">
+                <div style="font-size:12px; color:#e2e8f0; line-height:1.5;">
+                    <strong style="color:#60a5fa;">• S-Curve Matrix</strong> — Real-time dari progres tervalidasi
                 </div>
-                <div style="display:flex; align-items:center; gap:10px; font-size:12px; color:#e2e8f0;">
-                    <div style="width:24px; height:24px; border-radius:6px; background:rgba(16,185,129,0.2); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                        <i data-lucide="pencil-line" style="width:13px; height:13px; color:#34d399;"></i>
-                    </div>
-                    <span><strong>Input Progres Cepat</strong> di lapangan via smartphone</span>
+                <div style="font-size:12px; color:#e2e8f0; line-height:1.5;">
+                    <strong style="color:#34d399;">• Input Progres Cepat</strong> — Di lapangan via smartphone
                 </div>
-                <div style="display:flex; align-items:center; gap:10px; font-size:12px; color:#e2e8f0;">
-                    <div style="width:24px; height:24px; border-radius:6px; background:rgba(245,158,11,0.2); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                        <i data-lucide="bell-ring" style="width:13px; height:13px; color:#fbbf24;"></i>
-                    </div>
-                    <span><strong>Alert Keterlambatan</strong> &amp; deteksi dini kendala</span>
+                <div style="font-size:12px; color:#e2e8f0; line-height:1.5;">
+                    <strong style="color:#fbbf24;">• Alert Keterlambatan</strong> — Deteksi dini kendala &amp; recovery
                 </div>
             </div>
 
             <!-- Action buttons -->
             <div style="display:flex; gap:10px; align-items:center;">
                 <button onclick="closeOnboardingWelcome()" style="flex:1; height:44px; border-radius:12px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.05); color:#cbd5e1; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.15s;">Lewati</button>
-                <button onclick="startOnboardingTour()" style="flex:1.8; height:44px; border-radius:12px; border:none; background:linear-gradient(135deg,#2563eb,#1d4ed8); color:#ffffff; font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:7px; box-shadow:0 4px 16px rgba(37,99,235,0.4); font-family:inherit; transition:all 0.15s;">
-                    <span>Ikuti Tour Panduan</span>
-                    <i data-lucide="arrow-right" style="width:15px; height:15px;"></i>
+                <button onclick="startOnboardingTour()" style="flex:1.8; height:44px; border-radius:12px; border:none; background:linear-gradient(135deg,#2563eb,#1d4ed8); color:#ffffff; font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 16px rgba(37,99,235,0.4); font-family:inherit; transition:all 0.15s;">
+                    Ikuti Tour Panduan
                 </button>
             </div>
         </div>

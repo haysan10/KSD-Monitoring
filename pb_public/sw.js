@@ -3,7 +3,7 @@
  * Caches static shell, scripts, styles, and font icons for offline operation in plant areas.
  */
 
-const CACHE_NAME = 'ksd-monitor-v2.7';
+const CACHE_NAME = 'ksd-monitor-v2.8';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -40,6 +40,22 @@ self.addEventListener('fetch', event => {
 
   // Jangan cache request API PocketBase / custom backend (selalu bypass ke network atau offline queue handler di client)
   if (url.pathname.startsWith('/api/')) {
+    return;
+  }
+
+  // Network-First untuk navigasi & HTML shell agar update UI selalu langsung tampil
+  if (event.request.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname === '/') {
+    event.respondWith(
+      fetch(event.request).then(networkResponse => {
+        if (networkResponse && networkResponse.status === 200) {
+          const clone = networkResponse.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        }
+        return networkResponse;
+      }).catch(() => {
+        return caches.match('./index.html') || caches.match('/');
+      })
+    );
     return;
   }
 
