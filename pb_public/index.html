@@ -983,6 +983,26 @@
             resize: vertical;
         }
 
+        /* ── Field Validation State ── */
+        .field-invalid,
+        .field input.field-invalid,
+        .field-light input.field-invalid,
+        .field-light select.field-invalid,
+        .field-light textarea.field-invalid {
+            border-color: var(--danger) !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.22) !important;
+            background: rgba(239, 68, 68, 0.04) !important;
+            animation: shakeField 0.25s ease-in-out;
+        }
+
+        @keyframes shakeField {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-4px); }
+            40% { transform: translateX(4px); }
+            60% { transform: translateX(-2px); }
+            80% { transform: translateX(2px); }
+        }
+
         /* ============================================================
        =================== APP SHELL ===================
        ============================================================ */
@@ -3905,17 +3925,17 @@
                                             </select></div>
 
                                         <div class="field-light"><label>Lebar Pengecoran (mm)</label><input
-                                                type="number" id="castableLebar" step="any" required placeholder="0"
+                                                type="number" id="castableLebar" step="any" min="0.1" required placeholder="0"
                                                 oninput="updateCastablePreview()" /></div>
                                         <div class="field-light"><label>Panjang Pengecoran (mm)</label><input
-                                                type="number" id="castablePanjang" step="any" required placeholder="0"
+                                                type="number" id="castablePanjang" step="any" min="0.1" required placeholder="0"
                                                 oninput="updateCastablePreview()" /></div>
 
                                         <div class="field-light"><label>Diameter Angkur (mm) - Info</label><input
-                                                type="number" id="castableDiameterAngkur" step="any" required
+                                                type="number" id="castableDiameterAngkur" step="any" min="0" required
                                                 placeholder="0" oninput="updateCastablePreview()" /></div>
                                         <div class="field-light"><label>Panjang Angkur (mm)</label><input type="number"
-                                                id="castablePanjangAngkur" step="any" required placeholder="0"
+                                                id="castablePanjangAngkur" step="any" min="0.1" required placeholder="0"
                                                 oninput="updateCastablePreview()" /></div>
 
                                         <div class="field-light"><label>Type Material</label><select
@@ -4069,20 +4089,20 @@
                                                     style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-3);">
                                                     <div class="field-light">
                                                         <label>Qty Planned</label>
-                                                        <input type="number" step="0.01" id="logMatPlanned" value="0" />
+                                                        <input type="number" step="0.01" min="0" id="logMatPlanned" value="0" />
                                                     </div>
                                                     <div class="field-light">
                                                         <label>Qty Issued</label>
-                                                        <input type="number" step="0.01" id="logMatIssued" value="0" />
+                                                        <input type="number" step="0.01" min="0" id="logMatIssued" value="0" />
                                                     </div>
                                                     <div class="field-light">
                                                         <label>Qty Consumed</label>
-                                                        <input type="number" step="0.01" id="logMatConsumed"
+                                                        <input type="number" step="0.01" min="0" id="logMatConsumed"
                                                             value="0" />
                                                     </div>
                                                     <div class="field-light">
                                                         <label>Qty Return</label>
-                                                        <input type="number" step="0.01" id="logMatReturn" value="0" />
+                                                        <input type="number" step="0.01" min="0" id="logMatReturn" value="0" />
                                                     </div>
                                                 </div>
                                                 <button type="submit" class="btn btn-accent"
@@ -4123,11 +4143,11 @@
                                                     style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-3);">
                                                     <div class="field-light">
                                                         <label>Manpower (Orang)</label>
-                                                        <input type="number" id="logManCount" value="0" />
+                                                        <input type="number" min="0" id="logManCount" value="0" />
                                                     </div>
                                                     <div class="field-light">
                                                         <label>Manhours (Jam)</label>
-                                                        <input type="number" step="0.5" id="logManHours" value="0" />
+                                                        <input type="number" step="0.5" min="0" id="logManHours" value="0" />
                                                     </div>
                                                 </div>
                                                 <button type="submit" class="btn btn-accent"
@@ -4361,7 +4381,7 @@
                                             <div class="field-light"><label>Nama Type</label><input type="text"
                                                     id="castableNewTypeNama" required /></div>
                                             <div class="field-light"><label>Densitas</label><input type="number"
-                                                    id="castableNewTypeDensitas" step="0.01" required /></div>
+                                                    id="castableNewTypeDensitas" step="0.01" min="0.01" required /></div>
                                             <button type="submit" class="btn btn-accent btn-sm"
                                                 id="btnCastableAddType">Tambah Type</button>
                                         </form>
@@ -4388,12 +4408,12 @@
                                         <form id="castableSetForm" onsubmit="handleUpdateCastableSettings(event)"
                                             class="form-grid">
                                             <div class="field-light"><label>Waste Factor</label><input type="number"
-                                                    id="castableSetWF" step="0.01" required /></div>
+                                                    id="castableSetWF" step="0.01" min="1.0" required /></div>
                                             <div class="field-light"><label>% Castable (Total harus 100%)</label><input
-                                                    type="number" id="castableSetPctCast" step="0.01" required /></div>
+                                                    type="number" id="castableSetPctCast" step="0.01" min="0.01" max="99.99" required /></div>
                                             <div class="field-light"><label>% Insulating (Total harus
                                                     100%)</label><input type="number" id="castableSetPctIns" step="0.01"
-                                                    required /></div>
+                                                    min="0.01" max="99.99" required /></div>
                                             <button type="submit" class="btn btn-accent"
                                                 id="btnCastableUpdateSet">Perbarui Settings</button>
                                         </form>
@@ -4487,7 +4507,7 @@
                                         <div class="field-light"><label>Nama Pekerjaan</label><input type="text"
                                                 id="setupIacTitle" required /></div>
                                         <div class="field-light"><label>Bobot (%) terhadap Proyek</label><input
-                                                type="number" step="0.01" id="setupIacWeight" required /></div>
+                                                type="number" step="0.01" min="0.01" max="100" id="setupIacWeight" required /></div>
                                         <button type="submit" class="btn btn-accent" id="addIacBtn">Tambahkan
                                             IAC</button>
                                     </form>
@@ -4509,7 +4529,7 @@
                                                 id="setupSubContractor" required placeholder="TALI / HJG / Prod" />
                                         </div>
                                         <div class="field-light"><label>Bobot (%) dalam IAC</label><input type="number"
-                                                step="0.01" id="setupSubWeight" required /></div>
+                                                step="0.01" min="0.01" max="100" id="setupSubWeight" required /></div>
                                         <button type="submit" class="btn btn-accent" id="addSubBtn">Tambahkan
                                             Sub-Jobdesk</button>
                                     </form>
@@ -5782,12 +5802,304 @@
             if (m) m.classList.add("hidden");
         }
 
+        // ═════════════════════════════════════════════════════════════════════
+        // FORM VALIDATION & INPUT RESTRICTION ENGINE
+        // Strict typing: Number fields cannot contain letters;
+        // Text/Name fields cannot contain digits / pure numbers.
+        // ═════════════════════════════════════════════════════════════════════
+
+        function highlightInvalidField(idOrEl) {
+            const el = typeof idOrEl === "string" ? document.getElementById(idOrEl) : idOrEl;
+            if (!el) return;
+            el.classList.add("field-invalid");
+            try {
+                el.scrollIntoView({ behavior: "smooth", block: "center" });
+            } catch (err) {}
+            try {
+                el.focus();
+            } catch (err) {}
+
+            const clearFn = () => {
+                el.classList.remove("field-invalid");
+                el.removeEventListener("input", clearFn);
+                el.removeEventListener("change", clearFn);
+            };
+            el.addEventListener("input", clearFn);
+            el.addEventListener("change", clearFn);
+        }
+
+        function validateTextNotPureNumeric(val, fieldName) {
+            const trimmed = (val || "").trim();
+            if (!trimmed) {
+                return `${fieldName} wajib diisi.`;
+            }
+            if (/^\d+$/.test(trimmed)) {
+                return `${fieldName} harus berupa teks/nama, tidak boleh hanya angka (${trimmed}).`;
+            }
+            return null;
+        }
+
+        function validatePersonName(val) {
+            const trimmed = (val || "").trim();
+            if (!trimmed) return "Nama Lengkap wajib diisi.";
+            if (trimmed.length < 2) return "Nama Lengkap minimal 2 karakter.";
+            if (/[0-9]/.test(trimmed)) return "Nama Lengkap tidak boleh mengandung angka (hanya huruf dan tanda baca nama).";
+            return null;
+        }
+
+        function attachNumberRestriction(input, allowDecimal = false, allowNegative = false) {
+            if (!input) return;
+            input.setAttribute("autocomplete", "off");
+            input.setAttribute("inputmode", allowDecimal ? "decimal" : "numeric");
+
+            input.addEventListener("keydown", function(e) {
+                // Allow control keys: Backspace, Tab, Enter, Esc, Delete, Arrow keys, Home, End
+                if ([8, 9, 13, 27, 46, 37, 38, 39, 40, 35, 36].includes(e.keyCode) ||
+                    (e.ctrlKey || e.metaKey)) {
+                    return;
+                }
+
+                // Strictly block exponential 'e', 'E', and '+'
+                if (e.key === "e" || e.key === "E" || e.key === "+") {
+                    e.preventDefault();
+                    return;
+                }
+
+                // Decimal point handling
+                if (e.key === "." || e.key === ",") {
+                    if (!allowDecimal || this.value.includes(".")) {
+                        e.preventDefault();
+                        return;
+                    }
+                    if (e.key === ",") {
+                        e.preventDefault();
+                        const start = this.selectionStart;
+                        const end = this.selectionEnd;
+                        this.value = this.value.substring(0, start) + "." + this.value.substring(end);
+                        this.setSelectionRange(start + 1, start + 1);
+                        this.dispatchEvent(new Event("input"));
+                        return;
+                    }
+                    return;
+                }
+
+                // Negative sign check
+                if (e.key === "-") {
+                    if (!allowNegative || this.value.includes("-") || this.selectionStart !== 0) {
+                        e.preventDefault();
+                        return;
+                    }
+                    return;
+                }
+
+                // Strictly allow digits 0-9 only (blocks all letters and symbols)
+                if (!/^[0-9]$/.test(e.key)) {
+                    e.preventDefault();
+                }
+            });
+
+            input.addEventListener("input", function() {
+                let val = this.value;
+                if (allowDecimal) {
+                    val = val.replace(/,/g, ".");
+                    val = val.replace(/[^0-9.]/g, "");
+                    const parts = val.split(".");
+                    if (parts.length > 2) {
+                        val = parts[0] + "." + parts.slice(1).join("");
+                    }
+                } else {
+                    val = val.replace(/[^0-9]/g, "");
+                }
+                if (this.value !== val) {
+                    this.value = val;
+                }
+                this.classList.remove("field-invalid");
+            });
+
+            input.addEventListener("paste", function(e) {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData("text") || "";
+                let cleaned = "";
+                if (allowDecimal) {
+                    cleaned = text.replace(/,/g, ".").replace(/[^0-9.]/g, "");
+                    const parts = cleaned.split(".");
+                    if (parts.length > 2) cleaned = parts[0] + "." + parts.slice(1).join("");
+                } else {
+                    cleaned = text.replace(/[^0-9]/g, "");
+                }
+                if (cleaned) {
+                    const start = this.selectionStart || 0;
+                    const end = this.selectionEnd || 0;
+                    const cur = this.value || "";
+                    this.value = cur.substring(0, start) + cleaned + cur.substring(end);
+                    this.dispatchEvent(new Event("input"));
+                }
+            });
+        }
+
+        function attachTextOnlyRestriction(input) {
+            if (!input) return;
+            input.addEventListener("keydown", function(e) {
+                // Allow control keys
+                if ([8, 9, 13, 27, 46, 37, 38, 39, 40, 35, 36].includes(e.keyCode) ||
+                    (e.ctrlKey || e.metaKey)) {
+                    return;
+                }
+                // Strictly block digits 0-9
+                if (/^[0-9]$/.test(e.key)) {
+                    e.preventDefault();
+                }
+            });
+
+            input.addEventListener("input", function() {
+                const cleaned = this.value.replace(/[0-9]/g, "");
+                if (this.value !== cleaned) {
+                    this.value = cleaned;
+                }
+                this.classList.remove("field-invalid");
+            });
+
+            input.addEventListener("paste", function(e) {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData("text") || "";
+                const cleaned = text.replace(/[0-9]/g, "");
+                if (cleaned) {
+                    const start = this.selectionStart || 0;
+                    const end = this.selectionEnd || 0;
+                    const cur = this.value || "";
+                    this.value = cur.substring(0, start) + cleaned + cur.substring(end);
+                    this.dispatchEvent(new Event("input"));
+                }
+            });
+        }
+
+        function initFormRestrictions() {
+            // 1. Integer-only inputs (digits 0-9, no decimals, no negatives, no letters)
+            const integerInputs = ["inputProgManpower", "reportWeekNum", "logManCount"];
+            integerInputs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) attachNumberRestriction(el, false, false);
+            });
+
+            // 2. Decimal inputs (digits 0-9, single period '.', no negatives, no letters)
+            const decimalInputs = [
+                "castableLebar",
+                "castablePanjang",
+                "castableDiameterAngkur",
+                "castablePanjangAngkur",
+                "logMatPlanned",
+                "logMatIssued",
+                "logMatConsumed",
+                "logMatReturn",
+                "logManHours",
+                "castableNewTypeDensitas",
+                "castableSetWF",
+                "castableSetPctCast",
+                "castableSetPctIns",
+                "setupIacWeight",
+                "setupSubWeight"
+            ];
+            decimalInputs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) attachNumberRestriction(el, true, false);
+            });
+
+            // 3. Letters-only inputs (names without numbers)
+            const textOnlyInputs = ["newName"];
+            textOnlyInputs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) attachTextOnlyRestriction(el);
+            });
+
+            // 4. Code & ID formatters (auto uppercase, no spaces)
+            const idCodeInputs = ["newProjId", "setupIacId", "setupSubId"];
+            idCodeInputs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener("input", function() {
+                        const cleaned = this.value.toUpperCase().replace(/\s+/g, "");
+                        if (this.value !== cleaned) this.value = cleaned;
+                        this.classList.remove("field-invalid");
+                    });
+                }
+            });
+
+            // 5. Username formatters (lowercase, no spaces)
+            const usernameInput = document.getElementById("newUsername");
+            if (usernameInput) {
+                usernameInput.addEventListener("input", function() {
+                    const cleaned = this.value.toLowerCase().replace(/\s+/g, "");
+                    if (this.value !== cleaned) this.value = cleaned;
+                    this.classList.remove("field-invalid");
+                });
+            }
+        }
+
+        // ─── FORCE CHANGE PASSWORD HANDLER ────────────────────────────────
+        function handleForceChangePassword(e) {
+            e.preventDefault();
+            const newPass = document.getElementById("newForcePassword").value;
+            const confirmPass = document.getElementById("newForcePasswordConfirm").value;
+            const btn = document.getElementById("forcePassBtnSubmit");
+
+            if (!newPass || newPass.length < 6) {
+                highlightInvalidField("newForcePassword");
+                return showToast("Kata sandi baru minimal 6 karakter.", "alert-triangle", "Validasi Gagal");
+            }
+            if (newPass !== confirmPass) {
+                highlightInvalidField("newForcePasswordConfirm");
+                return showToast("Konfirmasi kata sandi tidak cocok!", "alert-triangle", "Validasi Gagal");
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner" style="width:14px;height:14px;margin:0;"></span> Menyimpan...`;
+            showLoading(true, "Mengubah kata sandi...");
+
+            fetch('/api/custom/change-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + window.sessionToken
+                },
+                body: JSON.stringify({ newPass: newPass })
+            })
+            .then(res => res.json())
+            .then(r => {
+                showLoading(false);
+                btn.disabled = false;
+                btn.textContent = "Ubah & Masuk Dashboard";
+                if (r.success) {
+                    document.getElementById("forceChangePasswordModal").classList.add("hidden");
+                    showToast("Kata sandi berhasil diubah! Selamat datang.", "check", "Sandi Diperbarui");
+                    navigateTo('app');
+                } else {
+                    showToast("Gagal: " + (r.error || "Gagal memperbarui sandi"), "alert-triangle");
+                }
+            })
+            .catch(err => {
+                showLoading(false);
+                btn.disabled = false;
+                btn.textContent = "Ubah & Masuk Dashboard";
+                showToast("Koneksi gagal: " + err.message, "danger");
+            });
+        }
+
         // ─── LOGIN via PocketBase API ─────────────────────────────────────
         function handleLoginSubmit(e) {
             e.preventDefault();
-            showLoading(true);
             const user = document.getElementById("loginUsername").value.trim();
             const pass = document.getElementById("loginPassword").value;
+
+            if (!user) {
+                highlightInvalidField("loginUsername");
+                return showToast("Username atau Email wajib diisi.", "alert-triangle", "Validasi Gagal");
+            }
+            if (!pass) {
+                highlightInvalidField("loginPassword");
+                return showToast("Kata sandi wajib diisi.", "alert-triangle", "Validasi Gagal");
+            }
+
+            showLoading(true);
             const btn = document.getElementById("loginBtnSubmit");
             btn.innerHTML = `<span class="spinner" style="width:16px;height:16px;margin:0;"></span> Memproses...`;
             btn.disabled = true;
@@ -7789,17 +8101,48 @@ function renderAlertNotifications() {
 
         function handleMaterialLogSubmit(e) {
             e.preventDefault();
+            if (!state.activeProjectId) {
+                return showToast("Pilih atau buka proyek aktif terlebih dahulu di Pengaturan/Setup.", "alert-triangle", "Proyek Belum Dipilih");
+            }
+
             const subId = document.getElementById("logMatSubSelect").value;
-            const matCode = document.getElementById("logMatCode").value;
-            const qtyPlanned = document.getElementById("logMatPlanned").value;
-            const qtyIssued = document.getElementById("logMatIssued").value;
-            const qtyConsumed = document.getElementById("logMatConsumed").value;
-            const qtyReturn = document.getElementById("logMatReturn").value;
+            if (!subId) {
+                highlightInvalidField("logMatSubSelect");
+                return showToast("Pilih Sub-Jobdesk terlebih dahulu.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const matCode = document.getElementById("logMatCode").value.trim();
+            if (!matCode) {
+                highlightInvalidField("logMatCode");
+                return showToast("Kode / Nama Material wajib diisi.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const qtyPlanned = parseFloat(document.getElementById("logMatPlanned").value);
+            if (isNaN(qtyPlanned) || qtyPlanned < 0) {
+                highlightInvalidField("logMatPlanned");
+                return showToast("Rencana kuantitas harus berupa angka positif (>= 0).", "alert-triangle", "Validasi Gagal");
+            }
+
+            const qtyIssued = parseFloat(document.getElementById("logMatIssued").value);
+            if (isNaN(qtyIssued) || qtyIssued < 0) {
+                highlightInvalidField("logMatIssued");
+                return showToast("Kuantitas dikeluarkan harus berupa angka positif (>= 0).", "alert-triangle", "Validasi Gagal");
+            }
+
+            const qtyConsumed = parseFloat(document.getElementById("logMatConsumed").value);
+            if (isNaN(qtyConsumed) || qtyConsumed < 0) {
+                highlightInvalidField("logMatConsumed");
+                return showToast("Kuantitas terpakai harus berupa angka positif (>= 0).", "alert-triangle", "Validasi Gagal");
+            }
+
+            const qtyReturn = parseFloat(document.getElementById("logMatReturn").value);
+            if (isNaN(qtyReturn) || qtyReturn < 0) {
+                highlightInvalidField("logMatReturn");
+                return showToast("Kuantitas sisa/kembali harus berupa angka positif (>= 0).", "alert-triangle", "Validasi Gagal");
+            }
 
             // shortage is implicitly calculated
-            const shortage = parseFloat(qtyPlanned) - parseFloat(qtyConsumed);
-
-            if (!subId || !matCode) return showToast("Sub-Jobdesk dan Kode Material wajib diisi", "alert-triangle");
+            const shortage = qtyPlanned - qtyConsumed;
 
             const btn = document.getElementById("btnSubmitMaterial");
             const ogText = btn.textContent;
@@ -7809,7 +8152,7 @@ function renderAlertNotifications() {
                 .withSuccessHandler(res => {
                     btn.disabled = false; btn.textContent = ogText;
                     if (res.success) {
-                        showToast("Material Log berhasil disimpan", "check-circle");
+                        showToast("Material Log berhasil disimpan", "check");
                         document.getElementById("formMaterialLog").reset();
                         triggerSync();
                     } else {
@@ -7825,21 +8168,50 @@ function renderAlertNotifications() {
                 })
                 .withFailureHandler(err => {
                     btn.disabled = false; btn.textContent = ogText;
-                    showToast("Error sistem", "alert-triangle");
+                    showToast("Error sistem: " + err.message, "alert-triangle");
                 })
                 .submitMaterialLog(window.sessionToken, state.activeProjectId, subId, matCode, qtyPlanned, qtyIssued, qtyConsumed, qtyReturn, shortage);
         }
 
         function handleManpowerLogSubmit(e) {
             e.preventDefault();
-            const subId = document.getElementById("logManSubSelect").value;
-            const dateStr = document.getElementById("logManDate").value;
-            const contractor = document.getElementById("logManContractor").value;
-            const shift = document.getElementById("logManShift").value;
-            const manpowerCount = document.getElementById("logManCount").value;
-            const manhours = document.getElementById("logManHours").value;
+            if (!state.activeProjectId) {
+                return showToast("Pilih atau buka proyek aktif terlebih dahulu di Pengaturan/Setup.", "alert-triangle", "Proyek Belum Dipilih");
+            }
 
-            if (!subId || !dateStr) return showToast("Sub-Jobdesk dan Tanggal wajib diisi", "alert-triangle");
+            const subId = document.getElementById("logManSubSelect").value;
+            if (!subId) {
+                highlightInvalidField("logManSubSelect");
+                return showToast("Pilih Sub-Jobdesk terlebih dahulu.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const dateStr = document.getElementById("logManDate").value;
+            if (!dateStr) {
+                highlightInvalidField("logManDate");
+                return showToast("Tanggal log manpower wajib diisi.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const contractor = document.getElementById("logManContractor").value.trim();
+            if (contractor && /^\d+$/.test(contractor)) {
+                highlightInvalidField("logManContractor");
+                return showToast("Nama kontraktor tidak boleh hanya berupa angka.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const countVal = document.getElementById("logManCount").value;
+            const manpowerCount = parseInt(countVal, 10);
+            if (isNaN(manpowerCount) || manpowerCount < 0) {
+                highlightInvalidField("logManCount");
+                return showToast("Jumlah pekerja (orang) harus berupa angka bulat positif (>= 0).", "alert-triangle", "Validasi Gagal");
+            }
+
+            const hoursVal = document.getElementById("logManHours").value;
+            const manhours = parseFloat(hoursVal);
+            if (isNaN(manhours) || manhours < 0) {
+                highlightInvalidField("logManHours");
+                return showToast("Total jam kerja harus berupa angka positif (>= 0).", "alert-triangle", "Validasi Gagal");
+            }
+
+            const shift = document.getElementById("logManShift").value;
 
             const btn = document.getElementById("btnSubmitManpower");
             const ogText = btn.textContent;
@@ -7849,7 +8221,7 @@ function renderAlertNotifications() {
                 .withSuccessHandler(res => {
                     btn.disabled = false; btn.textContent = ogText;
                     if (res.success) {
-                        showToast("Manpower Log berhasil disimpan", "check-circle");
+                        showToast("Manpower Log berhasil disimpan", "check");
                         document.getElementById("formManpowerLog").reset();
                         triggerSync();
                     } else {
@@ -7865,7 +8237,7 @@ function renderAlertNotifications() {
                 })
                 .withFailureHandler(err => {
                     btn.disabled = false; btn.textContent = ogText;
-                    showToast("Error sistem", "alert-triangle");
+                    showToast("Error sistem: " + err.message, "alert-triangle");
                 })
                 .submitManpowerLog(window.sessionToken, state.activeProjectId, subId, dateStr, contractor, shift, manpowerCount, manhours);
         }
@@ -7875,12 +8247,36 @@ function renderAlertNotifications() {
             const btn = document.getElementById("btnGenerateReport");
             const ogText = btn.textContent;
 
-            const weekNum = document.getElementById("reportWeekNum").value;
+            const weekNum = parseInt(document.getElementById("reportWeekNum").value, 10);
+            if (isNaN(weekNum) || weekNum < 1) {
+                highlightInvalidField("reportWeekNum");
+                return showToast("Nomor minggu (Week) harus berupa angka minimal 1.", "alert-triangle", "Validasi Gagal");
+            }
+
             const category = document.getElementById("reportCategory").value;
-            const issue = document.getElementById("reportIssue").value;
-            const rootCause = document.getElementById("reportRootCause").value;
-            const impact = document.getElementById("reportImpact").value;
-            const recommendation = document.getElementById("reportRecommendation").value;
+            const issue = document.getElementById("reportIssue").value.trim();
+            if (!issue) {
+                highlightInvalidField("reportIssue");
+                return showToast("Kolom Issue / Kendala wajib diisi.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const rootCause = document.getElementById("reportRootCause").value.trim();
+            if (!rootCause) {
+                highlightInvalidField("reportRootCause");
+                return showToast("Kolom Root Cause / Penyebab wajib diisi.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const impact = document.getElementById("reportImpact").value.trim();
+            if (!impact) {
+                highlightInvalidField("reportImpact");
+                return showToast("Kolom Impact / Dampak wajib diisi.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const recommendation = document.getElementById("reportRecommendation").value.trim();
+            if (!recommendation) {
+                highlightInvalidField("reportRecommendation");
+                return showToast("Kolom Recommendation / Rekomendasi wajib diisi.", "alert-triangle", "Validasi Gagal");
+            }
 
             btn.disabled = true;
             btn.textContent = "Menyimpan & Generate...";
@@ -7895,9 +8291,10 @@ function renderAlertNotifications() {
                         let csvContent = "data:text/csv;charset=utf-8,";
 
                         // 1. Header
+                        const prjName = (state.config && state.config.projectName) || "Project";
                         csvContent += `WEEKLY REPORT - MINGGU KE-${weekNum}\r\n`;
-                        csvContent += `Project:,${state.config.projectName}\r\n`;
-                        csvContent += `Overall Progress:,${state.overallProgress}%\r\n\r\n`;
+                        csvContent += `Project:,${prjName}\r\n`;
+                        csvContent += `Overall Progress:,${state.overallProgress || 0}%\r\n\r\n`;
 
                         csvContent += `Lessons Learned\r\n`;
                         csvContent += `Category:,${category.replace(/,/g, ";")}\r\n`;
@@ -7911,7 +8308,7 @@ function renderAlertNotifications() {
 
                         if (state.baseline && state.baseline.length > 0) {
                             state.baseline.forEach(b => {
-                                const subTitle = state.subs.find(s => s.id === b.subId)?.title || b.subId;
+                                const subTitle = (state.subs || []).find(s => s.id === b.subId)?.title || b.subId;
                                 const logs = (state.dailyProgress || []).filter(p => p.subId === b.subId).sort((a, b) => new Date(a.date) - new Date(b.date));
                                 const actualStart = logs.length > 0 ? logs[0].date : "-";
                                 const actualFinishProg = logs.find(p => p.progress === 100);
@@ -7932,14 +8329,12 @@ function renderAlertNotifications() {
                         const encodedUri = encodeURI(csvContent);
                         const link = document.createElement("a");
                         link.setAttribute("href", encodedUri);
-                        link.setAttribute("download", `Weekly_Report_Week_${weekNum}_${state.config.projectName.replace(/\s+/g, "_")}.csv`);
-                        document.body.appendChild(link); // Required for FF
+                        link.setAttribute("download", `Weekly_Report_Week_${weekNum}_${prjName.replace(/\s+/g, "_")}.csv`);
+                        document.body.appendChild(link);
                         link.click();
                         document.body.removeChild(link);
 
-                        showToast("Evaluasi disimpan & Laporan berhasil di-generate", "check-circle");
-
-                        // Reset Form
+                        showToast("Evaluasi disimpan & Laporan berhasil di-generate", "check");
                         document.getElementById("formWeeklyReport").reset();
 
                     } else {
@@ -7956,7 +8351,7 @@ function renderAlertNotifications() {
                 .withFailureHandler(err => {
                     btn.disabled = false;
                     btn.textContent = ogText;
-                    showToast("Error sistem", "alert-triangle");
+                    showToast("Error sistem: " + err.message, "alert-triangle");
                 })
                 .submitLessonsLearned(window.sessionToken, state.activeProjectId, category, issue, rootCause, impact, recommendation);
         }
@@ -7964,19 +8359,47 @@ function renderAlertNotifications() {
         function handleProgressSubmit(e) {
             e.preventDefault();
 
-            const subId = document.getElementById("inputSubSelect").value;
-            const submittedProgress = parseInt(document.getElementById("inputProgressSlider").value);
-            const dateStr = document.getElementById("inputDate").value;
-            const lokasiVal = document.getElementById("inputProgLocation") ? document.getElementById("inputProgLocation").value : "";
-
-            if (!subId) {
-                showToast("Silakan pilih sub-jobdesk terlebih dahulu.", "alert-triangle");
-                return;
+            if (!state.activeProjectId) {
+                return showToast("Pilih atau buka proyek aktif terlebih dahulu di Pengaturan/Setup.", "alert-triangle", "Proyek Belum Dipilih");
             }
 
+            const dateStr = document.getElementById("inputDate").value;
+            if (!dateStr) {
+                highlightInvalidField("inputDate");
+                return showToast("Tanggal progres wajib diisi.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const iacId = document.getElementById("inputIacSelect").value;
+            if (!iacId) {
+                highlightInvalidField("inputIacSelect");
+                return showToast("Pilih Head Jobdesk (IAC) terlebih dahulu.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const subId = document.getElementById("inputSubSelect").value;
+            if (!subId) {
+                highlightInvalidField("inputSubSelect");
+                return showToast("Silakan pilih sub-jobdesk terlebih dahulu.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const lokasiVal = document.getElementById("inputProgLocation") ? document.getElementById("inputProgLocation").value : "";
+            if (!lokasiVal) {
+                highlightInvalidField("inputProgLocation");
+                return showToast("Pilih Sektor Kiln / Lokasi Kerja.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const submittedProgress = parseInt(document.getElementById("inputProgressSlider").value, 10);
             if (isNaN(submittedProgress) || submittedProgress < 0 || submittedProgress > 100) {
-                showToast("Progres harus berada pada rentang 0% - 100%.", "alert-triangle");
-                return;
+                return showToast("Progres harus berada pada rentang 0% - 100%.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const manpowerVal = document.getElementById("inputProgManpower").value;
+            let manpower = 0;
+            if (manpowerVal !== "") {
+                manpower = parseInt(manpowerVal, 10);
+                if (isNaN(manpower) || manpower < 0) {
+                    highlightInvalidField("inputProgManpower");
+                    return showToast("Jumlah manpower harus berupa angka bulat positif (>= 0).", "alert-triangle", "Validasi Gagal");
+                }
             }
 
             const allLogs = (state.dailyProgress || [])
@@ -7986,7 +8409,7 @@ function renderAlertNotifications() {
             const maxOtherProgress = otherLogs.length ? Math.max(...otherLogs.map(r => r.progress)) : 0;
 
             if (submittedProgress < maxOtherProgress) {
-                showToast(`Progres tidak boleh lebih kecil dari entri lainnya (${maxOtherProgress}%)`, "alert-triangle");
+                showToast(`Progres kumulatif tidak boleh lebih kecil dari progres sebelumnya (${maxOtherProgress}%)`, "alert-triangle", "Aturan Monotonik");
                 return;
             }
 
@@ -7997,7 +8420,7 @@ function renderAlertNotifications() {
                 progress: submittedProgress,
                 remarks: document.getElementById("inputRemarks").value,
                 shift: document.getElementById("inputProgShift").value,
-                manpower: document.getElementById("inputProgManpower").value,
+                manpower: manpower,
                 delayCode: document.getElementById("inputProgDelay").value,
                 constraint: document.getElementById("inputProgConstraint").value,
                 recovery: document.getElementById("inputProgRecovery").value,
@@ -8451,8 +8874,36 @@ function renderAlertNotifications() {
         }
 
         function handleCreateUser(e) {
-            e.preventDefault(); const btn = document.getElementById("createUserBtn"); showLoading(true); btn.disabled = true;
+            e.preventDefault();
+            const username = document.getElementById("newUsername").value.trim().toLowerCase();
+            if (!username || username.length < 3) {
+                highlightInvalidField("newUsername");
+                return showToast("Username minimal 3 karakter tanpa spasi.", "alert-triangle", "Validasi Gagal");
+            }
+            if (/\s/.test(username)) {
+                highlightInvalidField("newUsername");
+                return showToast("Username tidak boleh mengandung spasi.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const name = document.getElementById("newName").value.trim();
+            const nameErr = validatePersonName(name);
+            if (nameErr) {
+                highlightInvalidField("newName");
+                return showToast(nameErr, "alert-triangle", "Validasi Gagal");
+            }
+
+            const password = document.getElementById("newPassword").value;
+            if (!password || password.length < 6) {
+                highlightInvalidField("newPassword");
+                return showToast("Password default user minimal 6 karakter.", "alert-triangle", "Validasi Gagal");
+            }
+
             const role = document.getElementById("newRole").value;
+            if (!role) {
+                highlightInvalidField("newRole");
+                return showToast("Pilih peran (role) untuk user.", "alert-triangle", "Validasi Gagal");
+            }
+
             let pt = "", pt_name = "", jobdesk_scope = "ALL";
             if (role === "kontraktor_admin") {
                 const ptSel = document.getElementById("newUserPt");
@@ -8467,18 +8918,31 @@ function renderAlertNotifications() {
             document.querySelectorAll("input[name='userPerm']:checked").forEach(cb => {
                 selectedPerms.push(cb.value);
             });
+            if (selectedPerms.length === 0) {
+                return showToast("Pilih minimal satu hak akses modul untuk user.", "alert-triangle", "Validasi Gagal");
+            }
 
             // Collect allowed projects
             const allowedProjects = [];
             document.querySelectorAll("input[name='userAllowedProj']:checked").forEach(cb => {
                 allowedProjects.push(cb.value);
             });
+            if (allowedProjects.length === 0) {
+                return showToast("Pilih minimal satu wewenang proyek untuk user.", "alert-triangle", "Validasi Gagal");
+            }
 
             // Collect allowed locations
             const allowedLocations = [];
             document.querySelectorAll("input[name='userAllowedLoc']:checked").forEach(cb => {
                 allowedLocations.push(cb.value);
             });
+            if (allowedLocations.length === 0) {
+                return showToast("Pilih minimal satu sektor/area untuk user.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const btn = document.getElementById("createUserBtn");
+            showLoading(true);
+            btn.disabled = true;
 
             google.script.run
                 .withSuccessHandler(r => { 
@@ -8495,10 +8959,10 @@ function renderAlertNotifications() {
                 .withFailureHandler(err => { showLoading(false); btn.disabled = false; showToast("Gagal: " + err.message, "alert-triangle"); })
                 .createUser(
                     window.sessionToken,
-                    document.getElementById("newUsername").value.trim(),
-                    document.getElementById("newName").value.trim(),
+                    username,
+                    name,
                     role,
-                    document.getElementById("newPassword").value,
+                    password,
                     pt,
                     pt_name,
                     jobdesk_scope,
@@ -8829,10 +9293,22 @@ function formatHeader(sheet) {
             const proj = (state.projects || []).find(p => p.id === projectId) || {};
             const newName = prompt(`Ubah Nama Proyek [${projectId}]:`, proj.name || "");
             if (newName === null) return;
+            const trimmedName = newName.trim();
+            const nameErr = validateTextNotPureNumeric(trimmedName, "Nama Proyek");
+            if (nameErr) return showToast(nameErr, "alert-triangle", "Validasi Gagal");
+
             const newArea = prompt(`Ubah Sektor Area Kiln Shutdown [${projectId}]:`, proj.area || "");
             if (newArea === null) return;
+            const trimmedArea = newArea.trim();
+            const areaErr = validateTextNotPureNumeric(trimmedArea, "Sektor Area");
+            if (areaErr) return showToast(areaErr, "alert-triangle", "Validasi Gagal");
+
             const newStartDate = prompt(`Ubah Tanggal Mulai (YYYY-MM-DD) [${projectId}]:`, proj.startDate || "");
             if (newStartDate === null) return;
+            const trimmedDate = newStartDate.trim();
+            if (!trimmedDate || isNaN(Date.parse(trimmedDate))) {
+                return showToast("Format tanggal mulai tidak valid (gunakan YYYY-MM-DD).", "alert-triangle", "Validasi Gagal");
+            }
 
             showLoading(true);
             google.script.run
@@ -8846,7 +9322,7 @@ function formatHeader(sheet) {
                     }
                 })
                 .withFailureHandler(err => { showLoading(false); showToast("Gagal: " + err.message, "alert-triangle"); })
-                .updateProject(window.sessionToken, projectId, { name: newName.trim(), area: newArea.trim(), startDate: newStartDate.trim() });
+                .updateProject(window.sessionToken, projectId, { name: trimmedName, area: trimmedArea, startDate: trimmedDate });
         }
 
         function triggerDeleteProjectCascade(projectId, projectName) {
@@ -8871,7 +9347,46 @@ function formatHeader(sheet) {
         }
 
         function handleCreateProject(e) {
-            e.preventDefault(); const btn = document.getElementById("createProjectBtn"); const id = document.getElementById("newProjId").value.trim().toUpperCase(); showLoading(true); btn.disabled = true;
+            e.preventDefault();
+            const idInput = document.getElementById("newProjId");
+            const id = idInput.value.trim().toUpperCase();
+            if (!id || id.length < 2) {
+                highlightInvalidField("newProjId");
+                return showToast("ID Project wajib diisi minimal 2 karakter (contoh: PRJ-01).", "alert-triangle", "Validasi Gagal");
+            }
+            if (/\s/.test(id)) {
+                highlightInvalidField("newProjId");
+                return showToast("ID Project tidak boleh mengandung spasi.", "alert-triangle", "Validasi Gagal");
+            }
+            if ((state.projects || []).some(p => p.id === id)) {
+                highlightInvalidField("newProjId");
+                return showToast(`ID Proyek [${id}] sudah terdaftar! Gunakan ID lain.`, "alert-triangle", "Validasi Gagal");
+            }
+
+            const name = document.getElementById("newProjName").value.trim();
+            const nameErr = validateTextNotPureNumeric(name, "Nama Proyek");
+            if (nameErr) {
+                highlightInvalidField("newProjName");
+                return showToast(nameErr, "alert-triangle", "Validasi Gagal");
+            }
+
+            const area = document.getElementById("newProjArea").value.trim();
+            const areaErr = validateTextNotPureNumeric(area, "Sektor Kiln / Area");
+            if (areaErr) {
+                highlightInvalidField("newProjArea");
+                return showToast(areaErr, "alert-triangle", "Validasi Gagal");
+            }
+
+            const startDate = document.getElementById("newProjStartDate").value;
+            if (!startDate) {
+                highlightInvalidField("newProjStartDate");
+                return showToast("Tanggal mulai proyek wajib diisi.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const btn = document.getElementById("createProjectBtn");
+            showLoading(true);
+            btn.disabled = true;
+
             google.script.run
                 .withSuccessHandler(r => {
                     showLoading(false); btn.disabled = false;
@@ -8885,39 +9400,171 @@ function formatHeader(sheet) {
                     }
                 })
                 .withFailureHandler(err => { showLoading(false); btn.disabled = false; showToast("Gagal: " + err.message, "alert-triangle"); })
-                .createNewProject(window.sessionToken, id, document.getElementById("newProjName").value.trim(), document.getElementById("newProjArea").value.trim(), document.getElementById("newProjStartDate").value);
+                .createNewProject(window.sessionToken, id, name, area, startDate);
         }
 
         function handleConfigSubmit(e) {
-            e.preventDefault(); const btn = document.getElementById("setupConfigBtn"); showLoading(true); btn.disabled = true;
+            e.preventDefault();
+            if (!state.activeProjectId) {
+                return showToast("Pilih atau buka proyek aktif terlebih dahulu.", "alert-triangle", "Proyek Belum Dipilih");
+            }
+
+            const name = document.getElementById("setupProjName").value.trim();
+            const nameErr = validateTextNotPureNumeric(name, "Nama Proyek");
+            if (nameErr) {
+                highlightInvalidField("setupProjName");
+                return showToast(nameErr, "alert-triangle", "Validasi Gagal");
+            }
+
+            const area = document.getElementById("setupProjArea").value.trim();
+            const areaErr = validateTextNotPureNumeric(area, "Sektor Kiln / Area Shutdown");
+            if (areaErr) {
+                highlightInvalidField("setupProjArea");
+                return showToast(areaErr, "alert-triangle", "Validasi Gagal");
+            }
+
+            const startDate = document.getElementById("setupStartDate").value;
+            if (!startDate) {
+                highlightInvalidField("setupStartDate");
+                return showToast("Tanggal mulai proyek wajib diisi.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const btn = document.getElementById("setupConfigBtn");
+            showLoading(true);
+            btn.disabled = true;
+
             google.script.run
                 .withSuccessHandler(r => { showLoading(false); btn.disabled = false; if (r.success) { showToast("Konfigurasi disimpan!", "check"); triggerSync(); } else { showToast("Gagal: " + r.error, "alert-triangle"); } })
                 .withFailureHandler(err => { showLoading(false); btn.disabled = false; showToast("Gagal: " + err.message, "alert-triangle"); })
-                .updateConfig(window.sessionToken, state.activeProjectId, { projectName: document.getElementById("setupProjName").value, area: document.getElementById("setupProjArea").value, startDatePlanned: document.getElementById("setupStartDate").value });
+                .updateConfig(window.sessionToken, state.activeProjectId, { projectName: name, area: area, startDatePlanned: startDate });
         }
 
         function handleIacSubmit(e) {
-            e.preventDefault(); const btn = document.getElementById("addIacBtn"); showLoading(true); btn.disabled = true;
+            e.preventDefault();
+            if (!state.activeProjectId) {
+                return showToast("Pilih atau buka proyek aktif terlebih dahulu sebelum menambah IAC.", "alert-triangle", "Proyek Belum Dipilih");
+            }
+
+            const iacId = document.getElementById("setupIacId").value.trim().toUpperCase();
+            if (!iacId) {
+                highlightInvalidField("setupIacId");
+                return showToast("ID IAC wajib diisi (contoh: IAC-01).", "alert-triangle", "Validasi Gagal");
+            }
+            if ((state.iac || []).some(item => item.id === iacId)) {
+                highlightInvalidField("setupIacId");
+                return showToast(`ID IAC [${iacId}] sudah terdaftar di proyek ini!`, "alert-triangle", "Validasi Gagal");
+            }
+
+            const title = document.getElementById("setupIacTitle").value.trim();
+            const titleErr = validateTextNotPureNumeric(title, "Nama Pekerjaan IAC");
+            if (titleErr) {
+                highlightInvalidField("setupIacTitle");
+                return showToast(titleErr, "alert-triangle", "Validasi Gagal");
+            }
+
+            const weightVal = document.getElementById("setupIacWeight").value;
+            const weight = parseFloat(weightVal);
+            if (isNaN(weight) || weight <= 0 || weight > 100) {
+                highlightInvalidField("setupIacWeight");
+                return showToast("Bobot IAC harus berupa angka positif antara 0.01% s/d 100%.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const btn = document.getElementById("addIacBtn");
+            showLoading(true);
+            btn.disabled = true;
+
             google.script.run
                 .withSuccessHandler(r => { showLoading(false); btn.disabled = false; if (r.success) { showToast("IAC ditambahkan!", "check"); document.getElementById("setupIacForm").reset(); triggerSync(); } else { showToast("Gagal: " + r.error, "alert-triangle"); } })
                 .withFailureHandler(err => { showLoading(false); btn.disabled = false; showToast("Gagal: " + err.message, "alert-triangle"); })
-                .addIAC(window.sessionToken, state.activeProjectId, document.getElementById("setupIacId").value.trim(), document.getElementById("setupIacTitle").value.trim(), parseFloat(document.getElementById("setupIacWeight").value));
+                .addIAC(window.sessionToken, state.activeProjectId, iacId, title, weight);
         }
 
         function handleSubSubmit(e) {
-            e.preventDefault(); const btn = document.getElementById("addSubBtn"); showLoading(true); btn.disabled = true;
+            e.preventDefault();
+            if (!state.activeProjectId) {
+                return showToast("Pilih atau buka proyek aktif terlebih dahulu sebelum menambah Sub-Jobdesk.", "alert-triangle", "Proyek Belum Dipilih");
+            }
+
+            const iacSel = document.getElementById("setupSubIacSelect").value;
+            if (!iacSel) {
+                highlightInvalidField("setupSubIacSelect");
+                return showToast("Pilih Head IAC induk terlebih dahulu.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const subId = document.getElementById("setupSubId").value.trim().toUpperCase();
+            if (!subId) {
+                highlightInvalidField("setupSubId");
+                return showToast("ID Sub-Jobdesk wajib diisi (contoh: SUB-01).", "alert-triangle", "Validasi Gagal");
+            }
+            if ((state.subs || []).some(s => s.id === subId)) {
+                highlightInvalidField("setupSubId");
+                return showToast(`ID Sub-Jobdesk [${subId}] sudah ada!`, "alert-triangle", "Validasi Gagal");
+            }
+
+            const subTitle = document.getElementById("setupSubTitle").value.trim();
+            const titleErr = validateTextNotPureNumeric(subTitle, "Nama Sub-Pekerjaan");
+            if (titleErr) {
+                highlightInvalidField("setupSubTitle");
+                return showToast(titleErr, "alert-triangle", "Validasi Gagal");
+            }
+
+            const contractor = document.getElementById("setupSubContractor").value.trim();
+            const contErr = validateTextNotPureNumeric(contractor, "Nama Kontraktor");
+            if (contErr) {
+                highlightInvalidField("setupSubContractor");
+                return showToast(contErr, "alert-triangle", "Validasi Gagal");
+            }
+
+            const weightVal = document.getElementById("setupSubWeight").value;
+            const weight = parseFloat(weightVal);
+            if (isNaN(weight) || weight <= 0 || weight > 100) {
+                highlightInvalidField("setupSubWeight");
+                return showToast("Bobot Sub-Jobdesk harus berupa angka positif antara 0.01% s/d 100%.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const btn = document.getElementById("addSubBtn");
+            showLoading(true);
+            btn.disabled = true;
+
             google.script.run
                 .withSuccessHandler(r => { showLoading(false); btn.disabled = false; if (r.success) { showToast("Sub-Jobdesk ditambahkan!", "check"); document.getElementById("setupSubForm").reset(); triggerSync(); } else { showToast("Gagal: " + r.error, "alert-triangle"); } })
                 .withFailureHandler(err => { showLoading(false); btn.disabled = false; showToast("Gagal: " + err.message, "alert-triangle"); })
-                .addSubJobdesk(window.sessionToken, state.activeProjectId, document.getElementById("setupSubId").value.trim(), document.getElementById("setupSubIacSelect").value, document.getElementById("setupSubTitle").value.trim(), document.getElementById("setupSubContractor").value.trim(), parseFloat(document.getElementById("setupSubWeight").value));
+                .addSubJobdesk(window.sessionToken, state.activeProjectId, subId, iacSel, subTitle, contractor, weight);
         }
 
         function handleBaselineSubmit(e) {
-            e.preventDefault(); const btn = document.getElementById("addBaselineBtn"); showLoading(true); btn.disabled = true;
+            e.preventDefault();
+            if (!state.activeProjectId) {
+                return showToast("Pilih atau buka proyek aktif terlebih dahulu.", "alert-triangle", "Proyek Belum Dipilih");
+            }
 
             const subId = document.getElementById("setupBaselineSubSelect").value;
+            if (!subId) {
+                highlightInvalidField("setupBaselineSubSelect");
+                return showToast("Pilih Sub-Jobdesk terlebih dahulu.", "alert-triangle", "Validasi Gagal");
+            }
+
             const start = document.getElementById("setupBaselineStart").value;
+            if (!start) {
+                highlightInvalidField("setupBaselineStart");
+                return showToast("Planned Start wajib diisi.", "alert-triangle", "Validasi Gagal");
+            }
+
             const finish = document.getElementById("setupBaselineFinish").value;
+            if (!finish) {
+                highlightInvalidField("setupBaselineFinish");
+                return showToast("Planned Finish wajib diisi.", "alert-triangle", "Validasi Gagal");
+            }
+
+            if (new Date(finish) < new Date(start)) {
+                highlightInvalidField("setupBaselineFinish");
+                return showToast("Planned Finish tidak boleh lebih awal dari Planned Start!", "alert-triangle", "Jadwal Tidak Logis");
+            }
+
+            const btn = document.getElementById("addBaselineBtn");
+            showLoading(true);
+            btn.disabled = true;
+
             const pred = document.getElementById("setupBaselinePredSelect").value;
             const isCritical = document.getElementById("setupBaselineCritical").checked;
 
@@ -10205,18 +10852,74 @@ function formatHeader(sheet) {
 
         function handleCastableSubmit(e) {
             e.preventDefault();
-            const btn = document.getElementById("castableSubmitBtn");
 
+            const tgl = document.getElementById("castableTanggal").value;
+            if (!tgl) {
+                highlightInvalidField("castableTanggal");
+                return showToast("Tanggal inspeksi castable wajib diisi.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const vendor = document.getElementById("castableVendor").value.trim();
+            const vendorErr = validateTextNotPureNumeric(vendor, "Nama Vendor");
+            if (vendorErr) {
+                highlightInvalidField("castableVendor");
+                return showToast(vendorErr, "alert-triangle", "Validasi Gagal");
+            }
+
+            const katId = document.getElementById("castableKategori").value;
+            if (!katId) {
+                highlightInvalidField("castableKategori");
+                return showToast("Pilih Kategori Area castable.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const detId = document.getElementById("castableDetail").value;
+            if (!detId) {
+                highlightInvalidField("castableDetail");
+                return showToast("Pilih Detail Area castable.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const typeId = document.getElementById("castableTypeMaterial").value;
+            if (!typeId) {
+                highlightInvalidField("castableTypeMaterial");
+                return showToast("Pilih Type Material castable.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const lebar = parseFloat(document.getElementById("castableLebar").value);
+            if (isNaN(lebar) || lebar <= 0) {
+                highlightInvalidField("castableLebar");
+                return showToast("Lebar pengecoran harus berupa angka positif (> 0 mm).", "alert-triangle", "Validasi Gagal");
+            }
+
+            const panjang = parseFloat(document.getElementById("castablePanjang").value);
+            if (isNaN(panjang) || panjang <= 0) {
+                highlightInvalidField("castablePanjang");
+                return showToast("Panjang pengecoran harus berupa angka positif (> 0 mm).", "alert-triangle", "Validasi Gagal");
+            }
+
+            const diaAngkurVal = document.getElementById("castableDiameterAngkur").value;
+            const diaAngkur = parseFloat(diaAngkurVal);
+            if (isNaN(diaAngkur) || diaAngkur < 0) {
+                highlightInvalidField("castableDiameterAngkur");
+                return showToast("Diameter angkur harus berupa angka (>= 0 mm).", "alert-triangle", "Validasi Gagal");
+            }
+
+            const pjgAngkur = parseFloat(document.getElementById("castablePanjangAngkur").value);
+            if (isNaN(pjgAngkur) || pjgAngkur <= 0) {
+                highlightInvalidField("castablePanjangAngkur");
+                return showToast("Panjang angkur harus berupa angka positif (> 0 mm).", "alert-triangle", "Validasi Gagal");
+            }
+
+            const btn = document.getElementById("castableSubmitBtn");
             const payload = {
-                tanggalInspeksi: document.getElementById("castableTanggal").value,
-                vendor: document.getElementById("castableVendor").value,
-                kategoriId: document.getElementById("castableKategori").value,
-                detailId: document.getElementById("castableDetail").value,
-                lebar: document.getElementById("castableLebar").value,
-                panjang: document.getElementById("castablePanjang").value,
-                diameterAngkur: document.getElementById("castableDiameterAngkur").value,
-                panjangAngkur: document.getElementById("castablePanjangAngkur").value,
-                typeId: document.getElementById("castableTypeMaterial").value,
+                tanggalInspeksi: tgl,
+                vendor: vendor,
+                kategoriId: katId,
+                detailId: detId,
+                lebar: lebar,
+                panjang: panjang,
+                diameterAngkur: diaAngkur,
+                panjangAngkur: pjgAngkur,
+                typeId: typeId,
                 remarks: document.getElementById("castableRemarks").value,
                 photoBase64: selectedCastablePhotoBase64,
                 photoName: selectedCastablePhotoName
@@ -10306,35 +11009,102 @@ function formatHeader(sheet) {
         }
 
         function handleAddCastableKategori(e) {
-            e.preventDefault(); const btn = document.getElementById("btnCastableAddKat"); showLoading(true); btn.disabled = true;
+            e.preventDefault();
+            const nama = document.getElementById("castableNewKatNama").value.trim();
+            const err = validateTextNotPureNumeric(nama, "Nama Kategori");
+            if (err) {
+                highlightInvalidField("castableNewKatNama");
+                return showToast(err, "alert-triangle", "Validasi Gagal");
+            }
+
+            const btn = document.getElementById("btnCastableAddKat");
+            showLoading(true); btn.disabled = true;
+
             google.script.run
                 .withSuccessHandler(r => { showLoading(false); btn.disabled = false; if (r.success) { showToast("Kategori disimpan!", "check"); document.getElementById("castableKatForm").reset(); loadCastableModule(); } else { showToast(r.error, "alert-triangle"); } })
                 .withFailureHandler(err => { showLoading(false); btn.disabled = false; showToast(err.message, "alert-triangle"); })
-                .addCastableKategori(window.sessionToken, document.getElementById("castableNewKatNama").value.trim());
+                .addCastableKategori(window.sessionToken, nama);
         }
 
         function handleAddCastableDetailArea(e) {
-            e.preventDefault(); const btn = document.getElementById("btnCastableAddDet"); showLoading(true); btn.disabled = true;
+            e.preventDefault();
+            const katId = document.getElementById("castableNewDetKat").value;
+            if (!katId) {
+                highlightInvalidField("castableNewDetKat");
+                return showToast("Pilih Kategori Induk terlebih dahulu.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const nama = document.getElementById("castableNewDetNama").value.trim();
+            const err = validateTextNotPureNumeric(nama, "Nama Detail Area");
+            if (err) {
+                highlightInvalidField("castableNewDetNama");
+                return showToast(err, "alert-triangle", "Validasi Gagal");
+            }
+
+            const btn = document.getElementById("btnCastableAddDet");
+            showLoading(true); btn.disabled = true;
+
             google.script.run
                 .withSuccessHandler(r => { showLoading(false); btn.disabled = false; if (r.success) { showToast("Detail area disimpan!", "check"); document.getElementById("castableDetForm").reset(); loadCastableModule(); } else { showToast(r.error, "alert-triangle"); } })
                 .withFailureHandler(err => { showLoading(false); btn.disabled = false; showToast(err.message, "alert-triangle"); })
-                .addCastableDetailArea(window.sessionToken, document.getElementById("castableNewDetKat").value, document.getElementById("castableNewDetNama").value.trim());
+                .addCastableDetailArea(window.sessionToken, katId, nama);
         }
 
         function handleAddCastableTypeMaterial(e) {
-            e.preventDefault(); const btn = document.getElementById("btnCastableAddType"); showLoading(true); btn.disabled = true;
+            e.preventDefault();
+            const nama = document.getElementById("castableNewTypeNama").value.trim();
+            if (!nama) {
+                highlightInvalidField("castableNewTypeNama");
+                return showToast("Nama Type Material wajib diisi.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const densitasVal = document.getElementById("castableNewTypeDensitas").value;
+            const densitas = parseFloat(densitasVal);
+            if (isNaN(densitas) || densitas <= 0) {
+                highlightInvalidField("castableNewTypeDensitas");
+                return showToast("Densitas material harus berupa angka lebih besar dari 0.", "alert-triangle", "Validasi Gagal");
+            }
+
+            const btn = document.getElementById("btnCastableAddType");
+            showLoading(true); btn.disabled = true;
+
             google.script.run
                 .withSuccessHandler(r => { showLoading(false); btn.disabled = false; if (r.success) { showToast("Type material disimpan!", "check"); document.getElementById("castableTypeForm").reset(); loadCastableModule(); } else { showToast(r.error, "alert-triangle"); } })
                 .withFailureHandler(err => { showLoading(false); btn.disabled = false; showToast(err.message, "alert-triangle"); })
-                .addCastableTypeMaterial(window.sessionToken, document.getElementById("castableNewTypeNama").value.trim(), parseFloat(document.getElementById("castableNewTypeDensitas").value));
+                .addCastableTypeMaterial(window.sessionToken, nama, densitas);
         }
 
         function handleUpdateCastableSettings(e) {
-            e.preventDefault(); const btn = document.getElementById("btnCastableUpdateSet"); showLoading(true); btn.disabled = true;
+            e.preventDefault();
+            const wfVal = document.getElementById("castableSetWF").value;
+            const wf = parseFloat(wfVal);
+            if (isNaN(wf) || wf < 1.0) {
+                highlightInvalidField("castableSetWF");
+                return showToast("Waste Factor harus berupa angka minimal 1.0 (contoh: 1.10).", "alert-triangle", "Validasi Gagal");
+            }
+
+            const pctCastVal = document.getElementById("castableSetPctCast").value;
+            const pctCast = parseFloat(pctCastVal);
+            const pctInsVal = document.getElementById("castableSetPctIns").value;
+            const pctIns = parseFloat(pctInsVal);
+
+            if (isNaN(pctCast) || pctCast <= 0 || isNaN(pctIns) || pctIns <= 0) {
+                return showToast("Persentase Castable dan Insulating harus berupa angka positif.", "alert-triangle", "Validasi Gagal");
+            }
+
+            if (Math.abs((pctCast + pctIns) - 100) > 0.01) {
+                highlightInvalidField("castableSetPctCast");
+                highlightInvalidField("castableSetPctIns");
+                return showToast(`Total persentase (% Castable + % Insulating) harus tepat 100%! Saat ini: ${(pctCast + pctIns).toFixed(1)}%`, "alert-triangle", "Validasi Gagal");
+            }
+
+            const btn = document.getElementById("btnCastableUpdateSet");
+            showLoading(true); btn.disabled = true;
+
             google.script.run
                 .withSuccessHandler(r => { showLoading(false); btn.disabled = false; if (r.success) { showToast("Settings diperbarui!", "check"); loadCastableModule(); } else { showToast(r.error, "alert-triangle"); } })
                 .withFailureHandler(err => { showLoading(false); btn.disabled = false; showToast(err.message, "alert-triangle"); })
-                .updateCastableSettings(window.sessionToken, parseFloat(document.getElementById("castableSetWF").value), parseFloat(document.getElementById("castableSetPctCast").value), parseFloat(document.getElementById("castableSetPctIns").value));
+                .updateCastableSettings(window.sessionToken, wf, pctCast, pctIns);
         }
 
         function triggerDeleteCastable(idLog) {
@@ -10399,6 +11169,7 @@ function formatHeader(sheet) {
                 document.getElementById("castableSetupSection").style.display = "block";
             }
 
+            initFormRestrictions();
             lucideRefresh();
         }
 
@@ -10661,6 +11432,7 @@ function formatHeader(sheet) {
             try {
                 initTheme();
                 revealDevPanelIfRequested();
+                initFormRestrictions();
                 const local = new Date();
                 local.setMinutes(local.getMinutes() - local.getTimezoneOffset());
                 const dateInput = document.getElementById("inputDate");
