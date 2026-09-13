@@ -28,15 +28,22 @@ Sistem manajemen, pemantauan progres, logistik, dan kalkulasi refraktori kiln sh
 
 ## 🌐 Cara Akses dari Perangkat Lain (HP, Tablet, Laptop)
 
-### 1. Jalur Wi-Fi / Jaringan Lokal (Tanpa Perlu Install Tailscale)
-Jika perangkat Anda terhubung ke jaringan Wi-Fi / LAN yang sama dengan komputer host:
+### 1. Akses Tanpa Instal Aplikasi (Satu Jaringan Wi-Fi)
+Jika perangkat Anda terhubung ke Wi-Fi yang sama dengan komputer host, **tidak perlu instal aplikasi apa pun**:
 - **URL Akses**:
   ```text
   http://192.168.1.5:8090/
   ```
 
-### 2. Jalur Tailscale (Jarak Jauh / Data Seluler / Luar Jaringan)
-Jika berada di luar jaringan lokal, pastikan aplikasi Tailscale di HP/perangkat lain telah diinstal, login dengan akun yang sama (`haysan1010@`), dan VPN dalam kondisi **Connected**:
+### 2. Akses Publik Internet Tanpa Instal Aplikasi (Beda Jaringan / Paket Data Seluler)
+Jika perangkat berada di luar jaringan atau menggunakan koneksi seluler tanpa menginstal Tailscale:
+- **URL HTTPS Publik**:
+  ```text
+  https://ytiez-124-158-189-237.free.pinggy.net/
+  ```
+
+### 3. Akses via VPN Tailscale (Privat & Terenkripsi)
+Jika menggunakan aplikasi Tailscale resmi dengan akun yang sama (`haysan1010@`):
 - **Tailscale IP (Port Default)**: `http://100.99.188.113/`
 - **Tailscale IP (Port 8090)**: `http://100.99.188.113:8090/`
 - **Tailscale MagicDNS**: `http://ksd-monitor.tail76fff5.ts.net/`
