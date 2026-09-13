@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KSD Monitor — Kiln Support Division</title>
+    <title>KSD Monitor — Kiln Shutdown &amp; Overhaul Management System</title>
 
     <script>
         (function() {
@@ -45,35 +45,35 @@
            ============================================================ */
         :root,
         [data-theme="light"] {
-            /* Surface Canvas */
+            /* Surface Canvas — Clinical High-Precision White/Slate */
             --surface-sidebar: #FFFFFF;
             --surface-sidebar-alt: #F8FAFC;
-            --surface-0: #F1F5F9;
-            --surface-1: #F8FAFC;
+            --surface-0: #F8FAFC;
+            --surface-1: #FFFFFF;
             --surface-2: #FFFFFF;
-            --surface-3: #E2E8F0;
-            --surface-overlay: rgba(15, 23, 42, 0.75);
+            --surface-3: #F1F5F9;
+            --surface-overlay: rgba(15, 23, 42, 0.7);
             --surface-footer: #FFFFFF;
-            --surface-bottomnav: rgba(255, 255, 255, 0.96);
+            --surface-bottomnav: rgba(255, 255, 255, 0.95);
 
-            /* Accent Colors (Corporate Blue) */
+            /* Accent Colors (Precision Industrial Blue & Amber) */
             --accent: #1D4ED8;
             --accent-dim: #1E40AF;
             --accent-glow: rgba(29, 78, 216, 0.12);
-            --accent-glow-strong: rgba(29, 78, 216, 0.25);
+            --accent-glow-strong: rgba(29, 78, 216, 0.22);
             --accent-fg: #FFFFFF;
 
             /* Semantic Colors */
             --danger: #DC2626;
             --danger-bg: rgba(220, 38, 38, 0.08);
-            --success: #10B981;
-            --success-bg: rgba(16, 185, 129, 0.08);
+            --success: #059669;
+            --success-bg: rgba(5, 150, 105, 0.08);
             --warning: #D97706;
             --warning-bg: rgba(217, 119, 6, 0.08);
             --info: #1D4ED8;
             --info-bg: rgba(29, 78, 216, 0.08);
 
-            /* Text Colors (High Contrast in Light Mode) */
+            /* Text Colors (High-Contrast Slate Hierarchy) */
             --text-primary: #0F172A;
             --text-secondary: #334155;
             --text-tertiary: #64748B;
@@ -81,19 +81,19 @@
             --text-on-dark-dim: #64748B;
             --text-accent: var(--accent);
 
-            /* Border Colors */
+            /* Border Colors — Crisp Hairlines */
             --border-subtle: #E2E8F0;
             --border-medium: #CBD5E1;
             --border-dark: #E2E8F0;
             --border-dark-medium: #CBD5E1;
 
-            /* Shadows */
-            --shadow-rest: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
-            --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+            /* Shadows — Machined Double-Bezel Elevation */
+            --shadow-rest: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-hover: 0 6px 18px -2px rgba(15, 23, 42, 0.07), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
             --shadow-active: 0 1px 2px rgba(0, 0, 0, 0.05);
-            --shadow-accent: 0 4px 16px rgba(29, 78, 216, 0.22);
-            --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
-            --shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.08);
+            --shadow-accent: 0 4px 14px rgba(29, 78, 216, 0.2);
+            --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), inset 0 1px 0 #FFFFFF;
+            --shadow-card-hover: 0 10px 24px -4px rgba(15, 23, 42, 0.08), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
 
             /* Spacing scale */
             --sp-1: 4px;
@@ -106,11 +106,11 @@
             --sp-10: 40px;
             --sp-12: 48px;
 
-            /* Radius */
+            /* Radius — Concentric Squircle Rhythms */
             --r-sm: 6px;
             --r-md: 10px;
             --r-lg: 14px;
-            --r-xl: 20px;
+            --r-xl: 18px;
             --r-full: 9999px;
 
             /* Layout */
@@ -120,39 +120,39 @@
             --bottomnav-h: 64px;
 
             /* Typography */
-            --font-ui: 'Plus Jakarta Sans', system-ui, sans-serif;
-            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            --font-ui: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
         }
 
-        /* DARK MODE THEME OVERRIDES */
+        /* DARK MODE THEME OVERRIDES — Mission-Control Deep Graphite */
         [data-theme="dark"] {
             /* Surface Canvas */
-            --surface-sidebar: #0F172A;
-            --surface-sidebar-alt: #1E293B;
-            --surface-0: #0B0F19;
-            --surface-1: #111827;
-            --surface-2: #1E293B;
-            --surface-3: #334155;
-            --surface-overlay: rgba(0, 0, 0, 0.85);
-            --surface-footer: #0F172A;
-            --surface-bottomnav: rgba(15, 23, 42, 0.96);
+            --surface-sidebar: #0B111E;
+            --surface-sidebar-alt: #0E1729;
+            --surface-0: #080C14;
+            --surface-1: #0F172A;
+            --surface-2: #131C2E;
+            --surface-3: #1E293B;
+            --surface-overlay: rgba(3, 7, 18, 0.85);
+            --surface-footer: #0B111E;
+            --surface-bottomnav: rgba(11, 17, 30, 0.95);
 
             /* Accent Colors */
             --accent: #3B82F6;
             --accent-dim: #2563EB;
             --accent-glow: rgba(59, 130, 246, 0.18);
-            --accent-glow-strong: rgba(59, 130, 246, 0.35);
+            --accent-glow-strong: rgba(59, 130, 246, 0.32);
             --accent-fg: #FFFFFF;
 
             /* Semantic Colors */
             --danger: #EF4444;
-            --danger-bg: rgba(239, 68, 68, 0.15);
+            --danger-bg: rgba(239, 68, 68, 0.12);
             --success: #10B981;
-            --success-bg: rgba(16, 185, 129, 0.15);
+            --success-bg: rgba(16, 185, 129, 0.12);
             --warning: #F59E0B;
-            --warning-bg: rgba(245, 158, 11, 0.15);
+            --warning-bg: rgba(245, 158, 11, 0.12);
             --info: #3B82F6;
-            --info-bg: rgba(59, 130, 246, 0.15);
+            --info-bg: rgba(59, 130, 246, 0.12);
 
             /* Text Colors */
             --text-primary: #F8FAFC;
@@ -162,14 +162,14 @@
             --text-on-dark-dim: #94A3B8;
 
             /* Border Colors */
-            --border-subtle: #334155;
-            --border-medium: #475569;
-            --border-dark: rgba(255, 255, 255, 0.12);
-            --border-dark-medium: rgba(255, 255, 255, 0.2);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-medium: rgba(255, 255, 255, 0.15);
+            --border-dark: rgba(255, 255, 255, 0.08);
+            --border-dark-medium: rgba(255, 255, 255, 0.16);
 
-            /* Shadows */
-            --shadow-card: 0 0 0 1px #334155, 0 4px 12px rgba(0, 0, 0, 0.4);
-            --shadow-card-hover: 0 0 0 1px var(--accent), 0 8px 24px rgba(0, 0, 0, 0.5);
+            /* Shadows — Double-Bezel Inner Highlight & Deep Ambient Depth */
+            --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            --shadow-card-hover: 0 12px 28px -4px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(59, 130, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         /* ============================================================
@@ -186,6 +186,10 @@
         html {
             font-size: 16px;
             -webkit-text-size-adjust: 100%;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum";
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
         }
 
         body {
@@ -195,18 +199,25 @@
             line-height: 1.5;
             min-height: 100vh;
             overflow-x: hidden;
+            letter-spacing: -0.01em;
         }
 
         a {
             color: inherit;
             text-decoration: none;
+            transition: color 150ms cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        button {
+        button, .btn, .icon-btn, .topbar-btn, .nav-item, .tab-btn, .quick-btn {
             font-family: inherit;
             cursor: pointer;
             border: none;
             background: none;
+            transition: transform 150ms cubic-bezier(0.16, 1, 0.3, 1), background-color 150ms cubic-bezier(0.16, 1, 0.3, 1), border-color 150ms cubic-bezier(0.16, 1, 0.3, 1), color 150ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        button:active, .btn:active, .icon-btn:active, .topbar-btn:active, .nav-item:active, .tab-btn:active, .quick-btn:active {
+            transform: scale(0.975);
         }
 
         input,
@@ -987,7 +998,9 @@
             z-index: 400;
             height: var(--topbar-h);
             background: var(--surface-sidebar);
-            border-bottom: 1px solid var(--border-dark);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-bottom: 1px solid var(--border-subtle);
             display: flex;
             align-items: center;
             padding: 0 var(--sp-5);
@@ -1006,27 +1019,62 @@
             width: 32px;
             height: 32px;
             background: var(--accent);
-            border-radius: var(--r-sm);
+            border-radius: var(--r-md);
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            box-shadow: 0 0 10px var(--accent-glow-strong);
+            box-shadow: 0 0 14px var(--accent-glow-strong);
+            transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .topbar-logo:hover {
+            transform: scale(1.05);
         }
 
         .topbar-name {
-            font-size: 13px;
+            font-size: 13.5px;
             font-weight: 800;
             color: var(--text-on-dark);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .ksd-system-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(245, 158, 11, 0.12);
+            color: #f59e0b;
+            padding: 3px 10px;
+            border-radius: var(--r-full);
+            border: 1px solid rgba(245, 158, 11, 0.28);
+            font-size: 10px;
+            font-weight: 800;
             letter-spacing: 0.06em;
             text-transform: uppercase;
             white-space: nowrap;
         }
 
+        .ksd-badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #f59e0b;
+            box-shadow: 0 0 8px #f59e0b;
+            animation: pulseSlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulseSlow {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.45; transform: scale(0.85); }
+        }
+
         .topbar-divider {
             width: 1px;
             height: 20px;
-            background: var(--border-dark-medium);
+            background: var(--border-subtle);
             flex-shrink: 0;
         }
 
@@ -1035,14 +1083,21 @@
             align-items: center;
             gap: var(--sp-2);
             background: var(--surface-1);
-            border: 1px solid var(--border-medium);
+            border: 1px solid var(--border-subtle);
             border-radius: var(--r-md);
-            padding: 9px 12px;
+            padding: 8px 12px;
             min-height: 38px;
             min-width: 0;
             flex: 1;
             max-width: 340px;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: var(--shadow-rest);
+        }
+
+        .project-selector-wrap:hover,
+        .project-selector-wrap:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
         }
 
         .project-selector-wrap svg {
@@ -1368,18 +1423,20 @@
         }
 
         /* ============================================================
-       CARD COMPONENTS
+       CARD COMPONENTS — MACHINED DOUBLE-BEZEL ARCHITECTURE
        ============================================================ */
         .card {
             background: var(--surface-2);
-            border-radius: var(--r-lg);
+            border-radius: var(--r-xl);
             box-shadow: var(--shadow-card);
             border: 1px solid var(--border-subtle);
-            transition: box-shadow 250ms ease, transform 200ms ease;
+            transition: box-shadow 300ms cubic-bezier(0.16, 1, 0.3, 1), transform 300ms cubic-bezier(0.16, 1, 0.3, 1), border-color 300ms cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
         }
 
         .card:hover {
-            box-shadow: var(--shadow-hover);
+            box-shadow: var(--shadow-card-hover);
+            border-color: var(--border-medium);
         }
 
         .card-body {
@@ -1396,11 +1453,11 @@
         }
 
         .card-header h3 {
-            font-size: 13px;
+            font-size: 13.5px;
             font-weight: 800;
             color: var(--text-primary);
             text-transform: uppercase;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.05em;
         }
 
         .card-header p {
@@ -1412,18 +1469,19 @@
         /* ---- Metric cards ---- */
         .metric-card {
             background: var(--surface-2);
-            border-radius: var(--r-lg);
+            border-radius: var(--r-xl);
             box-shadow: var(--shadow-card);
             border: 1px solid var(--border-subtle);
             padding: var(--sp-6);
             position: relative;
             overflow: hidden;
-            transition: box-shadow 250ms, transform 200ms;
+            transition: box-shadow 300ms cubic-bezier(0.16, 1, 0.3, 1), transform 300ms cubic-bezier(0.16, 1, 0.3, 1), border-color 300ms cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .metric-card:hover {
             box-shadow: var(--shadow-card-hover);
             transform: translateY(-2px);
+            border-color: var(--border-medium);
         }
 
         .metric-card::after {
@@ -1434,7 +1492,7 @@
             right: 0;
             height: 3px;
             background: linear-gradient(90deg, var(--accent), transparent);
-            border-radius: var(--r-lg) var(--r-lg) 0 0;
+            border-radius: var(--r-xl) var(--r-xl) 0 0;
         }
 
         .metric-card.success-accent::after {
@@ -1450,26 +1508,26 @@
         }
 
         .metric-card--primary {
-            border-color: color-mix(in srgb, var(--accent) 32%, var(--border-subtle));
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            /* Slightly stronger shadow */
+            border-color: color-mix(in srgb, var(--accent) 35%, var(--border-subtle));
         }
 
         .metric-label {
-            font-size: 11px;
-            font-weight: 700;
+            font-size: 10.5px;
+            font-weight: 800;
             color: var(--text-tertiary);
             text-transform: uppercase;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.09em;
             margin-bottom: var(--sp-3);
         }
 
         .metric-value {
             font-size: clamp(24px, 4vw, 36px);
             font-family: var(--font-mono);
-            font-weight: 700;
+            font-variant-numeric: tabular-nums lining-nums;
+            font-weight: 800;
             color: var(--text-primary);
             line-height: 1;
+            letter-spacing: -0.02em;
         }
 
         .metric-sub {
@@ -1862,44 +1920,50 @@
         }
 
         /* ============================================================
-       TABLE STYLES
+       TABLE STYLES — HIGH-PRECISION ENGINEERING MATRIX
        ============================================================ */
         .data-table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             font-size: 12px;
         }
 
         .data-table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 5;
             background: var(--surface-1);
+            backdrop-filter: blur(8px);
             color: var(--text-tertiary);
             font-size: 10px;
-            font-weight: 700;
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.08em;
-            padding: 10px 14px;
+            padding: 11px 14px;
             border-bottom: 1px solid var(--border-subtle);
             white-space: nowrap;
         }
 
         .data-table tbody tr {
             border-bottom: 1px solid var(--border-subtle);
-            transition: background 150ms;
+            transition: background-color 150ms cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .data-table tbody tr:hover {
-            background: var(--surface-1);
+            background: rgba(59, 130, 246, 0.05);
         }
 
         .data-table tbody td {
-            padding: 10px 14px;
+            padding: 11px 14px;
             color: var(--text-secondary);
             vertical-align: middle;
+            border-bottom: 1px solid var(--border-subtle);
         }
 
         .data-table tbody td:first-child {
             color: var(--text-primary);
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .sticky-col-0 {
@@ -2916,7 +2980,7 @@
                         style="width:16px;height:16px;color:#fff;"></i></div>
                 <div class="topbar-divider" aria-hidden="true"></div>
                 <span class="topbar-name">KSD Monitor</span>
-                <span class="hide-mobile" style="font-size:10px;font-weight:800;background:rgba(245,158,11,0.15);color:#f59e0b;padding:2px 8px;border-radius:6px;border:1px solid rgba(245,158,11,0.3);letter-spacing:0.04em;">KILN SHUTDOWN</span>
+                <span class="hide-mobile ksd-system-badge"><span class="ksd-badge-dot"></span>KILN SHUTDOWN SYSTEM</span>
             </div>
             <div class="project-selector-wrap">
                 <i data-lucide="folder-open" style="width:13px;height:13px;"></i>
