@@ -26,16 +26,20 @@ Sistem manajemen, pemantauan progres, logistik, dan kalkulasi refraktori kiln sh
 
 ---
 
-## 🌐 Akses Jaringan Privat (Tailscale Deployment)
+## 🌐 Cara Akses dari Perangkat Lain (HP, Tablet, Laptop)
 
-KSD Monitor telah dikonfigurasi untuk akses remote melalui jaringan privat **Tailscale** menggunakan fitur **Tailscale Serve (Background TCP Forwarding)**:
+### 1. Jalur Wi-Fi / Jaringan Lokal (Tanpa Perlu Install Tailscale)
+Jika perangkat Anda terhubung ke jaringan Wi-Fi / LAN yang sama dengan komputer host:
+- **URL Akses**:
+  ```text
+  http://192.168.1.5:8090/
+  ```
 
-- **Tailscale IP**: `100.99.188.113`
-- **Tailscale MagicDNS**: `ksd-monitor.tail76fff5.ts.net`
-- **Port HTTP Standar**: `http://100.99.188.113/` (Port 80)
-- **Port PocketBase**: `http://100.99.188.113:8090/` (Port 8090)
-
-Perangkat apa pun yang terhubung ke tailnet yang sama dapat langsung mengakses antarmuka dan API KSD Monitor tanpa konfigurasi tambahan.
+### 2. Jalur Tailscale (Jarak Jauh / Data Seluler / Luar Jaringan)
+Jika berada di luar jaringan lokal, pastikan aplikasi Tailscale di HP/perangkat lain telah diinstal, login dengan akun yang sama (`haysan1010@`), dan VPN dalam kondisi **Connected**:
+- **Tailscale IP (Port Default)**: `http://100.99.188.113/`
+- **Tailscale IP (Port 8090)**: `http://100.99.188.113:8090/`
+- **Tailscale MagicDNS**: `http://ksd-monitor.tail76fff5.ts.net/`
 
 ---
 
