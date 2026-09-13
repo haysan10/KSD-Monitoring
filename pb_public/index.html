@@ -3301,7 +3301,7 @@
                                 <div class="metric-value" style="color:var(--warning);" id="ovTotalAlert">0</div>
                             </div>
                             <div class="metric-card info-accent">
-                                <div class="metric-label">Rata-rata Progres Semua Proyek</div>
+                                <div class="metric-label">Rata-rata Progres Shutdown</div>
                                 <div class="metric-value" style="color:var(--info);"><span id="ovAvgProgress">0</span>%
                                 </div>
                             </div>
@@ -4278,7 +4278,7 @@
                                             <label style="display:flex;align-items:center;gap:6px;font-weight:700;"><input type="checkbox" name="userAllowedProj" value="ALL" checked onchange="toggleAllScopeCheckboxes('userAllowedProj', this)"> 🌐 Semua Proyek (Full Access)</label>
                                             <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" name="userAllowedProj" value="PRJ-OVERHAUL-KILN-FULL"> [PRJ-OVERHAUL-KILN-FULL] Major Kiln Shutdown &amp; Overhaul (30 IAC)</label>
                                             <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" name="userAllowedProj" value="PRJ-01"> [PRJ-01] Overhaul Kiln 1 &amp; Burner</label>
-                                            <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" name="userAllowedProj" value="BSD-CT"> [BSD-CT] Bikin Pabrik Baru</label>
+                                            <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" name="userAllowedProj" value="KSD-MO-01"> [KSD-MO-01] Major Overhaul Kiln (Aktif)</label>
                                         </div>
                                     </div>
 
@@ -4467,7 +4467,7 @@
                                             <tr>
                                                 <th>ID Proyek</th>
                                                 <th>Nama Proyek</th>
-                                                <th>Area PLANT</th>
+                                                <th>Sektor Kiln</th>
                                                 <th>Tanggal Mulai</th>
                                                 <th>Status</th>
                                                 <th style="text-align:right;">Aksi Superadmin</th>
@@ -4512,8 +4512,8 @@
                                     class="form-grid form-grid-2">
                                     <div class="field-light"><label>Nama Proyek</label><input type="text"
                                             id="setupProjName" required /></div>
-                                    <div class="field-light"><label>Area PLANT</label><input type="text"
-                                            id="setupProjArea" required /></div>
+                                    <div class="field-light"><label>Sektor Kiln / Area Shutdown</label><input type="text"
+                                            id="setupProjArea" required placeholder="Contoh: Kiln Shell &amp; Lining, Burner Sector" /></div>
                                     <div class="field-light"><label>Tanggal Mulai</label><input type="date"
                                             id="setupStartDate" required /></div>
                                     <div style="grid-column:1/-1;"><button type="submit" class="btn btn-accent"
@@ -4723,7 +4723,7 @@
                                     <i data-lucide="flame" style="width:14px;height:14px;"></i> KSD MONITOR — SISTEM MONITORING KILN SHUTDOWN &amp; OVERHAUL
                                 </span>
                                 <h2 style="font-size:24px;font-weight:900;color:#FFFFFF;line-height:1.25;margin-bottom:10px;">Portal Dokumentasi &amp; Pedoman Operasional Kiln Shutdown</h2>
-                                <p style="font-size:13px;color:#E2E8F0;line-height:1.75;">Sistem informasi manajemen proyek khusus untuk operasional Kiln Shutdown &amp; Major Overhaul pabrik semen — mencakup kurva deviasi S-Curve rencana vs realisasi, pelaporan harian kontraktor dengan foto fisik, kalkulasi geometri &amp; tonase refraktori castable, hingga validasi handover mutu teknik secara bertingkat.</p>
+                                <p style="font-size:13px;color:#E2E8F0;line-height:1.75;">Sistem informasi manajemen proyek khusus untuk operasional <strong>Kiln Shutdown &amp; Major Overhaul</strong> — mencakup kurva deviasi S-Curve rencana vs realisasi, pelaporan harian kontraktor dengan foto fisik, kalkulasi geometri &amp; tonase refraktori castable, hingga validasi handover mutu teknik secara bertingkat.</p>
                             </div>
                             <div style="display:flex;flex-direction:column;gap:10px;min-width:190px;">
                                 <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:10px;padding:12px 16px;">
@@ -4780,7 +4780,7 @@
                                             <div style="width:38px;height:38px;border-radius:8px;background:var(--warning-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="shield-alert" style="width:20px;height:20px;color:var(--warning);"></i></div>
                                             <div>
                                                 <div style="font-size:13px;font-weight:800;color:var(--text-primary);">Isolasi Kontraktor</div>
-                                                <div style="font-size:11.5px;color:var(--text-secondary);margin-top:3px;line-height:1.5;">Multi-tenant secure: Kontraktor rekanan hanya dapat mengakses dan mengupdate tugas miliknya sendiri.</div>
+                                                <div style="font-size:11.5px;color:var(--text-secondary);margin-top:3px;line-height:1.5;">Akses Terisolasi: Kontraktor rekanan hanya dapat mengakses dan mengupdate tugas miliknya sendiri.</div>
                                             </div>
                                         </div>
                                         <div style="background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:10px;padding:14px;display:flex;gap:12px;align-items:flex-start;">
@@ -4848,7 +4848,7 @@
                                 </div>
                                 <div class="card-body">
                                     <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;margin-bottom:16px;">
-                                        Setiap overhaul kiln melewati 5 fase terstandarisasi untuk menjamin pekerjaan selesai tepat waktu, sesuai anggaran, dan memenuhi standar keselamatan ketat pabrik semen:
+                                        Setiap operasional Kiln Shutdown melewati 5 fase terstandarisasi untuk menjamin pekerjaan selesai tepat waktu, sesuai anggaran, dan memenuhi standar keselamatan teknik:
                                     </p>
 
                                     <div style="display:flex;flex-direction:column;gap:14px;">
@@ -4951,7 +4951,7 @@
                                                 Memiliki wewenang tertinggi dalam mengelola basis data, struktur proyek, dan integritas platform KSD Monitor:
                                             </p>
                                             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;">
-                                                <div style="font-size:11.5px;color:var(--text-primary);padding:8px 12px;background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:6px;">✅ Pendaftaran Proyek Baru di seluruh Plant</div>
+                                                <div style="font-size:11.5px;color:var(--text-primary);padding:8px 12px;background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:6px;">✅ Pendaftaran Proyek Kiln Shutdown Baru</div>
                                                 <div style="font-size:11.5px;color:var(--text-primary);padding:8px 12px;background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:6px;">✅ Konfigurasi IAC, Bobot, &amp; Sub-jobdesk</div>
                                                 <div style="font-size:11.5px;color:var(--text-primary);padding:8px 12px;background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:6px;">✅ Manajemen Akun, Reset Password, &amp; Hak Role</div>
                                                 <div style="font-size:11.5px;color:var(--text-primary);padding:8px 12px;background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:6px;">✅ Final Approval &amp; Handover Sealing</div>
@@ -4991,7 +4991,7 @@
                                                 <div style="width:38px;height:38px;border-radius:10px;background:var(--warning);display:flex;align-items:center;justify-content:center;"><i data-lucide="hard-hat" style="width:20px;height:20px;color:#fff;"></i></div>
                                                 <div>
                                                     <div style="font-size:15px;font-weight:900;color:var(--text-primary);">👷 Kontraktor Pelaksana (Executing Partner)</div>
-                                                    <div style="font-size:12px;font-weight:700;color:var(--warning);">Akun Rekanan Terisolasi (Multi-Tenant)</div>
+                                                    <div style="font-size:12px;font-weight:700;color:var(--warning);">Akun Rekanan Terisolasi (Access Control)</div>
                                                 </div>
                                             </div>
                                             <span class="badge warning">Tenant Khusus</span>
@@ -5210,12 +5210,12 @@
 
                                     <details style="background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:8px;overflow:hidden;">
                                         <summary style="padding:14px 16px;font-size:13px;font-weight:800;color:var(--text-primary);cursor:pointer;background:var(--surface-1);">🔒 Mengapa saya tidak bisa menurunkan nilai persentase progres pekerjaan?</summary>
-                                        <div style="padding:14px 16px;border-top:1px solid var(--border-subtle);font-size:12.5px;color:var(--text-secondary);line-height:1.7;">Sistem menerapkan aturan <strong>progres monotonik</strong> untuk menjaga integritas data audit teknik pabrik semen. Jika terjadi kesalahan input di lapangan, hubungi Superadmin atau Manager untuk melakukan penyesuaian melalui log inspeksi resmi.</div>
+                                        <div style="padding:14px 16px;border-top:1px solid var(--border-subtle);font-size:12.5px;color:var(--text-secondary);line-height:1.7;">Sistem menerapkan aturan <strong>progres monotonik</strong> untuk menjaga integritas data audit teknik. Jika terjadi kesalahan input di lapangan, hubungi Superadmin atau Manager untuk melakukan penyesuaian melalui log inspeksi resmi.</div>
                                     </details>
 
                                     <details style="background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:8px;overflow:hidden;">
                                         <summary style="padding:14px 16px;font-size:13px;font-weight:800;color:var(--text-primary);cursor:pointer;background:var(--surface-1);">🏢 Mengapa kontraktor hanya bisa melihat pekerjaan tertentu?</summary>
-                                        <div style="padding:14px 16px;border-top:1px solid var(--border-subtle);font-size:12.5px;color:var(--text-secondary);line-height:1.7;">Fitur <strong>Multi-Tenant Isolation</strong> memastikan rekanan kontraktor hanya melihat dan menginput sub-jobdesk yang ditugaskan kepada PT mereka demi kerahasiaan operasional antar vendor.</div>
+                                        <div style="padding:14px 16px;border-top:1px solid var(--border-subtle);font-size:12.5px;color:var(--text-secondary);line-height:1.7;">Fitur <strong>Role-Based Access Control</strong> memastikan rekanan kontraktor hanya melihat dan menginput sub-jobdesk yang ditugaskan kepada PT mereka demi kerahasiaan operasional antar vendor.</div>
                                     </details>
 
                                     <details style="background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:8px;overflow:hidden;">
@@ -10959,9 +10959,9 @@ function formatHeader(sheet) {
             {
                 target: '#tab-overview',
                 mobileTarget: '#ovTotalProjects',
-                title: 'Ringkasan Multi-Proyek',
+                title: 'Ringkasan Proyek Overhaul',
                 sub: 'Langkah 4 dari 10 — Tab Ringkasan',
-                body: 'Tab <strong>Ringkasan</strong> memantau seluruh proyek overhaul secara agregat — menampilkan total proyek, proyek on-track, total alert, dan rata-rata progres.',
+                body: 'Tab <strong>Ringkasan</strong> memantau seluruh proyek Kiln Shutdown &amp; Overhaul secara agregat — menampilkan total proyek, proyek on-track, total alert, dan rata-rata progres.',
                 position: 'right',
                 tab: 'overview'
             },
@@ -11045,7 +11045,7 @@ function formatHeader(sheet) {
                 mobileTarget: '#createProjectForm',
                 title: 'Registrasi Proyek Overhaul',
                 sub: 'Langkah 3 dari 7 — Project Setup',
-                body: 'Daftarkan data awal proyek berupa: kode proyek unik (contoh: PRJ-01), nama proyek, area plant, serta tanggal rencana mulai shutdown.',
+                body: 'Daftarkan data awal proyek berupa: kode proyek unik (contoh: KSD-KL-01), nama proyek, sektor kiln shutdown, serta tanggal rencana mulai operasional.',
                 position: 'right',
                 tab: 'setup'
             },
@@ -11565,7 +11565,7 @@ function formatHeader(sheet) {
             const manCnt = document.getElementById("logManCount");
             const manHrs = document.getElementById("logManHours");
             if (manDate && !manDate.value) manDate.value = todayStr;
-            if (manCtr && !manCtr.value) manCtr.value = "PT. Multi Fabrindo";
+            if (manCtr && !manCtr.value) manCtr.value = "PT. Tali Abadi Lancar";
             if (manShift && !manShift.value) manShift.value = "Day";
             if (manCnt && !manCnt.value) manCnt.value = "12";
             if (manHrs && !manHrs.value) manHrs.value = "96";
@@ -11631,7 +11631,7 @@ function formatHeader(sheet) {
             const subW = document.getElementById("setupSubWeight");
             if (subId && !subId.value) subId.value = "SUB-19-01";
             if (subTitle && !subTitle.value) subTitle.value = "Hydraulic Cylinder Seal Replacement & Pressure Check";
-            if (subCtr && !subCtr.value) subCtr.value = "PT. Multi Fabrindo";
+            if (subCtr && !subCtr.value) subCtr.value = "PT. Harapan Jaya Gemilang";
             if (subW && !subW.value) subW.value = "30";
         }
 
