@@ -36,10 +36,10 @@ Jika perangkat Anda terhubung ke Wi-Fi yang sama dengan komputer host, **tidak p
   ```
 
 ### 2. Akses Publik Internet Tanpa Instal Aplikasi (Bisa Dibuka di HP Mana Saja)
-Gunakan link publik HTTPS resmi berikut (bisa dibuka langsung dari HP Android / iPhone, laptop lain, baik lewat paket data 4G/5G maupun Wi-Fi):
-- **URL Akses Langsung (Aktif)**:
+Gunakan link HTTPS publik resmi berikut (bisa langsung dibuka di Chrome / Safari HP, baik lewat paket data seluler 4G/5G maupun Wi-Fi):
+- **URL Akses Langsung (Aktif & Tembus Semua Provider)**:
   ```text
-  https://7e9588775bfbfe.lhr.life/
+  https://64d529375abb261f-124-158-189-237.serveousercontent.com/
   ```
 
 ### 3. Akses via VPN Tailscale (Privat & Terenkripsi)
