@@ -35,15 +35,11 @@ Jika perangkat Anda terhubung ke Wi-Fi yang sama dengan komputer host, **tidak p
   http://192.168.1.5:8090/
   ```
 
-### 2. Akses Publik Internet Tanpa Instal Aplikasi (Cloudflare Tunnel)
-Jika perangkat berada di luar jaringan atau menggunakan koneksi seluler tanpa menginstal Tailscale:
-- **URL HTTPS Publik (Aktif)**:
+### 2. Akses Publik Internet Tanpa Instal Aplikasi (Bisa Dibuka di HP Mana Saja)
+Gunakan link publik HTTPS resmi berikut (bisa dibuka langsung dari HP Android / iPhone, laptop lain, baik lewat paket data 4G/5G maupun Wi-Fi):
+- **URL Akses Langsung (Aktif)**:
   ```text
-  https://whatever-given-son-naval.trycloudflare.com/
-  ```
-- **Menjalankan Cloudflare Tunnel Baru (Kapan Saja)**:
-  ```bash
-  cloudflared tunnel --url http://127.0.0.1:8090
+  https://7e9588775bfbfe.lhr.life/
   ```
 
 ### 3. Akses via VPN Tailscale (Privat & Terenkripsi)
