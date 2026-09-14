@@ -35,11 +35,15 @@ Jika perangkat Anda terhubung ke Wi-Fi yang sama dengan komputer host, **tidak p
   http://192.168.1.5:8090/
   ```
 
-### 2. Akses Publik Internet Tanpa Instal Aplikasi (Beda Jaringan / Paket Data Seluler)
+### 2. Akses Publik Internet Tanpa Instal Aplikasi (Cloudflare Tunnel)
 Jika perangkat berada di luar jaringan atau menggunakan koneksi seluler tanpa menginstal Tailscale:
-- **URL HTTPS Publik**:
+- **URL HTTPS Publik (Aktif)**:
   ```text
-  https://ytiez-124-158-189-237.free.pinggy.net/
+  https://whatever-given-son-naval.trycloudflare.com/
+  ```
+- **Menjalankan Cloudflare Tunnel Baru (Kapan Saja)**:
+  ```bash
+  cloudflared tunnel --url http://127.0.0.1:8090
   ```
 
 ### 3. Akses via VPN Tailscale (Privat & Terenkripsi)
