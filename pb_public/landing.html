@@ -1,0 +1,3659 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KSD Monitor — Track Your Kiln Overhaul with Absolute Precision</title>
+    <meta name="description" content="Sistem monitoring shutdown & overhaul rotary kiln presisi tinggi Pelacakan Kurva-S real-time, validasi foto lapangan, dan kalkulasi refraktori.">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f59e0b'><path d='M12 2c1.5 3 4 5.5 4 8.5 0 3.5-2.5 6.5-6 6.5s-6-3-6-6.5C4 7.5 6.5 5 8 2c0 2 2 4 4 4s2-2 2-4z'/></svg>">
+    
+    <!-- Google Fonts: Inter Tight, Plus Jakarta Sans & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Smooth Scroll & Lucide Icons -->
+    <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* ==========================================================================
+           KSD EDITORIAL DESIGN SYSTEM TOKENS
+           ========================================================================== */
+        :root {
+            --black: #0A0A0A;
+            --carbon: #121620;
+            --graphite: #2A3342;
+            --zinc: #64748B;
+            --ash: #94A3B8;
+            --mist: #E2E8F0;
+            --fog: #F8FAFC;
+            --paper: #FFFFFF;
+
+            --ocean-hero: #0D1B2A;
+            --ocean-deep: #070D14;
+            --accent-blue: #2563EB;
+            --accent-blue-hover: #1D4ED8;
+            --flame-amber: #F59E0B;
+            --signal-green: #10B981;
+            --signal-red: #EF4444;
+
+            --font-display: 'Inter Tight', 'Plus Jakarta Sans', sans-serif;
+            --font-ui: 'Plus Jakarta Sans', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --ease-fluid: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            background-color: var(--fog);
+            color: var(--carbon);
+            font-family: var(--font-ui);
+            font-size: 16px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        body {
+            background-color: var(--fog);
+            color: var(--carbon);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            cursor: default;
+        }
+
+        /* ==========================================================================
+           INTERACTIVE CUSTOM CURSOR RETICLE
+           ========================================================================== */
+        .custom-cursor-dot {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 8px;
+            height: 8px;
+            background: var(--flame-amber);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 100000;
+            transform: translate(-50%, -50%);
+            transition: transform 0.05s ease, opacity 0.2s ease;
+            box-shadow: 0 0 10px var(--flame-amber);
+        }
+
+        .custom-cursor-ring {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 36px;
+            height: 36px;
+            border: 1.5px solid rgba(255, 255, 255, 0.45);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%, -50%);
+            transition: width 0.25s var(--ease-fluid), height 0.25s var(--ease-fluid), border-color 0.25s ease, background 0.25s ease;
+            backdrop-filter: blur(1px);
+        }
+
+        /* Cursor Hover Targets */
+        body.cursor-hover .custom-cursor-ring {
+            width: 56px;
+            height: 56px;
+            border-color: var(--flame-amber);
+            background: rgba(245, 158, 11, 0.08);
+        }
+
+        body.cursor-hover .custom-cursor-dot {
+            transform: translate(-50%, -50%) scale(1.5);
+        }
+
+        
+        /* Micro HUD Telemetry beside cursor */
+        .cursor-telemetry-hud {
+            position: absolute;
+            bottom: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: var(--font-mono);
+            font-size: 8px;
+            font-weight: 700;
+            color: var(--flame-amber);
+            white-space: nowrap;
+            letter-spacing: 0.08em;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+        }
+
+        /* Viewfinder Reticle on Hover */
+        body.cursor-hover .custom-cursor-ring {
+            width: 58px;
+            height: 58px;
+            border-radius: 12px;
+            border-color: var(--flame-amber);
+            background: rgba(245, 158, 11, 0.08);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.25);
+        }
+
+        body.cursor-hover .cursor-telemetry-hud {
+            opacity: 1;
+        }
+
+        /* Hero Media Backdrop (Video or Image) & Parallax */
+        .hero-media-backdrop {
+            position: absolute;
+            inset: -40px;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+            will-change: transform;
+            transform: translateY(var(--hero-parallax, 0px));
+        }
+
+        .hero-bg-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            min-width: 100%;
+            min-height: 100%;
+            object-fit: cover;
+            transform: translate(-50%, -50%);
+            opacity: 0.42;
+            mix-blend-mode: screen;
+            filter: contrast(1.15) brightness(0.9);
+            transition: opacity 1s ease;
+        }
+
+        /* Cinematic Defocus to Sharp Scroll Reveal */
+        .cinematic-reveal {
+            opacity: 0;
+            transform: translateY(30px) scale(0.985);
+            filter: blur(5px);
+            transition: opacity 0.85s var(--ease-fluid), transform 0.85s var(--ease-fluid), filter 0.85s var(--ease-fluid);
+            will-change: opacity, transform, filter;
+        }
+
+        .cinematic-reveal.cinematic-in {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0px);
+        }
+
+        /* Photo Slots Real Image Support */
+        .stage-photo-slot {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s var(--ease-fluid), border-color 0.3s ease;
+        }
+
+        .stage-photo-slot:hover {
+            transform: translateY(-3px);
+            border-color: var(--flame-amber);
+        }
+
+        .slot-real-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+            border-radius: inherit;
+            outline: 1px solid rgba(255, 255, 255, 0.1);
+            outline-offset: -1px;
+            transition: transform 0.5s var(--ease-fluid);
+        }
+
+        .stage-photo-slot:hover .slot-real-img {
+            transform: scale(1.08);
+        }
+
+        .slot-overlay {
+            position: relative;
+            z-index: 2;
+            padding: 8px;
+            background: linear-gradient(to top, rgba(11, 14, 23, 0.92) 0%, rgba(11, 14, 23, 0.3) 60%, transparent 100%);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ==========================================================================
+           INTERACTIVE FILM GRAIN & GRUNGE CANVAS
+           ========================================================================== */
+        #grungeGrainCanvas {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.32;
+            mix-blend-mode: overlay;
+        }
+
+        /* Pointer Spotlight */
+        .interactive-spotlight {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            background: radial-gradient(
+                650px circle at var(--mouse-x, 50%) var(--mouse-y, 30%),
+                rgba(37, 99, 235, 0.08) 0%,
+                rgba(245, 158, 11, 0.03) 40%,
+                transparent 75%
+            );
+            transition: opacity 0.3s ease;
+        }
+
+        /* ==========================================================================
+           FULLSCREEN IMMERSIVE HERO (100VW / 100VH) & DIRECT TELEMETRY HUD
+           ========================================================================== */
+        .ksd-hero-fullscreen {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            min-height: 100svh;
+            background: #060911;
+            color: #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            padding: 0 48px 32px;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+
+        /* Hero Media Backdrop (Video & Scrim) */
+        .hero-media-backdrop {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .hero-bg-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            min-width: 100%;
+            min-height: 100%;
+            object-fit: cover;
+            transform: translate(-50%, -50%);
+            opacity: 0.54;
+            filter: contrast(1.18) brightness(0.68) saturate(0.95);
+            transition: opacity 1s ease;
+        }
+
+        .hero-scrim {
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse at 50% 50%, rgba(6, 9, 17, 0.42) 0%, rgba(6, 9, 17, 0.82) 72%, #060911 100%),
+                linear-gradient(to bottom, rgba(6, 9, 17, 0.88) 0%, rgba(6, 9, 17, 0.22) 28%, rgba(6, 9, 17, 0.42) 68%, #060911 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Top HUD Bar */
+        .hero-top-group {
+            position: relative;
+            z-index: 5;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            margin-top: 76px;
+        }
+
+        .hero-top-hud {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            letter-spacing: 0.05em;
+            color: var(--ash);
+        }
+
+        .hud-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hud-beacon {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--signal-green);
+            box-shadow: 0 0 10px var(--signal-green);
+            animation: pulseGlow 1.8s infinite;
+        }
+
+        .hud-mono {
+            color: var(--ash);
+            font-weight: 600;
+        }
+
+        .hud-divider {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .hud-timer {
+            color: #FFFFFF;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            background: rgba(37, 99, 235, 0.15);
+            border: 1px solid rgba(37, 99, 235, 0.35);
+            padding: 4px 14px;
+            border-radius: 999px;
+            font-variant-numeric: tabular-nums;
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.2);
+        }
+
+        .hud-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hud-status-badge {
+            background: rgba(16, 185, 129, 0.14);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--signal-green);
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        /* ==========================================================================
+           MASTER PERSISTENT FLOATING GLASS ISLAND NAVBAR (UNIFIED ARCHITECTURE)
+           ========================================================================== */
+        .ksd-master-navbar {
+            position: fixed;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(1280px, calc(100% - 32px));
+            z-index: 5000;
+            pointer-events: auto;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .nav-island-inner {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 20px;
+            padding: 8px 14px 8px 18px;
+            border-radius: 9999px;
+            background: rgba(8, 12, 20, 0.88);
+            backdrop-filter: blur(28px) saturate(180%);
+            -webkit-backdrop-filter: blur(28px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .ksd-master-navbar.scrolled .nav-island-inner {
+            background: rgba(6, 10, 18, 0.95);
+            border-color: rgba(255, 255, 255, 0.22);
+            box-shadow: 0 18px 48px rgba(0, 0, 0, 0.85), 0 0 24px rgba(245, 158, 11, 0.10);
+        }
+
+        /* Left Brand */
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #FFFFFF;
+        }
+
+        .brand-flame-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 50%, #f59e0b 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(245, 158, 11, 0.35);
+            flex-shrink: 0;
+        }
+
+        .brand-title-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brand-logo-text {
+            font-family: var(--font-display);
+            font-size: 16.5px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #FFFFFF;
+            white-space: nowrap;
+        }
+
+        .brand-version-badge {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--flame-amber);
+            background: rgba(245, 158, 11, 0.14);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            padding: 1px 7px;
+            border-radius: 4px;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+        }
+
+        .nav-status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.28);
+            margin-left: 2px;
+        }
+
+        .pulse-beacon-green {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #10B981;
+            box-shadow: 0 0 8px #10B981;
+            animation: beaconPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        .nav-status-label {
+            font-family: var(--font-mono);
+            font-size: 9.5px;
+            font-weight: 700;
+            color: #34D399;
+            letter-spacing: 0.06em;
+        }
+
+        /* Center Nav Links - High Contrast */
+        .nav-center-menu {
+            display: flex;
+            justify-content: center;
+        }
+
+        .nav-links-list {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            list-style: none;
+            margin: 0;
+            padding: 4px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 9999px;
+        }
+
+        .nav-link-item {
+            text-decoration: none;
+            color: #E2E8F0;
+            font-size: 13.5px;
+            font-weight: 600;
+            padding: 7px 16px;
+            border-radius: 9999px;
+            transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link-item:hover {
+            color: #FFFFFF;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        /* ScrollSpy Active State */
+        .nav-link-item.active-nav-link {
+            color: #090D16 !important;
+            background: #FFFFFF !important;
+            font-weight: 700;
+            box-shadow: 0 2px 12px rgba(255, 255, 255, 0.4);
+        }
+
+        /* Right Actions */
+        .nav-actions-group {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Kiln Hum Audio Button */
+        .nav-audio-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #CBD5E1;
+            padding: 8px 14px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .nav-audio-btn:hover {
+            background: rgba(245, 158, 11, 0.18);
+            border-color: rgba(245, 158, 11, 0.5);
+            color: #FCD34D;
+        }
+
+        .nav-audio-btn.is-active {
+            background: rgba(245, 158, 11, 0.25);
+            border-color: #F59E0B;
+            color: #FCD34D;
+        }
+
+        .audio-wave-bars {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            height: 12px;
+        }
+
+        .audio-bar {
+            width: 2px;
+            height: 4px;
+            background: currentColor;
+            border-radius: 1px;
+            transition: height 0.2s ease;
+        }
+
+        .nav-audio-btn.is-active .audio-bar:nth-child(1) {
+            animation: audioBounce 0.8s ease-in-out infinite alternate;
+        }
+        .nav-audio-btn.is-active .audio-bar:nth-child(2) {
+            animation: audioBounce 0.8s ease-in-out 0.2s infinite alternate;
+        }
+        .nav-audio-btn.is-active .audio-bar:nth-child(3) {
+            animation: audioBounce 0.8s ease-in-out 0.4s infinite alternate;
+        }
+
+        @keyframes audioBounce {
+            0% { height: 3px; }
+            100% { height: 12px; }
+        }
+
+        /* Master CTA Button */
+        .nav-cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #FFFFFF;
+            color: #090D16 !important;
+            padding: 9px 18px;
+            border-radius: 9999px;
+            font-size: 13.5px;
+            font-weight: 700;
+            text-decoration: none;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+            transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .nav-cta-btn:hover {
+            transform: translateY(-1px) scale(1.02);
+            background: #F8FAFC;
+            box-shadow: 0 6px 22px rgba(255, 255, 255, 0.25);
+        }
+
+        .nav-cta-btn:active {
+            transform: scale(0.97);
+        }
+
+        /* Hamburger Button (Mobile Only) */
+        .nav-hamburger-btn {
+            display: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 4px;
+            padding: 0;
+            transition: all 0.2s ease;
+        }
+
+        .nav-hamburger-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .hamburger-bar {
+            width: 18px;
+            height: 2px;
+            background: #FFFFFF;
+            border-radius: 2px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        /* Mobile Drawer Styles */
+        .mobile-nav-drawer {
+            position: fixed;
+            inset: 0;
+            z-index: 6000;
+            pointer-events: none;
+            visibility: hidden;
+            transition: visibility 0.3s ease;
+        }
+
+        .mobile-nav-drawer.drawer-open {
+            pointer-events: auto;
+            visibility: visible;
+        }
+
+        .mobile-drawer-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(2, 6, 12, 0.75);
+            backdrop-filter: blur(12px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .mobile-nav-drawer.drawer-open .mobile-drawer-backdrop {
+            opacity: 1;
+        }
+
+        .mobile-drawer-sheet {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: min(340px, 85vw);
+            background: #080C14;
+            border-left: 1px solid rgba(255, 255, 255, 0.14);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transform: translateX(100%);
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.8);
+        }
+
+        .mobile-nav-drawer.drawer-open .mobile-drawer-sheet {
+            transform: translateX(0);
+        }
+
+        .drawer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .drawer-close-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s ease;
+        }
+
+        .drawer-close-btn:hover {
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .drawer-body {
+            flex: 1;
+            padding: 24px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .drawer-meta-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: #34D399;
+        }
+
+        .drawer-links-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .drawer-link-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #E2E8F0;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .drawer-link-item span {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--flame-amber);
+            font-weight: 700;
+        }
+
+        .drawer-link-item:hover, .drawer-link-item.active-nav-link {
+            background: rgba(245, 158, 11, 0.15);
+            border-color: rgba(245, 158, 11, 0.4);
+            color: #FFFFFF;
+            transform: translateX(4px);
+        }
+
+        .drawer-footer {
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .drawer-cta-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            background: #FFFFFF;
+            color: #090D16;
+            font-weight: 700;
+            font-size: 14px;
+            text-decoration: none;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+            box-sizing: border-box;
+        }
+
+
+        .btn-ksd-white-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #FFFFFF;
+            color: var(--carbon) !important;
+            padding: 11px 20px 11px 24px;
+            border-radius: 9999px;
+            font-size: 13.5px;
+            font-weight: 700;
+            text-decoration: none;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 150ms ease-out, background-color 150ms ease, box-shadow 150ms ease;
+        }
+
+        .btn-ksd-white-pill:hover {
+            transform: scale(1.02);
+            background: #F1F5F9;
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-ksd-white-pill:active {
+            transform: scale(0.96);
+        }
+
+        /* Monumental Center Editorial Content */
+        .hero-editorial-center {
+            position: relative;
+            z-index: 4;
+            max-width: 1180px;
+            margin: auto auto;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 16px;
+        }
+
+        .hero-eyebrow-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 18px;
+            background: rgba(37, 99, 235, 0.14);
+            border: 1px solid rgba(37, 99, 235, 0.35);
+            border-radius: 999px;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #93C5FD;
+            letter-spacing: 0.08em;
+            margin-bottom: 24px;
+            box-shadow: 0 0 24px rgba(37, 99, 235, 0.25);
+        }
+
+        .pulse-beacon {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--signal-green);
+            box-shadow: 0 0 10px var(--signal-green);
+            animation: pulseGlow 1.8s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(0.9); opacity: 0.8; }
+            50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 14px var(--signal-green); }
+            100% { transform: scale(0.9); opacity: 0.8; }
+        }
+
+        .hero-title-editorial {
+            font-family: var(--font-display);
+            font-size: clamp(38px, 5.2vw, 74px);
+            font-weight: 900;
+            line-height: 1.05;
+            letter-spacing: -0.04em;
+            color: #FFFFFF;
+            margin-bottom: 22px;
+            text-transform: uppercase;
+            text-shadow: 0 4px 32px rgba(0, 0, 0, 0.9);
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #FFFFFF 15%, #CBD5E1 55%, #93C5FD 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        .hero-subtitle-editorial {
+            font-size: clamp(16px, 1.75vw, 19.5px);
+            color: rgba(255, 255, 255, 0.86);
+            line-height: 1.6;
+            max-width: 760px;
+            margin: 0 auto 36px;
+            text-shadow: 0 2px 18px rgba(0, 0, 0, 0.85);
+            font-weight: 400;
+        }
+
+        .hero-cta-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .hero-primary-btn {
+            padding: 15px 34px;
+            font-size: 15px;
+            box-shadow: 0 4px 28px rgba(255, 255, 255, 0.3), 0 0 40px rgba(37, 99, 235, 0.35);
+        }
+
+        .hero-secondary-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: #FFFFFF !important;
+            padding: 14px 28px 14px 24px;
+            border-radius: 9999px;
+            font-size: 14.5px;
+            font-weight: 600;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            transition: transform 150ms ease-out, background-color 150ms ease, border-color 150ms ease;
+        }
+
+        .hero-secondary-btn:hover {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.02);
+        }
+
+        .hero-secondary-btn:active {
+            transform: scale(0.96);
+        }
+
+        /* Direct Telemetry HUD (Bottom Strip Overlaid on Video) */
+        .hero-bottom-telemetry {
+            position: relative;
+            z-index: 5;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: flex-end;
+            padding-top: 18px;
+            border-top: 1px solid rgba(255, 255, 255, 0.09);
+        }
+
+        .telemetry-corner-block {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-family: var(--font-mono);
+        }
+
+        .telemetry-corner-block.left-block {
+            align-items: flex-start;
+        }
+
+        .telemetry-row-main {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #FFFFFF;
+            letter-spacing: 0.04em;
+        }
+
+        .telemetry-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--flame-amber);
+            box-shadow: 0 0 8px var(--flame-amber);
+        }
+
+        .telemetry-spec {
+            color: var(--flame-amber);
+            font-weight: 600;
+        }
+
+        .telemetry-meta {
+            font-size: 11px;
+            color: var(--ash);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .telemetry-pipe {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .text-amber {
+            color: var(--flame-amber);
+        }
+
+        /* Center Scroll Indicator */
+        .hero-scroll-indicator {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.65);
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        .hero-scroll-indicator:hover {
+            color: #FFFFFF;
+            transform: translateY(2px);
+        }
+
+        .scroll-caption {
+            font-family: var(--font-mono);
+            font-size: 9.5px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .scroll-mouse-icon {
+            width: 20px;
+            height: 32px;
+            border: 1.5px solid rgba(255, 255, 255, 0.4);
+            border-radius: 999px;
+            display: flex;
+            justify-content: center;
+            padding-top: 5px;
+        }
+
+        .scroll-wheel {
+            width: 3px;
+            height: 6px;
+            background: var(--flame-amber);
+            border-radius: 999px;
+            animation: wheelBounce 1.6s infinite;
+        }
+
+        @keyframes wheelBounce {
+            0% { transform: translateY(0); opacity: 1; }
+            80% { transform: translateY(8px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 0; }
+        }
+
+        /* Right Corner Telemetry Block */
+        .telemetry-corner-block.right-block {
+            align-items: flex-end;
+            text-align: right;
+        }
+
+        .telemetry-badge-live {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            color: var(--signal-green);
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 10.5px;
+            font-weight: 700;
+        }
+
+        .hero-audio-toggle {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: rgba(255, 255, 255, 0.85);
+            padding: 4px 10px 4px 8px;
+            border-radius: 999px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: transform 150ms ease-out, background-color 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
+        }
+
+        .hero-audio-toggle:hover {
+            background: rgba(255, 255, 255, 0.16);
+            color: #FFFFFF;
+        }
+
+        .hero-audio-toggle:active {
+            transform: scale(0.96);
+        }
+
+        .hero-audio-toggle.active {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: var(--flame-amber);
+            color: var(--flame-amber);
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
+        }
+
+        /* Responsive Breakpoints for Hero */
+        @media (max-width: 1024px) {
+            .ksd-hero-fullscreen { padding: 0 24px 24px; }
+            .hero-top-hud { font-size: 10px; }
+            .hero-bottom-telemetry { grid-template-columns: 1fr 1fr; gap: 16px; }
+            .hero-scroll-indicator { display: none; }
+            .nav-status-indicator { display: none; }
+        }
+
+        @media (max-width: 640px) {
+            .ksd-hero-fullscreen { padding: 0 16px 20px; }
+            .hero-top-hud { flex-direction: column; gap: 6px; text-align: center; }
+            .hud-timer { font-size: 10.5px; }
+            .hero-title-editorial { font-size: 32px; }
+            .hero-subtitle-editorial { font-size: 14.5px; }
+            .hero-bottom-telemetry { grid-template-columns: 1fr; gap: 12px; }
+            .telemetry-corner-block.right-block { align-items: flex-start; text-align: left; }
+        }
+
+
+        /* ==========================================================================
+           STORYTELLING ACT I: THE CHAOS OF MANUAL SYSTEMS
+           ========================================================================== */
+        .section-story-act1 {
+            padding: 100px 24px;
+            max-width: 1140px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .act-intro-badge {
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .act-headline-huge {
+            font-family: var(--font-display);
+            font-size: clamp(32px, 3.8vw, 50px);
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.03em;
+            color: var(--carbon);
+            margin-bottom: 20px;
+        }
+
+        .act-lead-p {
+            font-size: 17px;
+            color: var(--zinc);
+            max-width: 680px;
+            line-height: 1.6;
+            margin-bottom: 56px;
+        }
+
+        .pain-points-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .pain-card {
+            background: var(--paper);
+            border-radius: 14px;
+            padding: 28px;
+            box-shadow:
+                0px 0px 0px 1px oklch(0 0 0 / 0.06),
+                0px 1px 2px -1px oklch(0 0 0 / 0.06),
+                0px 2px 4px 0px oklch(0 0 0 / 0.04);
+            transition: transform 150ms ease-out, box-shadow 150ms ease-out;
+        }
+
+        .pain-card:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0px 0px 0px 1px oklch(0 0 0 / 0.09),
+                0px 1px 2px -1px oklch(0 0 0 / 0.08),
+                0px 6px 16px 0px oklch(0 0 0 / 0.08);
+        }
+
+        .problem-code-badge {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--signal-red);
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.22);
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 16px;
+            letter-spacing: 0.04em;
+        }
+
+        .pain-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--carbon);
+            margin-bottom: 8px;
+            letter-spacing: -0.01em;
+        }
+
+        .pain-text {
+            font-size: 14px;
+            color: var(--zinc);
+            line-height: 1.6;
+        }
+
+        /* ==========================================================================
+           STORYTELLING ACT II: THE AUTHENTIC COMMAND CENTER SHOWCASE
+           ========================================================================== */
+        .section-story-act2 {
+            padding: 60px 16px 100px;
+            max-width: 1280px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .stage-section-intro {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 40px;
+        }
+
+        .showcase-terminal-frame {
+            background: #090D16;
+            color: #FFFFFF;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            overflow: hidden;
+            box-shadow: 0 32px 80px -10px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Terminal Window Chrome */
+        .showcase-chrome-bar {
+            background: #060911;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            gap: 16px;
+        }
+
+        .chrome-left-group {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .chrome-dots {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .chrome-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+        }
+        .chrome-dot-red { background: #EF4444; }
+        .chrome-dot-amber { background: #F59E0B; }
+        .chrome-dot-green { background: #10B981; }
+
+        .chrome-title-mono {
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            color: rgba(255, 255, 255, 0.8);
+            letter-spacing: 0.04em;
+        }
+
+        .chrome-status-pills {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+        }
+
+        .chrome-pill-live {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 10px;
+            background: rgba(16, 185, 129, 0.14);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 999px;
+            color: var(--signal-green);
+            font-weight: 700;
+        }
+
+        .chrome-pill-sub {
+            padding: 3px 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 999px;
+            color: var(--ash);
+        }
+
+        /* Operational Subheader HUD Strip */
+        .showcase-hud-strip {
+            background: #0B111E;
+            padding: 14px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .hud-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .hud-cell-label {
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            color: var(--zinc);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .hud-cell-val {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #FFFFFF;
+        }
+
+        /* Module Tab Selector Toolbar */
+        .showcase-tab-bar {
+            background: #080C14;
+            padding: 10px 20px;
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            overflow-x: auto;
+        }
+
+        .showcase-tab-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 150ms ease;
+            white-space: nowrap;
+        }
+
+        .showcase-tab-btn:hover {
+            color: #FFFFFF;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .showcase-tab-btn.active-stage-nav {
+            background: #1D4ED8;
+            color: #FFFFFF;
+            border-color: #3B82F6;
+            box-shadow: 0 2px 10px rgba(37, 99, 235, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        }
+
+        /* Showcase Screen Canvas */
+        .showcase-canvas-body {
+            padding: 32px;
+            background: #090D16;
+            min-height: 540px;
+        }
+
+        .screen-panel {
+            display: none;
+            animation: fadeInScreen 0.3s var(--ease-fluid) forwards;
+        }
+
+        .screen-panel.active-screen {
+            display: block;
+        }
+
+        @keyframes fadeInScreen {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Screen 0: KPI Grid */
+        .screen-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .screen-kpi-card {
+            background: #0E1626;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .kpi-lbl {
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            color: var(--zinc);
+            text-transform: uppercase;
+        }
+
+        .kpi-num {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 800;
+            color: #FFFFFF;
+        }
+
+        .kpi-sub {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--ash);
+        }
+
+        .stage-svg-wrap {
+            width: 100%;
+            height: 220px;
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Screen 0: Interactive Slider Box */
+        .sim-input-box {
+            background: #0E1626;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .sim-val-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 12px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+        }
+
+        .ksd-range-slider {
+            width: 100%;
+            -webkit-appearance: none;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .ksd-range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #FFFFFF;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .guard-tag-live {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            font-weight: 700;
+            margin-top: 14px;
+        }
+
+        .guard-ok { background: rgba(16, 185, 129, 0.15); color: var(--signal-green); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .guard-warn { background: rgba(245, 158, 11, 0.15); color: var(--flame-amber); border: 1px solid rgba(245, 158, 11, 0.3); }
+
+        /* Screen 1: Photo Inspection Authentic */
+        .stage-qc-wo-bar {
+            background: #0E1626;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 12px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+        }
+
+        .stage-photo-grid-authentic {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stage-qc-card {
+            background: #0E1626;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stage-qc-img-wrap {
+            position: relative;
+            aspect-ratio: 4/3;
+            background: #000;
+            overflow: hidden;
+            outline: 1px solid rgba(255, 255, 255, 0.1);
+            outline-offset: -1px;
+        }
+
+        .stage-qc-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+
+        .stage-qc-card:hover .stage-qc-img-wrap img {
+            transform: scale(1.04);
+        }
+
+        .stage-qc-phase-tag {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 4px;
+            color: #FFF;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .stage-qc-info {
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .stage-qc-meta-time {
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            color: var(--ash);
+        }
+
+        .stage-qc-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #FFF;
+        }
+
+        .stage-qc-notes {
+            font-size: 12.5px;
+            color: var(--zinc);
+            line-height: 1.55;
+        }
+
+        .stage-qc-stamp {
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            font-weight: 700;
+            color: var(--signal-green);
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            padding: 4px 10px;
+            border-radius: 4px;
+            width: fit-content;
+            margin-top: 4px;
+        }
+
+        .stage-qc-footer-hash {
+            background: #060911;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--zinc);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Screen 2: Calculator Workbench */
+        .calc-workbench-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 24px;
+            margin-top: 16px;
+        }
+
+        .calc-param-box {
+            background: #0E1626;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .calc-output-box {
+            background: #0B1220;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 14px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 0 30px rgba(37, 99, 235, 0.08);
+        }
+
+        .param-row {
+            margin-bottom: 20px;
+        }
+
+        .param-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            margin-bottom: 8px;
+            color: var(--ash);
+        }
+
+        .param-label-row strong {
+            color: #FFF;
+            font-size: 13.5px;
+        }
+
+        .calc-metric-tile {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .calc-metric-tile span {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--ash);
+        }
+
+        .calc-metric-tile strong {
+            font-family: var(--font-mono);
+            font-size: 16px;
+            color: #FFF;
+        }
+
+        /* Screen 3: Dispatch Table */
+        .dispatch-table-wrap {
+            overflow-x: auto;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: #060A12;
+        }
+
+        .dispatch-real-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        .dispatch-real-table th {
+            background: #080E1A;
+            color: var(--ash);
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 14px 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .dispatch-real-table td {
+            padding: 14px 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            color: #E2E8F0;
+        }
+
+        .dispatch-real-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .dispatch-real-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .dispatch-handover-card {
+            background: #0E1626;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 16px 20px;
+            font-size: 13px;
+            color: var(--zinc);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        /* ==========================================================================
+           STORYTELLING ACT III: SYSTEM MOSAIC (ASYMMETRIC BENTO)
+           ========================================================================== */
+        .section-story-act3 {
+            padding: 60px 24px 100px;
+            max-width: 1140px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .system-mosaic-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .mosaic-card {
+            background: var(--paper);
+            border: 1px solid var(--mist);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s ease;
+        }
+
+        .mosaic-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .mosaic-tall {
+            grid-row: span 2;
+        }
+
+        .mosaic-wide {
+            grid-column: span 2;
+        }
+
+        .mosaic-spec-badge {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent-blue);
+            background: rgba(37, 99, 235, 0.08);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 16px;
+            letter-spacing: 0.04em;
+        }
+
+        .mosaic-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--carbon);
+            margin-bottom: 8px;
+            letter-spacing: -0.015em;
+        }
+
+        .mosaic-text {
+            font-size: 14.5px;
+            color: var(--zinc);
+            line-height: 1.6;
+        }
+
+        /* ==========================================================================
+           STORYTELLING ACT IV: RUNNING LOOPING MARQUEE FOR SUARA LAPANGAN
+           ========================================================================== */
+        .section-story-act4 {
+            padding: 80px 0 100px;
+            width: 100%;
+            overflow: hidden;
+            text-align: center;
+            position: relative;
+        }
+
+        .act4-header-wrap {
+            max-width: 1140px;
+            margin: 0 auto 40px;
+            padding: 0 24px;
+        }
+
+        .field-marquee-viewport {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            padding: 16px 0 32px;
+            mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+        }
+
+        .field-marquee-track {
+            display: flex;
+            width: max-content;
+            animation: fieldLogsRun 45s linear infinite;
+            will-change: transform;
+        }
+
+        .field-marquee-track:hover {
+            animation-play-state: paused;
+        }
+
+        .field-marquee-group {
+            display: flex;
+            gap: 24px;
+            padding-right: 24px;
+        }
+
+        @keyframes fieldLogsRun {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .field-log-card {
+            background: #0D1322;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 24px 26px;
+            width: 400px;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-align: left;
+            flex-shrink: 0;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            transition: transform 200ms ease, border-color 200ms ease;
+        }
+
+        .field-log-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+
+        .field-log-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .field-log-station {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--flame-amber);
+            letter-spacing: 0.04em;
+        }
+
+        .field-log-status {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--signal-green);
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            padding: 2px 8px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .field-log-quote {
+            font-size: 14.5px;
+            color: #E2E8F0;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        .field-log-author-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.07);
+            padding-top: 14px;
+        }
+
+        .field-log-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1D4ED8 0%, #3B82F6 100%);
+            color: #FFFFFF;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 12px rgba(37, 99, 235, 0.35);
+        }
+
+        .field-log-name {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #FFFFFF;
+        }
+
+        .field-log-meta {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: #94A3B8;
+        }
+
+        .marquee-hint-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 8px;
+        }
+
+        .marquee-hint-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 999px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--ash);
+        }
+
+        /* ==========================================================================
+           STORYTELLING ACT V: FINAL CTA & FOOTER
+           ========================================================================== */
+        .section-story-act5 {
+            background: radial-gradient(900px 480px at 50% 0%, rgba(37, 99, 235, 0.22) 0%, rgba(245, 158, 11, 0.08) 45%, #0B0E17 80%),
+                        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            color: #FFFFFF;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 24px;
+            padding: 110px 40px 80px;
+            max-width: 1140px;
+            margin: 0 auto 50px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            overflow: hidden;
+            box-shadow: 0 35px 80px -15px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .cta-atmosphere-glow {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.35) 0%, rgba(245, 158, 11, 0.12) 50%, transparent 75%);
+            filter: blur(50px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .cta-content-inner {
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta-badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 18px;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 999px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--signal-green);
+            letter-spacing: 0.06em;
+            margin-bottom: 24px;
+        }
+
+        .cta-ksd-title {
+            font-family: var(--font-display);
+            font-size: clamp(34px, 4.4vw, 56px);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: 18px;
+        }
+
+        .cta-highlight-gradient {
+            background: linear-gradient(135deg, #FFFFFF 20%, #E2E8F0 60%, #93C5FD 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        .cta-ksd-sub {
+            font-size: 17px;
+            color: var(--ash);
+            max-width: 660px;
+            margin: 0 auto 36px;
+            line-height: 1.6;
+        }
+
+        .cta-action-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 56px;
+        }
+
+        .cta-btn-hero {
+            padding: 16px 32px 16px 36px; /* Optical alignment: less padding on trailing icon side */
+            font-size: 15.5px;
+            box-shadow: 0 4px 28px rgba(255, 255, 255, 0.25), 0 0 50px rgba(37, 99, 235, 0.35);
+            transition: transform 150ms ease-out, background-color 150ms ease, box-shadow 150ms ease;
+        }
+
+        .cta-btn-hero:active {
+            transform: scale(0.96);
+        }
+
+        .cta-btn-sub {
+            padding: 16px 24px 16px 28px; /* Optical alignment: less padding on trailing icon side */
+            font-size: 14.5px;
+            transition: transform 150ms ease-out, background-color 150ms ease, border-color 150ms ease;
+        }
+
+        .cta-btn-sub:active {
+            transform: scale(0.96);
+        }
+
+        .cta-assurance-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            text-align: left;
+            margin-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 40px;
+        }
+
+        .assurance-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 20px;
+            transition: transform 0.25s var(--ease-fluid), border-color 0.25s ease, background 0.25s ease;
+        }
+
+        .assurance-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .assurance-badge {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            color: #60A5FA;
+            background: rgba(37, 99, 235, 0.12);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            padding: 3px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 14px;
+            letter-spacing: 0.04em;
+        }
+
+        .assurance-title {
+            font-size: 14.5px;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 6px;
+            letter-spacing: -0.01em;
+        }
+
+        .assurance-desc {
+            font-size: 12.5px;
+            color: var(--ash);
+            line-height: 1.55;
+        }
+
+        .ksd-footer {
+            max-width: 1140px;
+            margin: 0 auto 60px;
+            padding: 24px 12px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--zinc);
+        }
+
+        /* Reduced Motion Fallback */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation: none !important;
+                transition: none !important;
+                scroll-behavior: auto !important;
+            }
+            .custom-cursor-dot, .custom-cursor-ring, #grungeGrainCanvas {
+                display: none !important;
+            }
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 900px) {
+            .nav-center-menu { display: none; }
+            .nav-audio-btn { display: none; }
+            .nav-hamburger-btn { display: flex; }
+            .hero-top-group { margin-top: 68px; }
+            .nav-island-inner { padding: 8px 12px 8px 14px; gap: 12px; }
+            .nav-cta-btn { padding: 8px 14px; font-size: 12.5px; }
+            .ksd-hero-card { height: auto; min-height: 600px; padding: 24px; }
+            .hero-bottom-grid { flex-direction: column; align-items: flex-start; gap: 24px; }
+            .hero-mode-toggle { display: none; }
+            .pain-points-grid { grid-template-columns: 1fr; }
+            .cta-assurance-grid { grid-template-columns: 1fr; }
+            .feature-stage-card { grid-template-columns: 1fr; padding: 28px; }
+            .system-mosaic-grid { grid-template-columns: 1fr; }
+            .mosaic-tall, .mosaic-wide { grid-row: auto; grid-column: auto; }
+            .testimonials-masonry { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Accessible Skip Link -->
+    <a href="#storyStart" class="skip-link" style="position: fixed; top: -100px; left: 20px; z-index: 100000;">Lewati ke konten utama</a>
+
+    <!-- Custom Cursor Follower -->
+    <div class="custom-cursor-dot" id="cursorDot" aria-hidden="true"></div>
+    <div class="custom-cursor-ring" id="cursorRing" aria-hidden="true"><span class="cursor-telemetry-hud" id="cursorCoords">KSD // OPTICAL HUD</span></div>
+
+    <!-- Procedural Grunge Grain Canvas & Spotlight -->
+    <canvas id="grungeGrainCanvas" aria-hidden="true"></canvas>
+    <div class="interactive-spotlight" id="spotlightLayer" aria-hidden="true"></div>
+
+    <!-- MASTER PERSISTENT FLOATING GLASS ISLAND NAVBAR -->
+    <header class="ksd-master-navbar" id="masterNavbar" aria-label="Navigasi Utama">
+        <div class="nav-island-inner">
+            <!-- Left: Brand + Status Beacon -->
+            <a href="landing.html" class="nav-brand" aria-label="KSD Monitor Beranda">
+                <div class="brand-flame-icon">
+                    <i data-lucide="flame" style="width: 18px; height: 18px; color: #FFFFFF;"></i>
+                </div>
+                <div class="brand-title-group">
+                    <span class="brand-logo-text">KSD Monitor</span>
+                    <span class="brand-version-badge">v3.5 PRO</span>
+                </div>
+                <div class="nav-status-indicator" title="Koneksi Sistem Aktif">
+                    <span class="pulse-beacon-green"></span>
+                    <span class="nav-status-label">ONLINE</span>
+                </div>
+            </a>
+
+            <!-- Center: High-Contrast Navigation Links (ScrollSpy Active) -->
+            <nav class="nav-center-menu" aria-label="Menu Navigasi">
+                <ul class="nav-links-list">
+                    <li><a href="#story-problem" class="nav-link-item" data-nav-target="story-problem">Tantangan</a></li>
+                    <li><a href="#story-stage" class="nav-link-item" data-nav-target="story-stage">Pusat Kendali</a></li>
+                    <li><a href="#story-system" class="nav-link-item" data-nav-target="story-system">Sistem Mosaic</a></li>
+                    <li><a href="#story-testimonials" class="nav-link-item" data-nav-target="story-testimonials">Suara Lapangan</a></li>
+                </ul>
+            </nav>
+
+            <!-- Right: Kiln Hum Audio Button + High Contrast CTA + Hamburger -->
+            <div class="nav-actions-group">
+                <button type="button" class="nav-audio-btn" id="navbarAudioToggle" aria-label="Aktifkan Suara Ambience Kiln" title="Kiln 55Hz Hum Soundscape">
+                    <span class="audio-wave-bars" aria-hidden="true">
+                        <span class="audio-bar"></span>
+                        <span class="audio-bar"></span>
+                        <span class="audio-bar"></span>
+                    </span>
+                    <span class="audio-btn-txt">55Hz Hum</span>
+                </button>
+
+                <a href="index.html" class="nav-cta-btn" id="masterNavCta">
+                    <span>Buka Dashboard</span>
+                    <i data-lucide="arrow-up-right" style="width: 15px; height: 15px;" stroke-width="2.5" aria-hidden="true"></i>
+                </a>
+
+                <!-- Mobile Hamburger Toggle -->
+                <button type="button" class="nav-hamburger-btn" id="mobileNavToggle" aria-label="Buka Menu Navigasi" aria-expanded="false" aria-controls="mobileNavDrawer">
+                    <span class="hamburger-bar"></span>
+                    <span class="hamburger-bar"></span>
+                    <span class="hamburger-bar"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBILE NAVIGATION DRAWER -->
+    <div class="mobile-nav-drawer" id="mobileNavDrawer" aria-hidden="true">
+        <div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop"></div>
+        <div class="mobile-drawer-sheet">
+            <div class="drawer-header">
+                <div class="nav-brand">
+                    <div class="brand-flame-icon">
+                        <i data-lucide="flame" style="width: 18px; height: 18px; color: #FFFFFF;"></i>
+                    </div>
+                    <span class="brand-logo-text">KSD Monitor</span>
+                    <span class="brand-version-badge">PRO</span>
+                </div>
+                <button type="button" class="drawer-close-btn" id="drawerCloseBtn" aria-label="Tutup Menu">
+                    <i data-lucide="x" style="width: 20px; height: 20px; color: #FFFFFF;"></i>
+                </button>
+            </div>
+
+            <div class="drawer-body">
+                <div class="drawer-meta-badge">
+                    <span class="pulse-beacon-green"></span>
+                    <span>SISTEM SHUTDOWN MONITOR // HAYSAN CREATIVE</span>
+                </div>
+                <ul class="drawer-links-list">
+                    <li><a href="#story-problem" class="drawer-link-item" data-nav-target="story-problem"><span>01</span> Tantangan Overhaul</a></li>
+                    <li><a href="#story-stage" class="drawer-link-item" data-nav-target="story-stage"><span>02</span> Pusat Kendali (Showcase)</a></li>
+                    <li><a href="#story-system" class="drawer-link-item" data-nav-target="story-system"><span>03</span> Sistem Arsitektur Mosaic</a></li>
+                    <li><a href="#story-testimonials" class="drawer-link-item" data-nav-target="story-testimonials"><span>04</span> Suara Lapangan &amp; Log</a></li>
+                </ul>
+            </div>
+
+            <div class="drawer-footer">
+                <a href="index.html" class="drawer-cta-btn">
+                    <span>Masuk ke Dashboard Sistem</span>
+                    <i data-lucide="arrow-right" style="width: 16px; height: 16px;" stroke-width="2.5" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <main id="storyStart">
+        
+        <!-- PROLOGUE: FULLSCREEN IMMERSIVE HERO -->
+        <section class="ksd-hero-fullscreen" id="hero" aria-labelledby="heroTitle">
+            <!-- Cinematic Media Backdrop (Video & Scrim) -->
+            <div class="hero-media-backdrop" id="heroMediaBackdrop">
+                <video id="heroVideo" class="hero-bg-video" autoplay muted loop playsinline poster="assets/audit-during.jpg">
+                    <source src="assets/hero-kiln.mp4" type="video/mp4">
+                    <source src="assets/hero-kiln.mov" type="video/quicktime">
+                </video>
+                <div class="hero-scrim" aria-hidden="true"></div>
+            </div>
+
+            <!-- Top HUD & Navigation Group -->
+            <div class="hero-top-group">
+                <!-- Top Status Countdown Bar -->
+                <div class="hero-top-hud">
+                    <div class="hud-left">
+                        <span class="hud-beacon"></span>
+                        <span class="hud-mono">ROTARY KILN #3 OVERHAUL</span>
+                        <span class="hud-divider">//</span>
+                        <span class="hud-mono">SEQUENCE TELEMETRY</span>
+                    </div>
+                    <div class="hud-center">
+                        <span class="hud-timer" id="liveCountdown">D-09 / 14 HARI · 120H 00M 00S MENUJU FIRING</span>
+                    </div>
+                    <div class="hud-right">
+                        <span class="hud-mono">HAYSAN CREATIVE · v3.5 PRO</span>
+                        <span class="hud-status-badge">ONLINE SSE</span>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Center Editorial Monumental Typography -->
+            <div class="hero-editorial-center">
+                <div class="hero-eyebrow-pill">
+                    <span class="pulse-beacon"></span>
+                    <span>SISTEM OPERASI SHUTDOWN &amp; OVERHAUL ROTARY KILN // v3.5</span>
+                </div>
+
+                <h1 class="hero-title-editorial" id="heroTitle">
+                    KONTROL OVERHAUL KILN.<br>
+                    <span class="text-gradient">TERSTRUKTUR. PRESISI. TANPA SALAH KETIK.</span>
+                </h1>
+
+                <p class="hero-subtitle-editorial">
+                    Platform komando terpadu untuk memantau Kurva-S real-time, validasi foto audit 3-tahap, dan kalkulasi tonase refraktori dengan akurasi absolut tanpa risiko rumus spreadsheet tertimpa.
+                </p>
+
+                <div class="hero-cta-group">
+                    <a href="index.html" class="btn-ksd-white-pill hero-primary-btn" id="heroStartBtn">
+                        <span>Masuk ke Dashboard Sistem</span>
+                        <i data-lucide="arrow-right" style="width: 16px; height: 16px;" stroke-width="2.5" aria-hidden="true"></i>
+                    </a>
+                    <a href="#story-stage" class="btn-ksd-glass-pill hero-secondary-btn" id="heroLearnBtn">
+                        <i data-lucide="compass" style="width: 16px; height: 16px;" stroke-width="2" aria-hidden="true"></i>
+                        <span>Jelajahi Alur Komando 4 Tahap</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Direct Telemetry HUD on Video (Bottom Strip) -->
+            <div class="hero-bottom-telemetry">
+                <!-- Left HUD Widget -->
+                <div class="telemetry-corner-block left-block">
+                    <div class="telemetry-row-main">
+                        <span class="telemetry-dot"></span>
+                        <span class="telemetry-label">ROTARY KILN #3</span>
+                        <span class="telemetry-spec">65.0M × Ø4.2M</span>
+                    </div>
+                    <div class="telemetry-meta">
+                        <span>ESTIMASI TONASE: <strong class="text-amber">108.33 TON</strong></span>
+                        <span class="telemetry-pipe">|</span>
+                        <span>CRITICAL PATH: <strong>TYRE 2 &amp; BURNING ZONE</strong></span>
+                    </div>
+                </div>
+
+                <!-- Center Scroll Indicator -->
+                <a href="#story-problem" class="hero-scroll-indicator" aria-label="Gulir ke konten utama">
+                    <span class="scroll-caption">SCROLL TO EXPLORE</span>
+                    <div class="scroll-mouse-icon">
+                        <span class="scroll-wheel"></span>
+                    </div>
+                </a>
+
+                <!-- Right HUD Widget -->
+                <div class="telemetry-corner-block right-block">
+                    <div class="telemetry-row-main">
+                        <span class="telemetry-label">KURVA-S TELEMETRI</span>
+                        <span class="telemetry-badge-live">80.2% (+1.7% AHEAD)</span>
+                    </div>
+                    <div class="telemetry-meta">
+                        <span>SHIFT A (PAGI) · QC VERIFIKASI 34/34 FOTO</span>
+                        <span class="telemetry-pipe">|</span>
+                        <button type="button" class="hero-audio-toggle" id="heroAudioToggle" aria-label="Toggle Ambience Sound">
+                            <i data-lucide="volume-x" style="width: 12px; height: 12px;"></i>
+                            <span id="audioToggleText">AMBIENCE: OFF</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACT I: THE CHAOS OF SPREADSHEETS (PROBLEM FRAMING) -->
+        <section class="section-story-act1" id="story-problem" aria-labelledby="act1Title">
+            <span class="act-intro-badge">BABAK I // REALITA LAPANGAN</span>
+            <h2 class="act-headline-huge" id="act1Title">
+                Waktu terbuang, rumus tertimpa,<br>
+                dan deviasi kecil berujung jutaan kerugian.
+            </h2>
+            <p class="act-lead-p">
+                Di tengah kebisingan dan debu area kiln shell, mengandalkan spreadsheet manual dan grup chat yang tercecer menciptakan kekacauan data yang memperlambat jadwal firing.
+            </p>
+
+            <div class="pain-points-grid">
+                
+                <div class="pain-card">
+                    <div class="problem-code-badge">[ERR-01 // ASINKRON]</div>
+                    <h3 class="pain-title">Data Tersebar &amp; Hilang</h3>
+                    <p class="pain-text">
+                        Laporan teknisi tercecer di secarik kertas dan obrolan pesan instan tanpa riwayat arsip yang terstruktur saat audit manajemen.
+                    </p>
+                </div>
+
+                <div class="pain-card">
+                    <div class="problem-code-badge">[ERR-02 // HUMAN-ERROR]</div>
+                    <h3 class="pain-title">Formula Excel Rusak &amp; Tertimpa</h3>
+                    <p class="pain-text">
+                        Salah ketik persentase di atas 100% atau rumus bobot proyek yang tertimpa secara tidak sengaja merusak perhitungan Kurva-S.
+                    </p>
+                </div>
+
+                <div class="pain-card">
+                    <div class="problem-code-badge">[ERR-03 // JALUR-KRITIS]</div>
+                    <h3 class="pain-title">Keterlambatan Firing Tak Terdeteksi</h3>
+                    <p class="pain-text">
+                        Deviasi pemasangan bata tahan api baru disadari saat mendekati hari H, memicu biaya downtime pabrik yang masif.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ACT II: THE COMMAND CENTER SHOWCASE (AUTHENTIC OPERATIONAL SYSTEM) -->
+        <section class="section-story-act2" id="story-stage" aria-labelledby="act2Title">
+            
+            <div class="stage-section-intro">
+                <span class="act-intro-badge">BABAK II // PUSAT KENDALI TERPADU</span>
+                <h2 class="act-headline-huge" id="act2Title">
+                    Satu Layar Komando Operasional.<br>
+                    Empat Alur Verifikasi Lapangan.
+                </h2>
+                <p class="act-lead-p" style="margin: 0 auto;">
+                    Antarmuka KSD Monitor yang sebenarnya — dirancang untuk memantau kurva telemetri, inspeksi visual ber-timestamp, dan formula refraktori presisi langsung dari lantai pabrik.
+                </p>
+            </div>
+
+            <div class="showcase-terminal-frame">
+                
+                <!-- Terminal Window Chrome -->
+                <div class="showcase-chrome-bar">
+                    <div class="chrome-left-group">
+                        <div class="chrome-dots">
+                            <span class="chrome-dot chrome-dot-red" title="Close"></span>
+                            <span class="chrome-dot chrome-dot-amber" title="Minimize"></span>
+                            <span class="chrome-dot chrome-dot-green" title="Expand"></span>
+                        </div>
+                        <span class="chrome-title-mono">KSD MONITOR v3.5 // PUSAT KENDALI OVERHAUL // KILN #3 TUBAN</span>
+                    </div>
+                    <div class="chrome-status-pills">
+                        <span class="chrome-pill-live">
+                            <span class="pulse-beacon" style="background: var(--signal-green); width: 6px; height: 6px;"></span>
+                            <span>LIVE SSE SYNCED</span>
+                        </span>
+                        <span class="chrome-pill-sub">LATENSI: 14ms</span>
+                        <span class="chrome-pill-sub">OFFLINE BUFFER: 42 DOKUMEN</span>
+                    </div>
+                </div>
+
+                <!-- Operational Context HUD Strip -->
+                <div class="showcase-hud-strip">
+                    <div class="hud-cell">
+                        <span class="hud-cell-label">LOKASI STASIUN</span>
+                        <span class="hud-cell-val">STA 18.40M — BURNING ZONE</span>
+                    </div>
+                    <div class="hud-cell">
+                        <span class="hud-cell-label">SHIFT AKTIF</span>
+                        <span class="hud-cell-val">SHIFT 2 (MALAM) · 19:00 - 07:00</span>
+                    </div>
+                    <div class="hud-cell">
+                        <span class="hud-cell-label">SUPERINTENDENT</span>
+                        <span class="hud-cell-val">Bambang Prasetyo (Lead QC)</span>
+                    </div>
+                    <div class="hud-cell">
+                        <span class="hud-cell-label">STATUS TRAJEKTORI</span>
+                        <span class="hud-cell-val" style="color: var(--flame-amber);">78.50% (DEV -1.70% TOLERANSI AMAN)</span>
+                    </div>
+                </div>
+
+                <!-- Module Navigation Tabs -->
+                <div class="showcase-tab-bar" role="tablist" aria-label="Modul Showcase KSD Monitor">
+                    <button class="showcase-tab-btn active-stage-nav" data-stage="0" role="tab" aria-selected="true" id="stgBtn0">
+                        <span>[01] KURVA-S TELEMETRI</span>
+                    </button>
+                    <button class="showcase-tab-btn" data-stage="1" role="tab" aria-selected="false" id="stgBtn1">
+                        <span>[02] AUDIT FOTO 3-TAHAP</span>
+                    </button>
+                    <button class="showcase-tab-btn" data-stage="2" role="tab" aria-selected="false" id="stgBtn2">
+                        <span>[03] KALKULATOR REFRAKTORI</span>
+                    </button>
+                    <button class="showcase-tab-btn" data-stage="3" role="tab" aria-selected="false" id="stgBtn3">
+                        <span>[04] MATRIKS DISPATCH &amp; SPK</span>
+                    </button>
+                </div>
+
+                <!-- Showcase Canvas Body -->
+                <div class="showcase-canvas-body">
+                    
+                    <!-- SCREEN 0: S-CURVE & TELEMETRY -->
+                    <div class="screen-panel active-screen" id="scPanel0" role="tabpanel" aria-labelledby="stgBtn0">
+                        <div class="screen-kpi-grid">
+                            <div class="screen-kpi-card">
+                                <span class="kpi-lbl">TARGET KUMULATIF</span>
+                                <span class="kpi-num">80.20%</span>
+                                <span class="kpi-sub">Baseline Hari ke-14</span>
+                            </div>
+                            <div class="screen-kpi-card">
+                                <span class="kpi-lbl">REALISASI AKTUAL</span>
+                                <span class="kpi-num" style="color: #60A5FA;">78.50%</span>
+                                <span class="kpi-sub">Update Shift 2 (19:00 WIB)</span>
+                            </div>
+                            <div class="screen-kpi-card">
+                                <span class="kpi-lbl">VARIAN DEVIASI</span>
+                                <span class="kpi-num" style="color: var(--flame-amber);">-1.70%</span>
+                                <span class="kpi-sub">Toleransi Aman: ±3.0%</span>
+                            </div>
+                            <div class="screen-kpi-card">
+                                <span class="kpi-lbl">JALUR KRITIS</span>
+                                <span class="kpi-num" style="font-size: 16px; color: #FFF; line-height: 1.3; margin-top: 4px;">Burning Zone 14-16</span>
+                                <span class="kpi-sub">Bata Magnesite Spinel</span>
+                            </div>
+                        </div>
+
+                        <!-- High-Fidelity SVG Trajectory Chart -->
+                        <div class="stage-svg-wrap">
+                            <svg viewBox="0 0 900 220" style="width: 100%; height: 100%;" preserveAspectRatio="none">
+                                <defs>
+                                    <linearGradient id="scurveAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.3"/>
+                                        <stop offset="100%" stop-color="#3B82F6" stop-opacity="0.0"/>
+                                    </linearGradient>
+                                </defs>
+                                <!-- Grid Lines -->
+                                <line x1="60" y1="180" x2="860" y2="180" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                                <line x1="60" y1="130" x2="860" y2="130" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+                                <line x1="60" y1="80" x2="860" y2="80" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+                                <line x1="60" y1="30" x2="860" y2="30" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+
+                                <!-- Axis Labels -->
+                                <text x="25" y="184" fill="#64748B" font-family="'JetBrains Mono', monospace" font-size="10">0%</text>
+                                <text x="20" y="134" fill="#64748B" font-family="'JetBrains Mono', monospace" font-size="10">35%</text>
+                                <text x="20" y="84" fill="#64748B" font-family="'JetBrains Mono', monospace" font-size="10">70%</text>
+                                <text x="15" y="34" fill="#64748B" font-family="'JetBrains Mono', monospace" font-size="10">100%</text>
+
+                                <!-- Vertical Day Markers -->
+                                <line x1="60" y1="20" x2="60" y2="185" stroke="rgba(255,255,255,0.05)"/>
+                                <line x1="220" y1="20" x2="220" y2="185" stroke="rgba(255,255,255,0.05)"/>
+                                <line x1="380" y1="20" x2="380" y2="185" stroke="rgba(255,255,255,0.05)"/>
+                                <line x1="510" y1="20" x2="510" y2="185" stroke="rgba(59,130,246,0.3)" stroke-dasharray="2 2"/>
+                                <line x1="680" y1="20" x2="680" y2="185" stroke="rgba(255,255,255,0.05)"/>
+                                <line x1="860" y1="20" x2="860" y2="185" stroke="rgba(255,255,255,0.05)"/>
+
+                                <text x="50" y="202" fill="#64748B" font-family="'JetBrains Mono', monospace" font-size="10">H-01</text>
+                                <text x="210" y="202" fill="#64748B" font-family="'JetBrains Mono', monospace" font-size="10">H-05</text>
+                                <text x="370" y="202" fill="#64748B" font-family="'JetBrains Mono', monospace" font-size="10">H-10</text>
+                                <text x="480" y="202" fill="#60A5FA" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700">H-14 (HARI INI)</text>
+                                <text x="670" y="202" fill="#64748B" font-family="'JetBrains Mono', monospace" font-size="10">H-20</text>
+                                <text x="815" y="202" fill="#10B981" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700">H-26 FIRING</text>
+
+                                <!-- Planned S-Curve (Dashed Silver) -->
+                                <path d="M 60 180 C 200 176, 300 155, 420 105 C 500 70, 650 38, 860 30" fill="none" stroke="#94A3B8" stroke-width="2" stroke-dasharray="5 4"/>
+
+                                <!-- Actual Progress Fill & Curve -->
+                                <path d="M 60 180 C 200 176, 300 158, 420 110 C 470 88, 510 68, 510 68 L 510 180 Z" fill="url(#scurveAreaGrad)"/>
+                                <path d="M 60 180 C 200 176, 300 158, 420 110 C 470 88, 510 68, 510 68" fill="none" stroke="#3B82F6" stroke-width="3.5"/>
+
+                                <!-- Active Point at Day 14 -->
+                                <circle cx="510" cy="68" r="6" fill="#3B82F6" stroke="#FFFFFF" stroke-width="2"/>
+                                <circle cx="510" cy="68" r="14" fill="none" stroke="#3B82F6" stroke-width="1.5" opacity="0.5"/>
+
+                                <!-- Callout Tooltip Tag -->
+                                <rect x="525" y="52" width="130" height="28" rx="6" fill="#0B1322" stroke="#3B82F6" stroke-width="1"/>
+                                <text x="535" y="70" fill="#FFFFFF" font-family="'JetBrains Mono', monospace" font-size="10.5" font-weight="700">AKTUAL: 78.50%</text>
+
+                                <text x="700" y="55" fill="#94A3B8" font-family="'JetBrains Mono', monospace" font-size="10">-- RENCANA: 80.20%</text>
+                            </svg>
+                        </div>
+
+                        <!-- Interactive Tolerance Simulator -->
+                        <div class="sim-input-box">
+                            <div class="sim-val-row">
+                                <span style="color: var(--ash);">Uji Proteksi Anti-Miskeying (Input Progres Harian):</span>
+                                <strong id="mStageValTxt" style="color: var(--flame-amber); font-size: 16px;">78.5%</strong>
+                            </div>
+                            <input type="range" id="mStageSlider" class="ksd-range-slider" min="50" max="100" value="78" aria-label="Slider simulasi entri progres">
+                            <div class="guard-tag-live guard-ok" id="mStageGuard">
+                                <span>[STATUS AMAN] Input Valid: Sesuai Master Schedule Overhaul (Deviasi &lt; 3%)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SCREEN 1: 3-STAGE PHOTO AUDIT -->
+                    <div class="screen-panel" id="scPanel1" role="tabpanel" aria-labelledby="stgBtn1">
+                        <div class="stage-qc-wo-bar">
+                            <div>
+                                <span style="color: var(--zinc);">WORK ORDER:</span>
+                                <strong style="color: #FFF; margin-left: 6px;">WO-2026-KL3-089</strong>
+                                <span style="color: var(--zinc); margin: 0 8px;">//</span>
+                                <span>Penggantian Bata Magnesite Spinel</span>
+                            </div>
+                            <div>
+                                <span style="color: var(--zinc);">PELAKSANA:</span>
+                                <span style="color: var(--flame-amber); margin-left: 6px;">PT TALI Mandiri</span>
+                                <span style="color: var(--zinc); margin: 0 8px;">//</span>
+                                <span style="color: var(--signal-green);">STATUS: QC APPROVED</span>
+                            </div>
+                        </div>
+
+                        <div class="stage-photo-grid-authentic">
+                            <!-- Card 1: Before -->
+                            <div class="stage-qc-card">
+                                <div class="stage-qc-img-wrap">
+                                    <img src="assets/audit-before.jpg" alt="Fase Sebelum Overhaul" onerror="this.style.display='none'">
+                                    <span class="stage-qc-phase-tag" style="background: rgba(220, 38, 38, 0.9);">01 // SEBELUM</span>
+                                </div>
+                                <div class="stage-qc-info">
+                                    <span class="stage-qc-meta-time">12 SEP 2026 · 08:30 WIB</span>
+                                    <h4 class="stage-qc-title">Tearing &amp; Shell Cleaning</h4>
+                                    <p class="stage-qc-notes">
+                                        Ketebalan sisa batu lama 45mm, kerak slag dibersihkan hingga ke pelat shell baja tanpa retakan.
+                                    </p>
+                                    <span class="stage-qc-stamp">[TAHAP 1 TERVERIFIKASI · QC-104]</span>
+                                </div>
+                            </div>
+
+                            <!-- Card 2: During -->
+                            <div class="stage-qc-card">
+                                <div class="stage-qc-img-wrap">
+                                    <img src="assets/audit-during.jpg" alt="Fase Pengerjaan Bata" onerror="this.style.display='none'">
+                                    <span class="stage-qc-phase-tag" style="background: rgba(245, 158, 11, 0.9);">02 // PROSES</span>
+                                </div>
+                                <div class="stage-qc-info">
+                                    <span class="stage-qc-meta-time">13 SEP 2026 · 15:20 WIB</span>
+                                    <h4 class="stage-qc-title">Pemasangan Ring &amp; Mortar</h4>
+                                    <p class="stage-qc-notes">
+                                        Pemasangan ekspansi joint 2mm per 5 ring, kelurusan ring diuji dengan benang ukur dan waterpass.
+                                    </p>
+                                    <span class="stage-qc-stamp">[TAHAP 2 TERVERIFIKASI · QC-104]</span>
+                                </div>
+                            </div>
+
+                            <!-- Card 3: After -->
+                            <div class="stage-qc-card">
+                                <div class="stage-qc-img-wrap">
+                                    <img src="assets/audit-after.jpg" alt="Fase Selesai Keying" onerror="this.style.display='none'">
+                                    <span class="stage-qc-phase-tag" style="background: rgba(16, 185, 129, 0.9);">03 // SESUDAH</span>
+                                </div>
+                                <div class="stage-qc-info">
+                                    <span class="stage-qc-meta-time">14 SEP 2026 · 11:45 WIB</span>
+                                    <h4 class="stage-qc-title">Key Jack Locking</h4>
+                                    <p class="stage-qc-notes">
+                                        Key brick tertutup rapat, tekanan hidrolik jack 150 bar terkunci permanen, clearance aman.
+                                    </p>
+                                    <span class="stage-qc-stamp">[TAHAP 3 APPROVED · SUPERINTENDENT]</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stage-qc-footer-hash">
+                            <span>DIGITAL QC INTEGRITY: SHA-256 #8F3D7C9A4B12 · TERKUNCI PERMANEN DI DATABASE</span>
+                            <span style="color: var(--signal-green);">SIAP AUDIT ISO 9001 &amp; SPK RESMI</span>
+                        </div>
+                    </div>
+
+                    <!-- SCREEN 2: REFRACTORY CALCULATOR -->
+                    <div class="screen-panel" id="scPanel2" role="tabpanel" aria-labelledby="stgBtn2">
+                        <div style="background: #0E1626; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 12px 18px; font-family: var(--font-mono); font-size: 11.5px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <span style="color: var(--zinc);">FORMULA STANDAR:</span>
+                                <span style="color: var(--flame-amber); margin-left: 6px;">ΔV = π (R_outer² - R_inner²) × L</span>
+                            </div>
+                            <span style="color: var(--ash);">PRESISI TEKNIK DENGAN SAFETY FACTOR +5.0%</span>
+                        </div>
+
+                        <div class="calc-workbench-grid">
+                            <!-- Left: Parameter Input Controls -->
+                            <div class="calc-param-box">
+                                <h4 style="font-size: 15px; font-weight: 700; color: #FFF; margin-bottom: 16px;">Parameter Geometri Shell Kiln</h4>
+                                
+                                <div class="param-row">
+                                    <div class="param-label-row">
+                                        <span>Diameter Luar Shell (D):</span>
+                                        <strong>Ø 4.20 Meter</strong>
+                                    </div>
+                                    <div class="param-label-row" style="margin-top: 4px;">
+                                        <span>Ketebalan Bata (t):</span>
+                                        <strong>220 mm (B-32 / B-42)</strong>
+                                    </div>
+                                </div>
+
+                                <div class="param-row">
+                                    <div class="param-label-row">
+                                        <span>Panjang Zona Refraktori (L):</span>
+                                        <strong id="calcPanjangTxt" style="color: var(--flame-amber);">12.0 Meter</strong>
+                                    </div>
+                                    <input type="range" id="calcLengthSlider" class="ksd-range-slider" min="6" max="24" step="0.5" value="12" aria-label="Slider panjang zona refraktori">
+                                </div>
+
+                                <div class="param-row" style="margin-bottom: 0;">
+                                    <div class="param-label-row">
+                                        <span>Berat Jenis Material (ρ):</span>
+                                        <strong>2.85 Ton / m³</strong>
+                                    </div>
+                                    <div class="param-label-row" style="margin-top: 4px;">
+                                        <span>Jenis Material:</span>
+                                        <span style="color: #60A5FA; font-weight: 700;">Magnesite Spinel</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right: Live Real-time Calculations -->
+                            <div class="calc-output-box">
+                                <div>
+                                    <h4 style="font-size: 15px; font-weight: 700; color: #FFF; margin-bottom: 16px;">Hasil Kalkulasi Tonase Material</h4>
+                                    
+                                    <div class="calc-metric-tile">
+                                        <span>Volume Bersih Refraktori:</span>
+                                        <strong id="calcVol">38.03 m³</strong>
+                                    </div>
+                                    <div class="calc-metric-tile">
+                                        <span>Total Berat Material:</span>
+                                        <strong id="calcTon" style="color: var(--flame-amber);">108.38 Ton</strong>
+                                    </div>
+                                    <div class="calc-metric-tile">
+                                        <span>Estimasi Jumlah Keping Bata:</span>
+                                        <strong id="calcBatu">4,860 Pcs</strong>
+                                    </div>
+                                    <div class="calc-metric-tile">
+                                        <span>Kebutuhan Mortar / Castable:</span>
+                                        <strong id="calcMortar">420 Zak (@ 25 kg)</strong>
+                                    </div>
+                                </div>
+
+                                <div style="border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 12px; margin-top: 12px; display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 11.5px;">
+                                    <span style="color: var(--zinc);">Cadangan Safety Buffer (+5%):</span>
+                                    <strong id="calcBuffer" style="color: var(--signal-green);">113.80 Ton</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SCREEN 3: DISPATCH MATRIX & SPK EXPORT -->
+                    <div class="screen-panel" id="scPanel3" role="tabpanel" aria-labelledby="stgBtn3">
+                        <div class="dispatch-table-wrap">
+                            <table class="dispatch-real-table">
+                                <thead>
+                                    <tr>
+                                        <th>KODE SPK</th>
+                                        <th>ZONA KILN</th>
+                                        <th>KONTRAKTOR</th>
+                                        <th>TARGET SHIFT</th>
+                                        <th>REALISASI</th>
+                                        <th>STATUS QC</th>
+                                        <th>DOKUMEN</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="font-family: var(--font-mono); font-weight: 700; color: #FFF;">SPK-KL3-01</td>
+                                        <td>Transition Zone 1 (STA 12M)</td>
+                                        <td>PT TALI Mandiri</td>
+                                        <td>8.0 Ring</td>
+                                        <td><span style="color: var(--signal-green); font-weight: 700;">8.0 Ring (100%)</span></td>
+                                        <td><span style="font-family: var(--font-mono); font-size: 10px; background: rgba(16, 185, 129, 0.15); color: var(--signal-green); padding: 3px 8px; border-radius: 4px; font-weight: 700;">VERIFIED</span></td>
+                                        <td><button type="button" class="btn-ksd-glass-pill" style="padding: 4px 10px; font-size: 11px;" onclick="alert('Laporan SPK resmi tersedia di dashboard operasional KSD Monitor.')">[PDF SPK]</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-family: var(--font-mono); font-weight: 700; color: #FFF;">SPK-KL3-02</td>
+                                        <td>Burning Zone Ring 14-16</td>
+                                        <td>Tim Internal Kiln</td>
+                                        <td>6.0 Ring</td>
+                                        <td><span style="color: var(--flame-amber); font-weight: 700;">5.5 Ring (92%)</span></td>
+                                        <td><span style="font-family: var(--font-mono); font-size: 10px; background: rgba(245, 158, 11, 0.15); color: var(--flame-amber); padding: 3px 8px; border-radius: 4px; font-weight: 700;">IN PROGRESS</span></td>
+                                        <td><button type="button" class="btn-ksd-glass-pill" style="padding: 4px 10px; font-size: 11px;" onclick="alert('Laporan SPK resmi tersedia di dashboard operasional KSD Monitor.')">[PDF SPK]</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-family: var(--font-mono); font-weight: 700; color: #FFF;">SPK-KL3-03</td>
+                                        <td>Nose Ring Castable Curing</td>
+                                        <td>Mitra Refraktori</td>
+                                        <td>12.0 Ton</td>
+                                        <td><span style="color: var(--signal-green); font-weight: 700;">12.0 Ton (100%)</span></td>
+                                        <td><span style="font-family: var(--font-mono); font-size: 10px; background: rgba(59, 130, 246, 0.15); color: #60A5FA; padding: 3px 8px; border-radius: 4px; font-weight: 700;">CURING 24H</span></td>
+                                        <td><button type="button" class="btn-ksd-glass-pill" style="padding: 4px 10px; font-size: 11px;" onclick="alert('Laporan SPK resmi tersedia di dashboard operasional KSD Monitor.')">[PDF SPK]</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-family: var(--font-mono); font-weight: 700; color: #FFF;">SPK-KL3-04</td>
+                                        <td>Tyre #2 Mechanical Alignment</td>
+                                        <td>Tim Mekanik Utama</td>
+                                        <td>Alignment</td>
+                                        <td><span style="color: var(--signal-green); font-weight: 700;">0.12mm (Pass)</span></td>
+                                        <td><span style="font-family: var(--font-mono); font-size: 10px; background: rgba(16, 185, 129, 0.15); color: var(--signal-green); padding: 3px 8px; border-radius: 4px; font-weight: 700;">VERIFIED</span></td>
+                                        <td><button type="button" class="btn-ksd-glass-pill" style="padding: 4px 10px; font-size: 11px;" onclick="alert('Laporan SPK resmi tersedia di dashboard operasional KSD Monitor.')">[PDF SPK]</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="dispatch-handover-card">
+                            <strong style="color: #FFF; font-family: var(--font-mono);">CATATAN SERAH TERIMA SHIFT (HANDOVER LOG):</strong>
+                            <p style="margin-top: 4px;">
+                                Pekerjaan keying jack ring 15 telah diverifikasi oleh QC Inspector. Tim Shift 3 malam melanjutkan pemantauan pengeringan mortar zona transisi dan persiapan hidrolik uji beban ring 16.
+                            </p>
+                        </div>
+
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <button type="button" class="btn-ksd-white-pill" style="padding: 10px 20px; font-size: 13px; border: none; cursor: pointer;" onclick="alert('Dokumen PDF resmi SPK dapat dicetak langsung dari sistem dashboard.')">
+                                <span>Unduh Rekapitulasi SPK Harian (PDF)</span>
+                            </button>
+                            <button type="button" class="btn-ksd-glass-pill" style="padding: 10px 20px; font-size: 13px; cursor: pointer;" onclick="alert('Matriks evaluasi Excel dapat diekspor langsung dari sistem dashboard.')">
+                                <span>Ekspor Matriks Evaluasi (.xlsx)</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ACT III: SYSTEM MOSAIC (ASYMMETRIC BENTO) -->
+        <section class="section-story-act3" id="story-system" aria-labelledby="act3Title">
+            <span class="act-intro-badge">BABAK III // SISTEM MOSAIC</span>
+            <h2 class="act-headline-huge" id="act3Title">Kejelasan Total di Setiap Sudut Pabrik.</h2>
+            <p class="act-lead-p">
+                Dirancang spesifik untuk lingkungan semen industri. Berjalan tangguh tanpa bergantung pada kestabilan koneksi internet.
+            </p>
+
+            <div class="system-mosaic-grid">
+                
+                <div class="mosaic-card mosaic-tall">
+                    <div>
+                        <div class="mosaic-spec-badge">[MOD-01 // TELEMETRI S-CURVE]</div>
+                        <h3 class="mosaic-title">Pelacakan Deviasi Real-time</h3>
+                        <p class="mosaic-text">
+                            Matematika Kurva-S kumulatif otomatis membandingkan target master schedule terhadap realisasi harian di lapangan.
+                        </p>
+                    </div>
+                    <div style="margin-top: 30px; font-family: var(--font-mono); font-size: 12px; color: var(--zinc); border-top: 1px solid var(--mist); padding-top: 16px;">
+                        <span>Kalkulasi Akurat:</span> <strong style="color: var(--carbon);">Delta % Terkini</strong>
+                    </div>
+                </div>
+
+                <div class="mosaic-card mosaic-wide">
+                    <div>
+                        <div class="mosaic-spec-badge">[MOD-02 // INPUT GUARD]</div>
+                        <h3 class="mosaic-title">Proteksi Anti-Human Error</h3>
+                        <p class="mosaic-text">
+                            Blokade input otomatis jika persentase di luar rentang wajar (0–100%) atau bobot pekerjaan tidak seimbang, memastikan integritas data audit.
+                        </p>
+                    </div>
+                    <div style="margin-top: 20px; font-family: var(--font-mono); font-size: 12px; color: var(--zinc);">
+                        <span>Validasi Otomatis:</span> <strong style="color: var(--signal-green);">Zero Formula Corruption</strong>
+                    </div>
+                </div>
+
+                <div class="mosaic-card">
+                    <div>
+                        <div class="mosaic-spec-badge">[MOD-03 // ARSITEKTUR OFFLINE]</div>
+                        <h3 class="mosaic-title">Offline First PWA</h3>
+                        <p class="mosaic-text">
+                            Bekerja di dalam silinder kiln tanpa sinyal radio. Data tersimpan di storage lokal dan otomatis sinkron saat tersambung.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mosaic-card">
+                    <div>
+                        <div class="mosaic-spec-badge">[MOD-04 // EKSPOR RESMI]</div>
+                        <h3 class="mosaic-title">1-Klik Export SPK</h3>
+                        <p class="mosaic-text">
+                            Cetak laporan rekapitulasi harian berformat PDF resmi bertanda tangan pengawas dalam hitungan detik.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ACT IV: FIELD LOGS & TESTIMONIALS (CONTINUOUS RUNNING MARQUEE) -->
+        <section class="section-story-act4" id="story-testimonials" aria-labelledby="act4Title">
+            <div class="act4-header-wrap">
+                <span class="act-intro-badge">BABAK IV // SUARA LAPANGAN</span>
+                <h2 class="act-headline-huge" id="act4Title">Suara dari Lintasan Overhaul Kiln</h2>
+                <p class="act-lead-p" style="margin: 0 auto;">
+                    Transkrip langsung dari superintendent mekanik, spesialis refraktori, dan koordinator lapangan.
+                </p>
+            </div>
+
+            <!-- Continuous Infinite Running Looping Marquee Viewport -->
+            <div class="field-marquee-viewport" id="fieldMarqueeViewport">
+                <div class="field-marquee-track">
+                    
+                    <!-- Group 1 -->
+                    <div class="field-marquee-group">
+                        
+                        <div class="field-log-card">
+                            <div class="field-log-top">
+                                <span class="field-log-station">[STA 00+100 // SHIFT 1]</span>
+                                <span class="field-log-status">● TERVERIFIKASI QC</span>
+                            </div>
+                            <p class="field-log-quote">
+                                "UI-nya minimalis dan to the point. Mandor di lapangan langsung paham cara input foto sebelum dan sesudah bricking tanpa perlu ditraining lama. Tidak ada lagi foto tercecer di grup obrolan."
+                            </p>
+                            <div class="field-log-author-row">
+                                <div class="field-log-avatar">BP</div>
+                                <div>
+                                    <div class="field-log-name">Bambang Prasetyo</div>
+                                    <div class="field-log-meta">Kiln Mechanical Superintendent</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-log-card">
+                            <div class="field-log-top">
+                                <span class="field-log-station">[STA 18.4M // BURNING ZONE]</span>
+                                <span class="field-log-status">● PRESISI MATERIAL</span>
+                            </div>
+                            <p class="field-log-quote">
+                                "Kalkulator refraktorinya presisi luar biasa. Estimasi tonase batu Magnesite Spinel dan zak semen castable untuk nose ring langsung keluar angkanya, tidak perlu coret-coret kertas kalkulator lagi."
+                            </p>
+                            <div class="field-log-author-row">
+                                <div class="field-log-avatar">RH</div>
+                                <div>
+                                    <div class="field-log-name">Rendra Hidayat</div>
+                                    <div class="field-log-meta">Refractory Specialist</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-log-card">
+                            <div class="field-log-top">
+                                <span class="field-log-station">[WAR-ROOM // EVALUASI]</span>
+                                <span class="field-log-status">● JALUR KRITIS</span>
+                            </div>
+                            <p class="field-log-quote">
+                                "S-Curve otomatisnya sangat membantu saat rapat evaluasi shift malam. Manajemen langsung tahu zona mana yang perlu akselerasi sebelum deviasi melebar dan jalur kritis tertunda."
+                            </p>
+                            <div class="field-log-author-row">
+                                <div class="field-log-avatar">DW</div>
+                                <div>
+                                    <div class="field-log-name">Dwi Wicaksono</div>
+                                    <div class="field-log-meta">Overhaul Project Coordinator</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-log-card">
+                            <div class="field-log-top">
+                                <span class="field-log-station">[INSPECTION GATE // STA 24M]</span>
+                                <span class="field-log-status">● AUDIT ISO 9001</span>
+                            </div>
+                            <p class="field-log-quote">
+                                "Sistem audit foto 3-tahap menghentikan kebiasaan menutup pekerjaan sebelum diperiksa. Bukti foto sebelum, saat, dan sesudah tersimpan rapi ber-timestamp untuk bukti garansi vendor."
+                            </p>
+                            <div class="field-log-author-row">
+                                <div class="field-log-avatar">AS</div>
+                                <div>
+                                    <div class="field-log-name">Agus Santoso</div>
+                                    <div class="field-log-meta">Senior QC Inspector</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-log-card">
+                            <div class="field-log-top">
+                                <span class="field-log-station">[SHELL // ALIGNMENT]</span>
+                                <span class="field-log-status">● DATA INTEGRITY</span>
+                            </div>
+                            <p class="field-log-quote">
+                                "Proteksi anti-miskeying mencegah salah ketik fatal. Toleransi shift terkunci otomatis sehingga kurva deviasi proyek selalu akurat saat dilaporkan ke jajaran direksi."
+                            </p>
+                            <div class="field-log-author-row">
+                                <div class="field-log-avatar">HK</div>
+                                <div>
+                                    <div class="field-log-name">Hendra Kusuma</div>
+                                    <div class="field-log-meta">Plant Reliability Engineer</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-log-card">
+                            <div class="field-log-top">
+                                <span class="field-log-station">[KONTRAKTOR // LAPANGAN]</span>
+                                <span class="field-log-status">● 1-KLIK SPK</span>
+                            </div>
+                            <p class="field-log-quote">
+                                "Ekspor rekapitulasi SPK PDF 1-klik memotong waktu administrasi harian dari 45 menit jadi hitungan detik. Kami bisa fokus penuh pada keselamatan dan kerapian pemasangan bata."
+                            </p>
+                            <div class="field-log-author-row">
+                                <div class="field-log-avatar">FP</div>
+                                <div>
+                                    <div class="field-log-name">Fajar Pratama</div>
+                                    <div class="field-log-meta">Shift Supervisor · PT TALI Mandiri</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Group 2 (Exact Duplicate for Gapless Looping) -->
+                    <div class="field-marquee-group" aria-hidden="true">
+                        
+                        <div class="field-log-card">
+                            <div class="field-log-top">
+                                <span class="field-log-station">[STA 00+100 // SHIFT 1]</span>
+                                <span class="field-log-status">● TERVERIFIKASI QC</span>
+                            </div>
+                            <p class="field-log-quote">
+                                "UI-nya minimalis dan to the point. Mandor di lapangan langsung paham cara input foto sebelum dan sesudah bricking tanpa perlu ditraining lama. Tidak ada lagi foto tercecer di grup obrolan."
+                            </p>
+                            <div class="field-log-author-row">
+                                <div class="field-log-avatar">BP</div>
+                                <div>
+                                    <div class="field-log-name">Bambang Prasetyo</div>
+                                    <div class="field-log-meta">Kiln Mechanical Superintendent</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-log-card">
+                            <div class="field-log-top">
+                                <span class="field-log-station">[STA 18.4M // BURNING ZONE]</span>
+                                <span class="field-log-status">● PRESISI MATERIAL</span>
+                            </div>
+                            <p class="field-log-quote">
+                                "Kalkulator refraktorinya presisi luar biasa. Estimasi tonase batu Magnesite Spinel dan zak semen castable untuk nose ring langsung keluar angkanya, tidak perlu coret-coret kertas kalkulator lagi."
+                            </p>
+                            <div class="field-log-author-row">
+                                <div class="field-log-avatar">RH</div>
+                                <div>
+                                    <div class="field-log-name">Rendra Hidayat</div>
+                                    <div class="field-log-meta">Refractory Specialist</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-log-card">
+                            <div class="field-log-top">
+                                <span class="field-log-station">[WAR-ROOM // EVALUASI]</span>
+                                <span class="field-log-status">● JALUR KRITIS</span>
+                            </div>
+                            <p class="field-log-quote">
+                                "S-Curve otomatisnya sangat membantu saat rapat evaluasi shift malam. Manajemen langsung tahu zona mana yang perlu akselerasi sebelum deviasi melebar dan jalur kritis tertunda."
+                            </p>
+                            <div class="field-log-author-row">
+                                <div class="field-log-avatar">DW</div>
+                                <div>
+                                    <div class="field-log-name">Dwi Wicaksono</div>
+                                    <div class="field-log-meta">Overhaul Project Coordinator</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-log-card">
+                            <div class="field-log-top">
+                                <span class="field-log-station">[INSPECTION GATE // STA 24M]</span>
+                                <span class="field-log-status">● AUDIT ISO 9001</span>
+                            </div>
+                            <p class="field-log-quote">
+                                "Sistem audit foto 3-tahap menghentikan kebiasaan menutup pekerjaan sebelum diperiksa. Bukti foto sebelum, saat, dan sesudah tersimpan rapi ber-timestamp untuk bukti garansi vendor."
+                            </p>
+                            <div class="field-log-author-row">
+                                <div class="field-log-avatar">AS</div>
+                                <div>
+                                    <div class="field-log-name">Agus Santoso</div>
+                                    <div class="field-log-meta">Senior QC Inspector</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-log-card">
+                            <div class="field-log-top">
+                                <span class="field-log-station">[SHELL // ALIGNMENT]</span>
+                                <span class="field-log-status">● DATA INTEGRITY</span>
+                            </div>
+                            <p class="field-log-quote">
+                                "Proteksi anti-miskeying mencegah salah ketik fatal. Toleransi shift terkunci otomatis sehingga kurva deviasi proyek selalu akurat saat dilaporkan ke jajaran direksi."
+                            </p>
+                            <div class="field-log-author-row">
+                                <div class="field-log-avatar">HK</div>
+                                <div>
+                                    <div class="field-log-name">Hendra Kusuma</div>
+                                    <div class="field-log-meta">Plant Reliability Engineer</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-log-card">
+                            <div class="field-log-top">
+                                <span class="field-log-station">[KONTRAKTOR // LAPANGAN]</span>
+                                <span class="field-log-status">● 1-KLIK SPK</span>
+                            </div>
+                            <p class="field-log-quote">
+                                "Ekspor rekapitulasi SPK PDF 1-klik memotong waktu administrasi harian dari 45 menit jadi hitungan detik. Kami bisa fokus penuh pada keselamatan dan kerapian pemasangan bata."
+                            </p>
+                            <div class="field-log-author-row">
+                                <div class="field-log-avatar">FP</div>
+                                <div>
+                                    <div class="field-log-name">Fajar Pratama</div>
+                                    <div class="field-log-meta">Shift Supervisor · PT TALI Mandiri</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="marquee-hint-container">
+                <div class="marquee-hint-pill">
+                    <span class="hud-beacon"></span>
+                    <span>STREAM LOG LAPANGAN TERVERIFIKASI · ARAHKAN KURSOR UNTUK JEDA</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACT V: FINAL CTA (DARK HERO FINALE) -->
+        <div style="padding: 0 12px;">
+            <section class="section-story-act5" id="story-cta" aria-labelledby="act5Title">
+                <div class="cta-atmosphere-glow" aria-hidden="true"></div>
+
+                <div class="cta-content-inner">
+                    <div class="cta-badge-pill">
+                        <span class="pulse-beacon" style="background: var(--signal-green); box-shadow: 0 0 10px var(--signal-green);"></span>
+                        <span>SISTEM SIAP DIGUNAKAN DI LAPANGAN · v3.5 PRODUCTION ENGINE</span>
+                    </div>
+
+                    <h2 class="cta-ksd-title" id="act5Title">
+                        Perjalanan Menuju Start-up Kiln Tepat Waktu<br>
+                        <span class="cta-highlight-gradient">Dimulai dari Satu Panggung Kendali.</span>
+                    </h2>
+
+                    <p class="cta-ksd-sub">
+                        Tinggalkan lembar kerja spreadsheet manual yang rawan salah ketik dan grup chat yang tercecer. Mulai pantau Kurva-S real-time, audit foto 3-tahap, dan kalkulasi tonase refraktori dengan akurasi absolut.
+                    </p>
+
+                    <div class="cta-action-group">
+                        <a href="index.html" class="btn-ksd-white-pill cta-btn-hero" id="footerCtaBtn">
+                            <span>Buka Dashboard KSD Monitor Sekarang</span>
+                            <i data-lucide="arrow-right" style="width: 17px; height: 17px;" stroke-width="2.5" aria-hidden="true"></i>
+                        </a>
+                        <a href="#story-stage" class="btn-ksd-glass-pill cta-btn-sub">
+                            <i data-lucide="compass" style="width: 16px; height: 16px;" stroke-width="2" aria-hidden="true"></i>
+                            <span>Jelajahi Alur Komando 4 Tahap</span>
+                        </a>
+                    </div>
+
+                    <!-- 4 Engineering Assurance Pillars -->
+                    <div class="cta-assurance-grid">
+                        <div class="assurance-card">
+                            <div class="assurance-badge">[SPEC-01 // ZERO-DELAY]</div>
+                            <div class="assurance-title">Zero Setup Delay</div>
+                            <div class="assurance-desc">Langsung aktif via browser tanpa instalasi server rumit.</div>
+                        </div>
+                        <div class="assurance-card">
+                            <div class="assurance-badge">[SPEC-02 // OFFLINE-PWA]</div>
+                            <div class="assurance-title">Offline-First PWA</div>
+                            <div class="assurance-desc">Bekerja di dalam silinder kiln tanpa sinyal radio.</div>
+                        </div>
+                        <div class="assurance-card">
+                            <div class="assurance-badge">[SPEC-03 // ANTI-MISKEY]</div>
+                            <div class="assurance-title">Anti-Miskeying Guard</div>
+                            <div class="assurance-desc">Validasi angka ketat mencegah formula rusak.</div>
+                        </div>
+                        <div class="assurance-card">
+                            <div class="assurance-badge">[SPEC-04 // 1-KLIK SPK]</div>
+                            <div class="assurance-title">1-Klik Ekspor SPK</div>
+                            <div class="assurance-desc">Laporan PDF resmi siap cetak setiap shift.</div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+
+        <footer class="ksd-footer">
+            <div>
+                © 2026 <strong>KSD Monitor</strong> · Created by <strong>Haysan Creative</strong>
+            </div>
+            <div>
+                POCKETBASE ENGINE · PWA READY
+            </div>
+        </footer>
+
+    </main>
+
+    <!-- ==========================================================================
+       SCRIPTS: LENIS SCROLL, PROCEDURAL GRAIN, MOUSE SPOTLIGHT & CUSTOM CURSOR
+       ========================================================================== -->
+    <script>
+        // 1. Initialize Lucide Icons
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
+
+        // 1.1 Autoplay Hero Video
+        const heroVideo = document.getElementById('heroVideo');
+        if (heroVideo) {
+            heroVideo.muted = true;
+            const playPromise = heroVideo.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(() => {
+                    window.addEventListener('scroll', () => heroVideo.play(), { once: true });
+                });
+            }
+        }
+
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // ==========================================================================
+        // 2. INTERACTIVE CUSTOM CURSOR RETICLE
+        // ==========================================================================
+        const cursorDot = document.getElementById('cursorDot');
+        const cursorRing = document.getElementById('cursorRing');
+
+        if (cursorDot && cursorRing && !prefersReducedMotion) {
+            let mouseX = window.innerWidth / 2;
+            let mouseY = window.innerHeight / 2;
+            let ringX = mouseX;
+            let ringY = mouseY;
+
+            window.addEventListener('pointermove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+                
+                // Track spotlight
+                document.documentElement.style.setProperty('--mouse-x', `${mouseX}px`);
+                document.documentElement.style.setProperty('--mouse-y', `${mouseY}px`);
+                const cCoords = document.getElementById('cursorCoords');
+                if (cCoords) cCoords.textContent = `OPT // X:${Math.round(mouseX)} Y:${Math.round(mouseY)}`;
+            }, { passive: true });
+
+            function animateCursor() {
+                ringX += (mouseX - ringX) * 0.18;
+                ringY += (mouseY - ringY) * 0.18;
+                cursorRing.style.transform = `translate(${ringX}px, ${ringY}px)`;
+                requestAnimationFrame(animateCursor);
+            }
+            requestAnimationFrame(animateCursor);
+
+            // Hover interactions on buttons, links, cards, and sliders
+            const interactiveTargets = document.querySelectorAll('a, button, input, .stage-nav-btn, .pain-card, .mosaic-card, .testimonial-card');
+            interactiveTargets.forEach(el => {
+                el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+                el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+            });
+        }
+
+        // ==========================================================================
+        // 3. PROCEDURAL FILM GRAIN CANVAS
+        // ==========================================================================
+        const grainCanvas = document.getElementById('grungeGrainCanvas');
+        if (grainCanvas && !prefersReducedMotion) {
+            const ctx = grainCanvas.getContext('2d');
+            let w = grainCanvas.width = window.innerWidth;
+            let h = grainCanvas.height = window.innerHeight;
+
+            window.addEventListener('resize', () => {
+                w = grainCanvas.width = window.innerWidth;
+                h = grainCanvas.height = window.innerHeight;
+            }, { passive: true });
+
+            const tile = document.createElement('canvas');
+            tile.width = 200;
+            tile.height = 200;
+            const tCtx = tile.getContext('2d');
+            const imgData = tCtx.createImageData(200, 200);
+            const buf = new Uint32Array(imgData.data.buffer);
+
+            function updateNoise() {
+                for (let i = 0; i < buf.length; i++) {
+                    const val = (Math.random() * 255) | 0;
+                    buf[i] = (Math.random() > 0.48 ? 0x24000000 : 0x00000000) | (val << 16) | (val << 8) | val;
+                }
+                tCtx.putImageData(imgData, 0, 0);
+            }
+
+            let pattern = null;
+            updateNoise();
+            pattern = ctx.createPattern(tile, 'repeat');
+
+            let lastFrame = 0;
+            function loopGrain(now) {
+                if (now - lastFrame > 65) { // 16fps film flutter
+                    lastFrame = now;
+                    updateNoise();
+                    pattern = ctx.createPattern(tile, 'repeat');
+                }
+                ctx.clearRect(0, 0, w, h);
+                ctx.fillStyle = pattern;
+                ctx.fillRect(0, 0, w, h);
+                requestAnimationFrame(loopGrain);
+            }
+            requestAnimationFrame(loopGrain);
+        }
+
+        // ==========================================================================
+        // 4. LENIS SMOOTH SCROLL & KSD SLIDING SECONDARY NAVBAR
+        // ==========================================================================
+        const secondaryNav = document.getElementById('secondaryNav');
+
+        if (!prefersReducedMotion) {
+            // Cinematic Defocus-to-Sharp Scroll Reveal
+            const revealElements = document.querySelectorAll('.section-story-act1, .feature-stage-card, .section-story-act3, .section-story-act4, .section-story-act5');
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('cinematic-in');
+                        revealObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.10 });
+
+            revealElements.forEach(el => {
+                el.classList.add('cinematic-reveal');
+                revealObserver.observe(el);
+            });
+        }
+
+        // ==========================================================================
+        // 4. MASTER FLOATING ISLAND NAVBAR, SCROLLSPY & MOBILE DRAWER
+        // ==========================================================================
+        const masterNavbar = document.getElementById('masterNavbar');
+        const navLinkItems = document.querySelectorAll('.nav-link-item');
+        const drawerLinkItems = document.querySelectorAll('.drawer-link-item');
+        const spySectionIds = ['story-problem', 'story-stage', 'story-system', 'story-testimonials'];
+        const spySections = spySectionIds.map(id => document.getElementById(id)).filter(Boolean);
+
+        function updateNavbarState(scrollY) {
+            if (masterNavbar) {
+                if (scrollY > 40) {
+                    masterNavbar.classList.add('scrolled');
+                } else {
+                    masterNavbar.classList.remove('scrolled');
+                }
+            }
+
+            // ScrollSpy: identify active section
+            const scrollPos = scrollY + 160;
+            let activeId = '';
+            for (let i = 0; i < spySections.length; i++) {
+                const sec = spySections[i];
+                const top = sec.offsetTop;
+                const height = sec.offsetHeight;
+                if (scrollPos >= top && scrollPos < top + height) {
+                    activeId = sec.getAttribute('id');
+                    break;
+                }
+            }
+
+            navLinkItems.forEach(link => {
+                if (link.getAttribute('data-nav-target') === activeId) {
+                    link.classList.add('active-nav-link');
+                } else {
+                    link.classList.remove('active-nav-link');
+                }
+            });
+
+            drawerLinkItems.forEach(link => {
+                if (link.getAttribute('data-nav-target') === activeId) {
+                    link.classList.add('active-nav-link');
+                } else {
+                    link.classList.remove('active-nav-link');
+                }
+            });
+        }
+
+        // Native scroll listener for instant fallback & ScrollSpy
+        window.addEventListener('scroll', () => {
+            updateNavbarState(window.scrollY);
+        }, { passive: true });
+
+        // Mobile Drawer Toggle Handlers
+        const mobileNavToggle = document.getElementById('mobileNavToggle');
+        const mobileNavDrawer = document.getElementById('mobileNavDrawer');
+        const drawerCloseBtn = document.getElementById('drawerCloseBtn');
+        const mobileDrawerBackdrop = document.getElementById('mobileDrawerBackdrop');
+        const drawerActionLinks = document.querySelectorAll('.drawer-link-item, .drawer-cta-btn');
+
+        function openMobileDrawer() {
+            if (mobileNavDrawer) {
+                mobileNavDrawer.classList.add('drawer-open');
+                mobileNavDrawer.setAttribute('aria-hidden', 'false');
+                if (mobileNavToggle) mobileNavToggle.setAttribute('aria-expanded', 'true');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeMobileDrawer() {
+            if (mobileNavDrawer) {
+                mobileNavDrawer.classList.remove('drawer-open');
+                mobileNavDrawer.setAttribute('aria-hidden', 'true');
+                if (mobileNavToggle) mobileNavToggle.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = '';
+            }
+        }
+
+        if (mobileNavToggle) mobileNavToggle.addEventListener('click', openMobileDrawer);
+        if (drawerCloseBtn) drawerCloseBtn.addEventListener('click', closeMobileDrawer);
+        if (mobileDrawerBackdrop) mobileDrawerBackdrop.addEventListener('click', closeMobileDrawer);
+        drawerActionLinks.forEach(item => item.addEventListener('click', closeMobileDrawer));
+
+        // Lenis Smooth Scroll Engine
+        let globalLenis = null;
+        if (!prefersReducedMotion && typeof Lenis !== 'undefined') {
+            globalLenis = new Lenis({
+                duration: 1.1,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                smooth: true,
+                smoothTouch: false,
+            });
+
+            function raf(time) {
+                globalLenis.raf(time);
+                requestAnimationFrame(raf);
+            }
+            requestAnimationFrame(raf);
+
+            globalLenis.on('scroll', (e) => {
+                const heroBackdrop = document.getElementById('heroMediaBackdrop');
+                if (heroBackdrop && e.scroll < window.innerHeight) {
+                    heroBackdrop.style.setProperty('--hero-parallax', `${e.scroll * 0.35}px`);
+                }
+                updateNavbarState(e.scroll);
+            });
+        }
+
+        // Global Anchor Smooth Scroll Handler (Accounting for master navbar height)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const targetId = this.getAttribute('href');
+                if (targetId && targetId.length > 1) {
+                    const targetElem = document.querySelector(targetId);
+                    if (targetElem) {
+                        e.preventDefault();
+                        if (globalLenis) {
+                            globalLenis.scrollTo(targetElem, { offset: -84 });
+                        } else {
+                            const elementPosition = targetElem.getBoundingClientRect().top;
+                            const offsetPosition = elementPosition + window.pageYOffset - 84;
+                            window.scrollTo({
+                                top: offsetPosition,
+                                behavior: 'smooth'
+                            });
+                        }
+                    }
+                }
+            });
+        });
+
+
+        // ==========================================================================
+        // 5. IN-STAGE TAB SWITCHER (STAGE DOCK)
+        // ==========================================================================
+        // Showcase Module Tab Navigation
+        const stageNavBtns = document.querySelectorAll('.showcase-tab-btn, .stage-nav-btn');
+        const screenPanels = document.querySelectorAll('.screen-panel');
+
+        stageNavBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const stageIdx = btn.getAttribute('data-stage');
+
+                stageNavBtns.forEach(b => {
+                    b.classList.remove('active-stage-nav');
+                    b.setAttribute('aria-selected', 'false');
+                });
+                screenPanels.forEach(p => p.classList.remove('active-screen'));
+
+                btn.classList.add('active-stage-nav');
+                btn.setAttribute('aria-selected', 'true');
+
+                const targetPanel = document.getElementById(`scPanel${stageIdx}`);
+                if (targetPanel) {
+                    targetPanel.classList.add('active-screen');
+                }
+            });
+        });
+
+        // Stage 0: Anti-Miskeying Tolerance Simulator
+        const mStageSlider = document.getElementById('mStageSlider');
+        const mStageValTxt = document.getElementById('mStageValTxt');
+        const mStageGuard = document.getElementById('mStageGuard');
+
+        if (mStageSlider && mStageValTxt) {
+            mStageSlider.addEventListener('input', () => {
+                const val = parseFloat(mStageSlider.value);
+                mStageValTxt.textContent = `${val.toFixed(1)}%`;
+
+                if (val > 88) {
+                    mStageGuard.className = "guard-tag-live guard-warn";
+                    mStageGuard.innerHTML = `
+                        <span>[DEV-ALERT] Deviasi per shift melebihi toleransi wajar (+5%). Memerlukan otorisasi Lead Superintendent.</span>
+                    `;
+                } else if (val < 65) {
+                    mStageGuard.className = "guard-tag-live guard-warn";
+                    mStageGuard.innerHTML = `
+                        <span>[DEV-WARN] Progres berada di bawah batas minimum critical path shift malam (-13.5%).</span>
+                    `;
+                } else {
+                    mStageGuard.className = "guard-tag-live guard-ok";
+                    mStageGuard.innerHTML = `
+                        <span>[STATUS AMAN] Input Valid: Sesuai Master Schedule Overhaul (Deviasi &lt; 3%)</span>
+                    `;
+                }
+            });
+        }
+
+        // Stage 2: Interactive Refractory Geometry & Tonnage Calculator
+        const calcLengthSlider = document.getElementById('calcLengthSlider');
+        const calcPanjangTxt = document.getElementById('calcPanjangTxt');
+        const calcVol = document.getElementById('calcVol');
+        const calcTon = document.getElementById('calcTon');
+        const calcBatu = document.getElementById('calcBatu');
+        const calcMortar = document.getElementById('calcMortar');
+        const calcBuffer = document.getElementById('calcBuffer');
+
+        if (calcLengthSlider && calcPanjangTxt) {
+            calcLengthSlider.addEventListener('input', () => {
+                const L = parseFloat(calcLengthSlider.value);
+                calcPanjangTxt.textContent = `${L.toFixed(1)} Meter`;
+
+                // Formula: Do = 4.20m (Ro = 2.10m), t = 0.22m (Ri = 1.88m)
+                // Delta Area = pi * (2.10^2 - 1.88^2) = 2.7508 m2
+                const deltaArea = Math.PI * (Math.pow(2.10, 2) - Math.pow(1.88, 2));
+                const volume = deltaArea * L;
+                const density = 2.85; // Ton/m3 for Magnesite Spinel
+                const tonnage = volume * density;
+                const brickPcs = Math.round(L * 405);
+                const mortarBags = Math.round(L * 35);
+                const bufferTon = tonnage * 1.05;
+
+                if (calcVol) calcVol.textContent = `${volume.toFixed(2)} m³`;
+                if (calcTon) calcTon.textContent = `${tonnage.toFixed(2)} Ton`;
+                if (calcBatu) calcBatu.textContent = `${brickPcs.toLocaleString('id-ID')} Pcs`;
+                if (calcMortar) calcMortar.textContent = `${mortarBags.toLocaleString('id-ID')} Zak (@ 25 kg)`;
+                if (calcBuffer) calcBuffer.textContent = `${bufferTon.toFixed(2)} Ton`;
+            });
+        }
+
+        // ==========================================================================
+        // 6. HERO INTERACTIVE AMBIENCE SYNTHESIZER (WEB AUDIO API)
+        // ==========================================================================
+        const heroAudioToggle = document.getElementById('heroAudioToggle');
+        const navbarAudioToggle = document.getElementById('navbarAudioToggle');
+        const audioToggleText = document.getElementById('audioToggleText');
+        let audioCtx = null;
+        let ambientOsc = null;
+        let ambientGain = null;
+        let isAudioPlaying = false;
+
+        function toggleKilnAmbience() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+
+                // Low-frequency rotating machinery drone (55Hz + warm low-pass)
+                ambientOsc = audioCtx.createOscillator();
+                ambientOsc.type = 'sine';
+                ambientOsc.frequency.setValueAtTime(55, audioCtx.currentTime);
+
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(140, audioCtx.currentTime);
+
+                ambientGain = audioCtx.createGain();
+                ambientGain.gain.setValueAtTime(0, audioCtx.currentTime);
+
+                ambientOsc.connect(filter);
+                filter.connect(ambientGain);
+                ambientGain.connect(audioCtx.destination);
+                ambientOsc.start();
+            }
+
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            if (!isAudioPlaying) {
+                ambientGain.gain.setTargetAtTime(0.08, audioCtx.currentTime, 0.4);
+                isAudioPlaying = true;
+                if (heroAudioToggle) {
+                    heroAudioToggle.classList.add('active');
+                    const icon = heroAudioToggle.querySelector('i');
+                    if (icon) icon.setAttribute('data-lucide', 'volume-2');
+                }
+                if (navbarAudioToggle) {
+                    navbarAudioToggle.classList.add('is-active');
+                }
+                if (audioToggleText) audioToggleText.textContent = 'AMBIENCE: ON';
+            } else {
+                ambientGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.3);
+                isAudioPlaying = false;
+                if (heroAudioToggle) {
+                    heroAudioToggle.classList.remove('active');
+                    const icon = heroAudioToggle.querySelector('i');
+                    if (icon) icon.setAttribute('data-lucide', 'volume-x');
+                }
+                if (navbarAudioToggle) {
+                    navbarAudioToggle.classList.remove('is-active');
+                }
+                if (audioToggleText) audioToggleText.textContent = 'AMBIENCE: OFF';
+            }
+            if (window.lucide) window.lucide.createIcons();
+        }
+
+        if (heroAudioToggle) heroAudioToggle.addEventListener('click', toggleKilnAmbience);
+        if (navbarAudioToggle) navbarAudioToggle.addEventListener('click', toggleKilnAmbience);
+
+
+        // ==========================================================================
+        // 7. LIVE PROMO COUNTDOWN TICKER
+        // ==========================================================================
+        const liveCountdown = document.getElementById('liveCountdown');
+        if (liveCountdown) {
+            let targetHours = 120;
+            let targetMins = 0;
+            let targetSecs = 45;
+            setInterval(() => {
+                if (targetSecs > 0) {
+                    targetSecs--;
+                } else {
+                    targetSecs = 59;
+                    if (targetMins > 0) targetMins--;
+                    else {
+                        targetMins = 59;
+                        if (targetHours > 0) targetHours--;
+                    }
+                }
+                const sSec = targetSecs < 10 ? '0' + targetSecs : targetSecs;
+                const sMin = targetMins < 10 ? '0' + targetMins : targetMins;
+                liveCountdown.textContent = `D-09 / 14 HARI · ${targetHours}H ${sMin}M ${sSec}S MENUJU FIRING`;
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

@@ -208,6 +208,45 @@
             transition: color 150ms cubic-bezier(0.16, 1, 0.3, 1);
         }
 
+        /* Skip to Content bypass link (Accessibility WCAG 2.4.1) */
+        .skip-link {
+            position: fixed;
+            top: -120px;
+            left: 16px;
+            background: var(--accent);
+            color: #ffffff !important;
+            padding: 10px 18px;
+            border-radius: var(--r-md);
+            font-weight: 700;
+            font-size: 13px;
+            z-index: 10000;
+            text-decoration: none;
+            box-shadow: var(--shadow-hover);
+            transition: top 200ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .skip-link:focus {
+            top: 16px;
+            outline: 3px solid #ffffff;
+            outline-offset: 2px;
+        }
+
+        /* Global visible focus ring indicator (Accessibility WCAG 2.4.7) */
+        :focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        /* Tabular figures for numerical metrics & tables (Typography) */
+        .metric-value,
+        .stat-num,
+        .mono,
+        .table-modern td,
+        .calc-result-val,
+        [data-tabular] {
+            font-variant-numeric: tabular-nums;
+        }
+
         button, .btn, .icon-btn, .topbar-btn, .nav-item, .tab-btn, .quick-btn {
             font-family: inherit;
             cursor: pointer;
@@ -216,8 +255,9 @@
             transition: transform 150ms cubic-bezier(0.16, 1, 0.3, 1), background-color 150ms cubic-bezier(0.16, 1, 0.3, 1), border-color 150ms cubic-bezier(0.16, 1, 0.3, 1), color 150ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 150ms cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        button:active, .btn:active, .icon-btn:active, .topbar-btn:active, .nav-item:active, .tab-btn:active, .quick-btn:active {
-            transform: scale(0.975);
+        button:active, .btn:active, .icon-btn:active, .topbar-btn:active, .nav-item:active, .tab-btn:active, .quick-btn:active, .bnav-item:active {
+            transform: scale(0.96);
+            transition: transform 50ms ease;
         }
 
         input,
@@ -290,9 +330,9 @@
         .toast-item.toast-warning { border-left-color: var(--warning); }
         .toast-item.toast-info { border-left-color: var(--accent); }
         .toast-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 2px; }
-        .toast-message { font-size: 12px; color: var(--text-on-dark-dim); line-height: 1.4; }
-        .toast-close { background: transparent; border: none; color: var(--text-tertiary); cursor: pointer; padding: 2px; font-size: 14px; }
-        .toast-close:hover { color: #fff; }
+        .toast-message { font-size: 12px; color: #CBD5E1; line-height: 1.4; }
+        .toast-close { background: transparent; border: none; color: #94A3B8; cursor: pointer; padding: 6px; min-width: 32px; min-height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--r-sm); font-size: 14px; }
+        .toast-close:hover { color: #fff; background: rgba(255, 255, 255, 0.1); }
         .toast-bar { position: absolute; bottom: 0; left: 0; height: 3px; background: currentColor; opacity: 0.7; animation: toastBar 4s linear forwards; }
         @keyframes toastSlideIn { from { transform: translateX(120%) scale(0.9); opacity: 0; } to { transform: translateX(0) scale(1); opacity: 1; } }
         @keyframes toastBar { from { width: 100%; } to { width: 0%; } }
@@ -2788,8 +2828,8 @@
             }
 
             .project-selector-wrap {
-                max-width: 105px;
-                font-size: 10px;
+                max-width: min(180px, 42vw);
+                font-size: 11px;
             }
 
             .page-content {
@@ -2802,13 +2842,14 @@
             }
 
             .bnav-item {
-                min-width: 54px;
-                font-size: 8px;
+                min-width: 60px;
+                font-size: 10px;
+                padding: 6px 4px;
             }
 
             .bnav-item svg {
-                width: 18px;
-                height: 18px;
+                width: 20px;
+                height: 20px;
             }
         }
 
@@ -2832,6 +2873,10 @@
             *::after {
                 animation-duration: 0.01ms !important;
                 transition-duration: 0.01ms !important;
+            }
+
+            button:active, .btn:active, .icon-btn:active, .topbar-btn:active, .nav-item:active, .tab-btn:active, .quick-btn:active, .bnav-item:active {
+                transform: none !important;
             }
         }
 
@@ -2891,6 +2936,8 @@
                 style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.7);font-family:var(--font-ui);text-align:center;max-width:200px;"></span>
         </div>
     </div>
+
+    <a href="#dashboardMain" class="skip-link">Lewati ke konten utama</a>
 
     <div id="toast" role="alert" aria-live="polite">
         <div class="toast-icon" id="toastIcon"><i data-lucide="check" style="width:14px;height:14px;"></i></div>
@@ -3018,13 +3065,13 @@
             <div class="topbar-actions">
                 <!-- Theme Mode Toggle Button -->
                 <button class="icon-btn theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()"
-                    title="Ubah Tema (Terang / Gelap)" aria-label="Toggle Theme">
-                    <i data-lucide="sun" id="themeIconSun" style="width:16px;height:16px;color:#f59e0b;display:none;"></i>
-                    <i data-lucide="moon" id="themeIconMoon" style="width:16px;height:16px;color:var(--text-secondary);"></i>
+                    title="Ubah Tema (Terang / Gelap)" aria-label="Ubah mode tema terang atau gelap">
+                    <i data-lucide="sun" id="themeIconSun" aria-hidden="true" style="width:16px;height:16px;color:#f59e0b;display:none;"></i>
+                    <i data-lucide="moon" id="themeIconMoon" aria-hidden="true" style="width:16px;height:16px;color:var(--text-secondary);"></i>
                 </button>
                 <!-- Offline PWA Queue Status Badge -->
-                <button id="offlineSyncBtn" onclick="syncOfflineQueue()" class="btn btn-warning btn-sm" style="display:none;background:#f59e0b;color:#0f172a;font-weight:800;padding:4px 9px;font-size:11px;border-radius:6px;align-items:center;gap:4px;border:none;cursor:pointer;">
-                    <i data-lucide="wifi-off" style="width:13px;height:13px;"></i> <span id="offlineCountTxt">Offline (0)</span>
+                <button id="offlineSyncBtn" onclick="syncOfflineQueue()" class="btn btn-warning btn-sm" aria-label="Sinkronisasi antrean data offline" style="display:none;background:var(--warning);color:#0f172a;font-weight:800;padding:4px 9px;font-size:11px;border-radius:6px;align-items:center;gap:4px;border:none;cursor:pointer;">
+                    <i data-lucide="wifi-off" aria-hidden="true" style="width:13px;height:13px;"></i> <span id="offlineCountTxt">Offline (0)</span>
                 </button>
                 <button class="btn btn-ghost btn-sm topbar-guide-btn" onclick="switchTab('guide')" title="Panduan & Documentation" style="padding:4px 10px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;border-radius:var(--r-md);margin-right:4px;">
                     <span class="hide-mobile">Panduan User</span>
@@ -3040,7 +3087,7 @@
                             <div class="notif-header-top">
                                 <h4>Pusat Notifikasi
                                     <span class="notif-count-pill hidden" id="notifCountPill">0</span></h4>
-                                <button class="notif-mark-all" id="notifMarkAllBtn" onclick="dismissAllAlerts()">Tandai dibaca</button>
+                                <button class="notif-mark-all" id="notifMarkAllBtn" onclick="dismissAllAlerts()" aria-label="Tandai seluruh notifikasi telah dibaca">Tandai sudah dibaca</button>
                             </div>
                             <div class="notif-tab-nav">
                                 <button class="notif-tab-btn active" id="notifTabActionBtn" onclick="switchNotifTab('action')">
@@ -3054,7 +3101,7 @@
                         <div class="notif-list custom-scroll" id="notifList"></div>
                         <div class="notif-panel-footer">
                             <button onclick="closeNotifPanel(); switchTab('dashboard');">Dashboard</button>
-                            <button onclick="closeNotifPanel(); switchTab('validations');" id="notifFooterValidBtn" style="color:#34d399;font-weight:700;">Antrean Validasi &rarr;</button>
+                            <button onclick="closeNotifPanel(); switchTab('validations');" id="notifFooterValidBtn" style="color:var(--success);font-weight:700;">Buka antrean validasi &rarr;</button>
                         </div>
                     </div>
                 </div>
@@ -3151,7 +3198,7 @@
 
                     <div id="view-dashboard" class="view-panel active">
                         <div class="dashboard-layout">
-                            <main class="dashboard-main">
+                            <main class="dashboard-main" id="dashboardMain" tabindex="-1">
                                 <div class="metrics-grid section">
                                     <div class="metric-card metric-card--primary"
                                         style="display:flex;align-items:center;justify-content:space-between;gap:var(--sp-5);">
@@ -3581,10 +3628,10 @@
                                                     style="margin-top:var(--sp-3);position:relative;width:80px;height:60px;border-radius:var(--r-md);overflow:hidden;border:1px solid var(--border-subtle);">
                                                     <img id="photoPreview"
                                                         style="width:100%;height:100%;object-fit:cover;" />
-                                                    <button type="button" onclick="clearSelectedPhoto()"
-                                                        style="position:absolute;top:3px;right:3px;background:var(--danger);color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;"><i
-                                                            data-lucide="x"
-                                                            style="width:10px;height:10px;"></i></button>
+                                                    <button type="button" onclick="clearSelectedPhoto()" aria-label="Hapus foto terpilih" title="Hapus foto"
+                                                        style="position:absolute;top:3px;right:3px;background:var(--danger);color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;"><i
+                                                            data-lucide="x" aria-hidden="true"
+                                                            style="width:12px;height:12px;"></i></button>
                                                 </div>
                                             </div>
                                             <div class="field-light" style="grid-column:1/-1;">
@@ -3673,10 +3720,10 @@
                                         <p>Ketuk sel untuk melihat detail riwayat pekerjaan hari itu</p>
                                     </div>
                                     <div style="display:flex; gap: 8px;">
-                                        <button class="btn btn-ghost btn-sm" onclick="changeCalendarMonth(-1)"><i
-                                                data-lucide="chevron-left" style="width:16px;height:16px;"></i></button>
-                                        <button class="btn btn-ghost btn-sm" onclick="changeCalendarMonth(1)"><i
-                                                data-lucide="chevron-right"
+                                        <button class="btn btn-ghost btn-sm" onclick="changeCalendarMonth(-1)" aria-label="Bulan sebelumnya" title="Bulan sebelumnya"><i
+                                                data-lucide="chevron-left" aria-hidden="true" style="width:16px;height:16px;"></i></button>
+                                        <button class="btn btn-ghost btn-sm" onclick="changeCalendarMonth(1)" aria-label="Bulan berikutnya" title="Bulan berikutnya"><i
+                                                data-lucide="chevron-right" aria-hidden="true"
                                                 style="width:16px;height:16px;"></i></button>
                                     </div>
                                 </div>
@@ -3715,9 +3762,9 @@
                                             id="calendarDetailDate"
                                             style="color:var(--accent);font-family:var(--font-mono);"></span>
                                     </h4>
-                                    <button onclick="closeCalendarDayDetails()" class="icon-btn"
-                                        style="background:var(--surface-1);border:1px solid var(--border-subtle);color:var(--text-secondary);"><i
-                                            data-lucide="x" style="width:14px;height:14px;"></i></button>
+                                    <button onclick="closeCalendarDayDetails()" class="icon-btn" aria-label="Tutup detail riwayat pekerjaan hari ini" title="Tutup detail"
+                                        style="background:var(--surface-1);border:1px solid var(--border-subtle);color:var(--text-secondary);min-width:36px;min-height:36px;display:inline-flex;align-items:center;justify-content:center;"><i
+                                            data-lucide="x" aria-hidden="true" style="width:14px;height:14px;"></i></button>
                                 </div>
                                 <div id="calendarDayItems" style="display:flex;flex-direction:column;gap:var(--sp-3);">
                                 </div>
@@ -3958,9 +4005,9 @@
                                                 style="margin-top:var(--sp-3);position:relative;width:80px;height:60px;border-radius:var(--r-md);overflow:hidden;border:1px solid var(--border-subtle);">
                                                 <img id="castablePhotoPreviewImg"
                                                     style="width:100%;height:100%;object-fit:cover;" />
-                                                <button type="button" onclick="clearCastableSelectedPhoto()"
-                                                    style="position:absolute;top:3px;right:3px;background:var(--danger);color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;"><i
-                                                        data-lucide="x" style="width:10px;height:10px;"></i></button>
+                                                <button type="button" onclick="clearCastableSelectedPhoto()" aria-label="Hapus foto castable terpilih" title="Hapus foto"
+                                                    style="position:absolute;top:3px;right:3px;background:var(--danger);color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;"><i
+                                                        data-lucide="x" aria-hidden="true" style="width:12px;height:12px;"></i></button>
                                             </div>
                                         </div>
 
@@ -5216,7 +5263,7 @@
             <div style="width:36px; height:4px; background:rgba(255,255,255,0.25); border-radius:4px; margin:0 auto 14px auto;"></div>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; padding:0 4px;">
                 <div style="font-size:13px; font-weight:800; color:var(--text-on-dark); letter-spacing:0.04em; text-transform:uppercase;">Menu &amp; Fitur Sistem</div>
-                <button onclick="closeMobileMenuModal()" style="background:rgba(255,255,255,0.08); border:none; color:var(--text-on-dark-dim); width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer;"><i data-lucide="x" style="width:15px;height:15px;"></i></button>
+                <button onclick="closeMobileMenuModal()" aria-label="Tutup menu navigasi" title="Tutup menu" style="background:rgba(255,255,255,0.08); border:none; color:var(--text-on-dark-dim); width:40px; height:40px; min-width:40px; min-height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer;"><i data-lucide="x" aria-hidden="true" style="width:18px;height:18px;"></i></button>
             </div>
             <div class="mobile-menu-grid" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:14px;">
                 <button class="mobile-menu-btn" onclick="closeMobileMenuModal(); switchTab('overview');">
@@ -5267,7 +5314,7 @@
             <div class="modal-footer">
                 <button id="confirmModalCancelBtn" class="btn btn-ghost btn-sm">Batal</button>
                 <button id="confirmModalConfirmBtn" class="btn btn-danger btn-sm"
-                    style="background:var(--danger);color:#fff;">Ya, Lanjutkan</button>
+                    style="background:var(--danger);color:#fff;">Konfirmasi Tindakan</button>
             </div>
         </div>
     </div>
@@ -5291,10 +5338,10 @@
                     <h3 style="font-size:16px;font-weight:800;color:var(--text-primary);margin:0;">Auto Backup ke Google Spreadsheet via Apps Script</h3>
                     <p style="font-size:12px;color:var(--text-secondary);margin:4px 0 0 0;">Sinkronisasi otomatis seluruh database KSD Monitor ke tab Google Sheets</p>
                 </div>
-                <button onclick="closeAppsScriptModal()" style="border:none;background:none;cursor:pointer;color:var(--text-secondary);padding:4px;"><i data-lucide="x" style="width:20px;height:20px;"></i></button>
+                <button onclick="closeAppsScriptModal()" aria-label="Tutup panduan Google Apps Script" title="Tutup" style="border:none;background:none;cursor:pointer;color:var(--text-secondary);padding:10px;min-width:40px;min-height:40px;display:flex;align-items:center;justify-content:center;"><i data-lucide="x" aria-hidden="true" style="width:20px;height:20px;"></i></button>
             </div>
             <div class="modal-body" style="overflow-y:auto;flex:1;padding-right:4px;">
-                <div style="background:rgba(29,78,216,0.06);border-left:4px solid var(--accent);padding:12px 14px;border-radius:0 8px 8px 0;margin-bottom:14px;font-size:12.5px;color:var(--text-secondary);line-height:1.6;">
+                <div style="max-width:68ch;background:rgba(29,78,216,0.06);border-left:4px solid var(--accent);padding:12px 14px;border-radius:0 8px 8px 0;margin-bottom:14px;font-size:12.5px;color:var(--text-secondary);line-height:1.6;">
                     <strong style="color:var(--text-primary);">Langkah Mudah Pemasangan (2 Menit):</strong>
                     <ol style="margin:6px 0 0 18px;padding:0;">
                         <li>Buka file <strong>Google Spreadsheet</strong> baru di Google Drive Anda.</li>
@@ -6187,7 +6234,7 @@
                     showToast("Berhasil keluar dari sistem.", "check");
                     navigateTo('login');
                 });
-            });
+            }, "Keluar dari Sistem", true);
         }
 
         let currentPtFilter = "ALL";
@@ -6629,7 +6676,7 @@ function showFloatingPushToast({ title, message, type = "info", actionText = nul
                 </div>
                 <div style="font-size:12.5px;font-weight:800;color:#ffffff;">${escapeHTML(title)}</div>
             </div>
-            <button onclick="this.closest('.floating-push-toast').remove()" style="background:none;border:none;color:#94a3b8;cursor:pointer;padding:2px;"><i data-lucide="x" style="width:14px;height:14px;"></i></button>
+            <button onclick="this.closest('.floating-push-toast').remove()" aria-label="Tutup notifikasi push" title="Tutup" style="background:none;border:none;color:#94a3b8;cursor:pointer;padding:6px;min-width:32px;min-height:32px;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--r-sm);"><i data-lucide="x" aria-hidden="true" style="width:14px;height:14px;"></i></button>
         </div>
         <div style="font-size:11.5px;color:#cbd5e1;line-height:1.4;margin-left:32px;">${escapeHTML(message)}</div>
         ${actionText ? `
@@ -7173,10 +7220,10 @@ function renderAlertNotifications() {
                     <th rowspan="2" style="background:var(--surface-1);border:1px solid var(--border-subtle);padding:8px;font-size:10.5px;text-align:center;min-width:70px;">Bobot</th>
                     <th rowspan="2" style="background:var(--surface-1);border:1px solid var(--border-subtle);padding:8px;font-size:10.5px;text-align:center;min-width:75px;">Progres</th>
                     <th rowspan="2" style="background:var(--surface-1);border:1px solid var(--border-subtle);padding:8px;font-size:10.5px;min-width:130px;">Remark &amp; Kendala</th>
-                    ${matrixCols.map(c => `<th style="background:var(--surface-sidebar);color:var(--text-on-dark);border:1px solid var(--border-dark);padding:5px 6px;font-size:9.5px;font-weight:700;text-align:center;min-width:38px;font-family:var(--font-mono);">${c.title}</th>`).join("")}
+                    ${matrixCols.map(c => `<th style="background:var(--surface-sidebar);color:var(--text-on-dark);border:1px solid var(--border-dark);padding:5px 6px;font-size:10.5px;font-weight:700;text-align:center;min-width:38px;font-family:var(--font-mono);">${c.title}</th>`).join("")}
                 </tr>
                 <tr>
-                    ${matrixCols.map(c => `<th style="background:var(--surface-3);border:1px solid var(--border-subtle);padding:3px;font-size:8px;font-weight:600;text-align:center;color:var(--text-secondary);">${c.subtitle}</th>`).join("")}
+                    ${matrixCols.map(c => `<th style="background:var(--surface-3);border:1px solid var(--border-subtle);padding:3px;font-size:10px;font-weight:600;text-align:center;color:var(--text-secondary);">${c.subtitle}</th>`).join("")}
                 </tr>
             </thead>`;
 
@@ -8989,7 +9036,7 @@ function renderAlertNotifications() {
                     .withSuccessHandler(r => { showLoading(false); if (r.success) { showToast("User dihapus!", "check"); loadUsersList(); } else { showToast(r.error, "alert-triangle"); } })
                     .withFailureHandler(err => { showLoading(false); showToast("Gagal: " + err.message, "alert-triangle"); })
                     .deleteUser(window.sessionToken, username);
-            });
+            }, "Hapus Akun", true);
         }
 
         // ─── DATABASE EXPLORER & BACKUP CENTER ───────────────────────────
@@ -9343,7 +9390,7 @@ function formatHeader(sheet) {
                     })
                     .withFailureHandler(err => { showLoading(false); showToast("Gagal: " + err.message, "alert-triangle"); })
                     .deleteProject(window.sessionToken, projectId);
-            });
+            }, "Hapus Proyek Permanen", true);
         }
 
         function handleCreateProject(e) {
@@ -10712,11 +10759,23 @@ function formatHeader(sheet) {
                 .getAllProjectsFullData(window.sessionToken);
         }
 
-        function showConfirmModal(msg, onConfirm) {
+        function showConfirmModal(msg, onConfirm, confirmBtnLabel = "Konfirmasi Tindakan", isDanger = true) {
             document.getElementById("confirmModalMessage").textContent = msg;
-            const m = document.getElementById("confirmModal"); m.classList.remove("hidden");
+            const confirmBtn = document.getElementById("confirmModalConfirmBtn");
+            const m = document.getElementById("confirmModal");
+            if (confirmBtn) {
+                confirmBtn.textContent = confirmBtnLabel;
+                if (isDanger) {
+                    confirmBtn.className = "btn btn-danger btn-sm";
+                    confirmBtn.style.background = "var(--danger)";
+                } else {
+                    confirmBtn.className = "btn btn-accent btn-sm";
+                    confirmBtn.style.background = "var(--accent)";
+                }
+                confirmBtn.onclick = () => { m.classList.add("hidden"); onConfirm(); };
+            }
+            m.classList.remove("hidden");
             document.getElementById("confirmModalCancelBtn").onclick = () => m.classList.add("hidden");
-            document.getElementById("confirmModalConfirmBtn").onclick = () => { m.classList.add("hidden"); onConfirm(); };
         }
 
         function showPromptModal(title, defaultVal, onConfirm) {
@@ -11114,7 +11173,7 @@ function formatHeader(sheet) {
                     .withSuccessHandler(r => { showLoading(false); if (r.success) { showToast("Log dihapus!", "check"); loadCastableModule(); } else { showToast(r.error, "alert-triangle"); } })
                     .withFailureHandler(err => { showLoading(false); showToast("Gagal: " + err.message, "alert-triangle"); })
                     .deleteCastableInspeksi(window.sessionToken, idLog);
-            });
+            }, "Hapus Log Inspeksi", true);
         }
 
         function switchTab(tabId) {
@@ -11216,7 +11275,7 @@ function formatHeader(sheet) {
                     <div class="toast-title">${escapeHTML(title || defaultTitle)}</div>
                     <div class="toast-message">${escapeHTML(msg)}</div>
                 </div>
-                <button class="toast-close" onclick="this.parentElement.remove()"><i data-lucide="x" style="width:14px;height:14px;"></i></button>
+                <button class="toast-close" onclick="this.parentElement.remove()" aria-label="Tutup notifikasi" title="Tutup"><i data-lucide="x" aria-hidden="true" style="width:14px;height:14px;"></i></button>
                 <div class="toast-bar"></div>
             `;
 

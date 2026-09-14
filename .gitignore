@@ -6,4 +6,6 @@ Thumbs.db
 *.db-shm
 *.db-wal
 *.log
+# Large video files (keep MP4 only for web and git)
+*.mov
 pb_data/storage/cache
