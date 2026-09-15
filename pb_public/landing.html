@@ -12,9 +12,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Smooth Scroll & Lucide Icons -->
+    <!-- Smooth Scroll, Lucide Icons & Chart.js Engine -->
     <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         /* ==========================================================================
@@ -296,8 +297,8 @@
             min-height: 100%;
             object-fit: cover;
             transform: translate(-50%, -50%);
-            opacity: 0.54;
-            filter: contrast(1.18) brightness(0.68) saturate(0.95);
+            opacity: 0.92;
+            filter: contrast(1.10) brightness(1.08) saturate(1.22);
             transition: opacity 1s ease;
         }
 
@@ -305,120 +306,45 @@
             position: absolute;
             inset: 0;
             background: 
-                radial-gradient(ellipse at 50% 50%, rgba(6, 9, 17, 0.42) 0%, rgba(6, 9, 17, 0.82) 72%, #060911 100%),
-                linear-gradient(to bottom, rgba(6, 9, 17, 0.88) 0%, rgba(6, 9, 17, 0.22) 28%, rgba(6, 9, 17, 0.42) 68%, #060911 100%);
+                radial-gradient(ellipse at 50% 50%, rgba(6, 9, 17, 0.16) 0%, rgba(6, 9, 17, 0.50) 65%, rgba(6, 9, 17, 0.92) 100%),
+                linear-gradient(to bottom, transparent 65%, #060911 100%);
             pointer-events: none;
             z-index: 1;
         }
 
-        /* Top HUD Bar */
-        .hero-top-group {
-            position: relative;
-            z-index: 5;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            margin-top: 76px;
-        }
-
-        .hero-top-hud {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px 0 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.09);
-            font-family: var(--font-mono);
-            font-size: 11px;
-            letter-spacing: 0.05em;
-            color: var(--ash);
-        }
-
-        .hud-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .hud-beacon {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: var(--signal-green);
-            box-shadow: 0 0 10px var(--signal-green);
-            animation: pulseGlow 1.8s infinite;
-        }
-
-        .hud-mono {
-            color: var(--ash);
-            font-weight: 600;
-        }
-
-        .hud-divider {
-            color: rgba(255, 255, 255, 0.2);
-        }
-
-        .hud-timer {
-            color: #FFFFFF;
-            font-weight: 700;
-            letter-spacing: 0.06em;
-            background: rgba(37, 99, 235, 0.15);
-            border: 1px solid rgba(37, 99, 235, 0.35);
-            padding: 4px 14px;
-            border-radius: 999px;
-            font-variant-numeric: tabular-nums;
-            box-shadow: 0 0 20px rgba(37, 99, 235, 0.2);
-        }
-
-        .hud-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .hud-status-badge {
-            background: rgba(16, 185, 129, 0.14);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            color: var(--signal-green);
-            padding: 2px 8px;
-            border-radius: 999px;
-            font-size: 10px;
-            font-weight: 700;
-        }
-
         /* ==========================================================================
-           MASTER PERSISTENT FLOATING GLASS ISLAND NAVBAR (UNIFIED ARCHITECTURE)
+           MASTER FLUID FLOATING GLASS ISLAND NAVBAR (MINIMALIST & AIRY)
            ========================================================================== */
         .ksd-master-navbar {
             position: fixed;
-            top: 16px;
+            top: 18px;
             left: 50%;
             transform: translateX(-50%);
-            width: min(1280px, calc(100% - 32px));
+            width: min(980px, calc(100% - 36px));
             z-index: 5000;
             pointer-events: auto;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .nav-island-inner {
-            display: grid;
-            grid-template-columns: auto 1fr auto;
+            display: flex;
             align-items: center;
-            gap: 20px;
-            padding: 8px 14px 8px 18px;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 6px 14px 6px 18px;
             border-radius: 9999px;
-            background: rgba(8, 12, 20, 0.88);
-            backdrop-filter: blur(28px) saturate(180%);
-            -webkit-backdrop-filter: blur(28px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.16);
-            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            background: rgba(8, 12, 20, 0.72);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 10px 32px rgba(0, 0, 0, 0.55);
             transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .ksd-master-navbar.scrolled .nav-island-inner {
-            background: rgba(6, 10, 18, 0.95);
-            border-color: rgba(255, 255, 255, 0.22);
-            box-shadow: 0 18px 48px rgba(0, 0, 0, 0.85), 0 0 24px rgba(245, 158, 11, 0.10);
+            background: rgba(6, 10, 18, 0.92);
+            border-color: rgba(255, 255, 255, 0.18);
+            box-shadow: 0 16px 44px rgba(0, 0, 0, 0.75);
         }
 
         /* Left Brand */
@@ -428,80 +354,34 @@
             gap: 10px;
             text-decoration: none;
             color: #FFFFFF;
+            flex-shrink: 0;
         }
 
         .brand-flame-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
+            width: 28px;
+            height: 28px;
+            border-radius: 7px;
             background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 50%, #f59e0b 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 10px rgba(245, 158, 11, 0.35);
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
             flex-shrink: 0;
-        }
-
-        .brand-title-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .brand-logo-text {
             font-family: var(--font-display);
-            font-size: 16.5px;
-            font-weight: 800;
-            letter-spacing: -0.02em;
+            font-size: 15.5px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
             color: #FFFFFF;
             white-space: nowrap;
         }
 
-        .brand-version-badge {
-            font-family: var(--font-mono);
-            font-size: 10px;
-            font-weight: 700;
-            color: var(--flame-amber);
-            background: rgba(245, 158, 11, 0.14);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            padding: 1px 7px;
-            border-radius: 4px;
-            letter-spacing: 0.04em;
-            white-space: nowrap;
-        }
-
-        .nav-status-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 2px 8px;
-            border-radius: 999px;
-            background: rgba(16, 185, 129, 0.12);
-            border: 1px solid rgba(16, 185, 129, 0.28);
-            margin-left: 2px;
-        }
-
-        .pulse-beacon-green {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #10B981;
-            box-shadow: 0 0 8px #10B981;
-            animation: beaconPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-
-        .nav-status-label {
-            font-family: var(--font-mono);
-            font-size: 9.5px;
-            font-weight: 700;
-            color: #34D399;
-            letter-spacing: 0.06em;
-        }
-
-        /* Center Nav Links - High Contrast */
+        /* Center Nav Links - Breathable & Fluid */
         .nav-center-menu {
             display: flex;
-            justify-content: center;
+            align-items: center;
         }
 
         .nav-links-list {
@@ -510,29 +390,23 @@
             gap: 4px;
             list-style: none;
             margin: 0;
-            padding: 4px;
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.09);
-            border-radius: 9999px;
+            padding: 0;
         }
 
         .nav-link-item {
             text-decoration: none;
-            color: #E2E8F0;
-            font-size: 13.5px;
-            font-weight: 600;
-            padding: 7px 16px;
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 13px;
+            font-weight: 500;
+            padding: 6px 14px;
             border-radius: 9999px;
             transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
             white-space: nowrap;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
         }
 
         .nav-link-item:hover {
             color: #FFFFFF;
-            background: rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.08);
         }
 
         /* ScrollSpy Active State */
@@ -540,37 +414,37 @@
             color: #090D16 !important;
             background: #FFFFFF !important;
             font-weight: 700;
-            box-shadow: 0 2px 12px rgba(255, 255, 255, 0.4);
+            box-shadow: 0 2px 10px rgba(255, 255, 255, 0.3);
         }
 
         /* Right Actions */
         .nav-actions-group {
             display: flex;
             align-items: center;
-            justify-content: flex-end;
             gap: 10px;
+            flex-shrink: 0;
         }
 
-        /* Kiln Hum Audio Button */
+        /* Kiln Audio Toggle Button */
         .nav-audio-btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             color: #CBD5E1;
-            padding: 8px 14px;
+            padding: 6px 12px;
             border-radius: 9999px;
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 600;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             transition: all 0.2s ease;
             white-space: nowrap;
         }
 
         .nav-audio-btn:hover {
-            background: rgba(245, 158, 11, 0.18);
-            border-color: rgba(245, 158, 11, 0.5);
+            background: rgba(245, 158, 11, 0.15);
+            border-color: rgba(245, 158, 11, 0.4);
             color: #FCD34D;
         }
 
@@ -614,15 +488,15 @@
         .nav-cta-btn {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             background: #FFFFFF;
             color: #090D16 !important;
-            padding: 9px 18px;
+            padding: 7px 16px;
             border-radius: 9999px;
-            font-size: 13.5px;
+            font-size: 12.5px;
             font-weight: 700;
             text-decoration: none;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
             transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
             white-space: nowrap;
         }
@@ -630,7 +504,7 @@
         .nav-cta-btn:hover {
             transform: translateY(-1px) scale(1.02);
             background: #F8FAFC;
-            box-shadow: 0 6px 22px rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 18px rgba(255, 255, 255, 0.25);
         }
 
         .nav-cta-btn:active {
@@ -640,8 +514,8 @@
         /* Hamburger Button (Mobile Only) */
         .nav-hamburger-btn {
             display: none;
-            width: 38px;
-            height: 38px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.16);
@@ -660,7 +534,7 @@
         }
 
         .hamburger-bar {
-            width: 18px;
+            width: 16px;
             height: 2px;
             background: #FFFFFF;
             border-radius: 2px;
@@ -963,181 +837,151 @@
             transform: scale(0.96);
         }
 
-        /* Direct Telemetry HUD (Bottom Strip Overlaid on Video) */
-        .hero-bottom-telemetry {
-            position: relative;
-            z-index: 5;
-            width: 100%;
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            align-items: flex-end;
-            padding-top: 18px;
-            border-top: 1px solid rgba(255, 255, 255, 0.09);
+        .btn-pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10B981;
+            box-shadow: 0 0 10px #10B981;
+            animation: pulseGlow 1.6s infinite;
         }
 
-        .telemetry-corner-block {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            font-family: var(--font-mono);
-        }
-
-        .telemetry-corner-block.left-block {
-            align-items: flex-start;
-        }
-
-        .telemetry-row-main {
-            display: flex;
+        .hero-cta-latency-tag {
+            display: inline-flex;
             align-items: center;
-            gap: 8px;
-            font-size: 12px;
+            gap: 6px;
+            padding: 5px 14px;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 999px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: #34D399;
             font-weight: 700;
-            color: #FFFFFF;
             letter-spacing: 0.04em;
         }
 
-        .telemetry-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--flame-amber);
-            box-shadow: 0 0 8px var(--flame-amber);
-        }
-
-        .telemetry-spec {
-            color: var(--flame-amber);
-            font-weight: 600;
-        }
-
-        .telemetry-meta {
-            font-size: 11px;
-            color: var(--ash);
+        /* Hero Floating Soundscape Pill */
+        .hero-audio-pill-wrap {
+            margin-top: 26px;
             display: flex;
+            justify-content: center;
+        }
+
+        .hero-soundscape-btn {
+            display: inline-flex;
             align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
+            gap: 10px;
+            padding: 9px 20px;
+            border-radius: 999px;
+            background: rgba(8, 12, 20, 0.78);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            color: #FCD34D;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6), 0 0 16px rgba(245, 158, 11, 0.2);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .telemetry-pipe {
-            color: rgba(255, 255, 255, 0.2);
+        .hero-soundscape-btn:hover {
+            transform: translateY(-2px);
+            background: rgba(245, 158, 11, 0.2);
+            border-color: #F59E0B;
+            box-shadow: 0 8px 30px rgba(245, 158, 11, 0.35);
         }
 
-        .text-amber {
-            color: var(--flame-amber);
+        .hero-soundscape-btn.is-active {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: #10B981;
+            color: #34D399;
+            box-shadow: 0 0 24px rgba(16, 185, 129, 0.3);
         }
 
-        /* Center Scroll Indicator */
-        .hero-scroll-indicator {
+        .sound-wave-icon {
+            display: inline-flex;
+            align-items: center;
+            gap: 2.5px;
+            height: 12px;
+        }
+
+        .sound-wave-icon .bar {
+            width: 2px;
+            height: 4px;
+            background: currentColor;
+            border-radius: 1px;
+            transition: height 0.2s ease;
+        }
+
+        .hero-soundscape-btn.is-active .sound-wave-icon .bar:nth-child(1) {
+            animation: audioBounce 0.7s ease-in-out infinite alternate;
+        }
+        .hero-soundscape-btn.is-active .sound-wave-icon .bar:nth-child(2) {
+            animation: audioBounce 0.7s ease-in-out 0.2s infinite alternate;
+        }
+        .hero-soundscape-btn.is-active .sound-wave-icon .bar:nth-child(3) {
+            animation: audioBounce 0.7s ease-in-out 0.4s infinite alternate;
+        }
+        .hero-soundscape-btn.is-active .sound-wave-icon .bar:nth-child(4) {
+            animation: audioBounce 0.7s ease-in-out 0.15s infinite alternate;
+        }
+
+        /* Minimalist Scroll Cue */
+        .hero-bottom-cue {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            justify-content: center;
+            padding-bottom: 24px;
+        }
+
+        .hero-scroll-cue-link {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 8px;
             text-decoration: none;
-            color: rgba(255, 255, 255, 0.65);
-            transition: color 0.2s ease, transform 0.2s ease;
+            color: rgba(255, 255, 255, 0.45);
+            transition: color 0.2s ease;
         }
 
-        .hero-scroll-indicator:hover {
-            color: #FFFFFF;
-            transform: translateY(2px);
+        .hero-scroll-cue-link:hover {
+            color: rgba(255, 255, 255, 0.9);
         }
 
-        .scroll-caption {
+        .scroll-cue-text {
             font-family: var(--font-mono);
             font-size: 9.5px;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-        }
-
-        .scroll-mouse-icon {
-            width: 20px;
-            height: 32px;
-            border: 1.5px solid rgba(255, 255, 255, 0.4);
-            border-radius: 999px;
-            display: flex;
-            justify-content: center;
-            padding-top: 5px;
-        }
-
-        .scroll-wheel {
-            width: 3px;
-            height: 6px;
-            background: var(--flame-amber);
-            border-radius: 999px;
-            animation: wheelBounce 1.6s infinite;
-        }
-
-        @keyframes wheelBounce {
-            0% { transform: translateY(0); opacity: 1; }
-            80% { transform: translateY(8px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 0; }
-        }
-
-        /* Right Corner Telemetry Block */
-        .telemetry-corner-block.right-block {
-            align-items: flex-end;
-            text-align: right;
-        }
-
-        .telemetry-badge-live {
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid rgba(16, 185, 129, 0.35);
-            color: var(--signal-green);
-            padding: 2px 8px;
-            border-radius: 999px;
-            font-size: 10.5px;
             font-weight: 700;
+            letter-spacing: 0.14em;
         }
 
-        .hero-audio-toggle {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            color: rgba(255, 255, 255, 0.85);
-            padding: 4px 10px 4px 8px;
-            border-radius: 999px;
-            font-family: var(--font-mono);
-            font-size: 10px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            transition: transform 150ms ease-out, background-color 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
+        .scroll-cue-indicator {
+            width: 1px;
+            height: 24px;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), transparent);
+            animation: scrollLinePulse 2s ease-in-out infinite;
         }
 
-        .hero-audio-toggle:hover {
-            background: rgba(255, 255, 255, 0.16);
-            color: #FFFFFF;
-        }
-
-        .hero-audio-toggle:active {
-            transform: scale(0.96);
-        }
-
-        .hero-audio-toggle.active {
-            background: rgba(245, 158, 11, 0.2);
-            border-color: var(--flame-amber);
-            color: var(--flame-amber);
-            box-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
+        @keyframes scrollLinePulse {
+            0%, 100% { opacity: 0.3; transform: scaleY(0.7); }
+            50% { opacity: 1; transform: scaleY(1); }
         }
 
         /* Responsive Breakpoints for Hero */
         @media (max-width: 1024px) {
             .ksd-hero-fullscreen { padding: 0 24px 24px; }
-            .hero-top-hud { font-size: 10px; }
-            .hero-bottom-telemetry { grid-template-columns: 1fr 1fr; gap: 16px; }
-            .hero-scroll-indicator { display: none; }
-            .nav-status-indicator { display: none; }
         }
 
         @media (max-width: 640px) {
             .ksd-hero-fullscreen { padding: 0 16px 20px; }
-            .hero-top-hud { flex-direction: column; gap: 6px; text-align: center; }
-            .hud-timer { font-size: 10.5px; }
             .hero-title-editorial { font-size: 32px; }
             .hero-subtitle-editorial { font-size: 14.5px; }
-            .hero-bottom-telemetry { grid-template-columns: 1fr; gap: 12px; }
-            .telemetry-corner-block.right-block { align-items: flex-start; text-align: left; }
         }
+ }
 
 
         /* ==========================================================================
@@ -1242,6 +1086,7 @@
             margin: 0 auto;
             position: relative;
             z-index: 10;
+            scroll-margin-top: 90px;
         }
 
         .stage-section-intro {
@@ -1457,14 +1302,274 @@
             color: var(--ash);
         }
 
-        .stage-svg-wrap {
-            width: 100%;
-            height: 220px;
-            background: rgba(0, 0, 0, 0.35);
+        /* ==========================================================================
+           SHOWCASE WORKFLOW SIMULATION TOUR CONTROLLER BAR
+           ========================================================================== */
+        .showcase-simulation-bar {
+            background: #060A13;
+            padding: 10px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .sim-tour-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .sim-play-toggle-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 16px;
+            border-radius: 999px;
+            background: rgba(245, 158, 11, 0.16);
+            border: 1px solid rgba(245, 158, 11, 0.45);
+            color: #FCD34D;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 0 14px rgba(245, 158, 11, 0.15);
+        }
+
+        .sim-play-toggle-btn:hover {
+            background: rgba(245, 158, 11, 0.28);
+            border-color: #F59E0B;
+            transform: translateY(-1px);
+        }
+
+        .sim-play-toggle-btn.is-playing {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: #10B981;
+            color: #34D399;
+            box-shadow: 0 0 16px rgba(16, 185, 129, 0.25);
+        }
+
+        .sim-stepper {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+        }
+
+        .sim-step-dot {
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #94A3B8;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+
+        .sim-step-dot:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #FFFFFF;
+        }
+
+        .sim-step-dot.active {
+            background: #1D4ED8;
+            color: #FFFFFF;
+            font-weight: 700;
+            box-shadow: 0 0 12px rgba(37, 99, 235, 0.5);
+            border: 1px solid rgba(96, 165, 250, 0.4);
+        }
+
+        .sim-step-arrow {
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 10px;
+        }
+
+        .sim-tour-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sim-tour-lbl {
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            color: var(--zinc);
+        }
+
+        .sim-progress-track {
+            width: 130px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .sim-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #3B82F6, #10B981);
+            transition: width 0.1s linear;
+        }
+
+        /* ==========================================================================
+           REAL 3-LINE CHART.JS S-CURVE & SITE PLANNER INTELLIGENCE STYLES
+           ========================================================================== */
+        .scurve-chart-container {
+            background: #060912;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
-            padding: 16px;
+            padding: 16px 20px 20px;
             margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .scurve-chart-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .scurve-legend-pills {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .legend-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: #CBD5E1;
+        }
+
+        .line-swatch {
+            width: 16px;
+            height: 3px;
+            border-radius: 2px;
+            display: inline-block;
+        }
+        .line-swatch.planned { background: #3B82F6; border-top: 1px dashed #93C5FD; }
+        .line-swatch.actual { background: #10B981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); }
+        .line-swatch.forecast { background: #8B5CF6; border-top: 1px dashed #C084FC; }
+
+        .scurve-filter-btns {
+            display: flex;
+            gap: 6px;
+        }
+
+        .chart-range-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #94A3B8;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .chart-range-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #FFFFFF;
+        }
+
+        .chart-range-btn.active {
+            background: #1D4ED8;
+            color: #FFFFFF;
+            border-color: #3B82F6;
+            box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
+        }
+
+        .scurve-canvas-wrapper {
+            position: relative;
+            height: 250px;
+            width: 100%;
+        }
+
+        /* Predictive Intelligence Card */
+        .forecast-intelligence-card {
+            background: #0A101E;
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+        }
+
+        .forecast-intel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .intel-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            color: #93C5FD;
+            letter-spacing: 0.04em;
+        }
+
+        .intel-status-pill {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            color: #34D399;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.28);
+            padding: 3px 10px;
+            border-radius: 999px;
+        }
+
+        .forecast-intel-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .intel-metric {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .metric-lbl {
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            color: #94A3B8;
+        }
+
+        .metric-val {
+            font-size: 18px;
+            font-weight: 800;
+            color: #FFFFFF;
+        }
+
+        .metric-hint {
+            font-size: 11px;
+            color: #64748B;
         }
 
         /* Screen 0: Interactive Slider Box */
@@ -2206,18 +2311,13 @@
     <!-- MASTER PERSISTENT FLOATING GLASS ISLAND NAVBAR -->
     <header class="ksd-master-navbar" id="masterNavbar" aria-label="Navigasi Utama">
         <div class="nav-island-inner">
-            <!-- Left: Brand + Status Beacon -->
+            <!-- Left: Brand (Clean Minimalist Flame + Name) -->
             <a href="landing.html" class="nav-brand" aria-label="KSD Monitor Beranda">
                 <div class="brand-flame-icon">
                     <i data-lucide="flame" style="width: 18px; height: 18px; color: #FFFFFF;"></i>
                 </div>
                 <div class="brand-title-group">
                     <span class="brand-logo-text">KSD Monitor</span>
-                    <span class="brand-version-badge">v3.5 PRO</span>
-                </div>
-                <div class="nav-status-indicator" title="Koneksi Sistem Aktif">
-                    <span class="pulse-beacon-green"></span>
-                    <span class="nav-status-label">ONLINE</span>
                 </div>
             </a>
 
@@ -2243,7 +2343,7 @@
                 </button>
 
                 <a href="index.html" class="nav-cta-btn" id="masterNavCta">
-                    <span>Buka Dashboard</span>
+                    <span>Buka Konsol Kiln #3</span>
                     <i data-lucide="arrow-up-right" style="width: 15px; height: 15px;" stroke-width="2.5" aria-hidden="true"></i>
                 </a>
 
@@ -2310,27 +2410,6 @@
                 <div class="hero-scrim" aria-hidden="true"></div>
             </div>
 
-            <!-- Top HUD & Navigation Group -->
-            <div class="hero-top-group">
-                <!-- Top Status Countdown Bar -->
-                <div class="hero-top-hud">
-                    <div class="hud-left">
-                        <span class="hud-beacon"></span>
-                        <span class="hud-mono">ROTARY KILN #3 OVERHAUL</span>
-                        <span class="hud-divider">//</span>
-                        <span class="hud-mono">SEQUENCE TELEMETRY</span>
-                    </div>
-                    <div class="hud-center">
-                        <span class="hud-timer" id="liveCountdown">D-09 / 14 HARI · 120H 00M 00S MENUJU FIRING</span>
-                    </div>
-                    <div class="hud-right">
-                        <span class="hud-mono">HAYSAN CREATIVE · v3.5 PRO</span>
-                        <span class="hud-status-badge">ONLINE SSE</span>
-                    </div>
-                </div>
-            </div>
-
-
             <!-- Center Editorial Monumental Typography -->
             <div class="hero-editorial-center">
                 <div class="hero-eyebrow-pill">
@@ -2349,55 +2428,40 @@
 
                 <div class="hero-cta-group">
                     <a href="index.html" class="btn-ksd-white-pill hero-primary-btn" id="heroStartBtn">
-                        <span>Masuk ke Dashboard Sistem</span>
-                        <i data-lucide="arrow-right" style="width: 16px; height: 16px;" stroke-width="2.5" aria-hidden="true"></i>
+                        <span class="btn-pulse-dot"></span>
+                        <span>Buka Konsol Kiln #3 (Live Demo)</span>
+                        <i data-lucide="arrow-up-right" style="width: 17px; height: 17px;" stroke-width="2.5" aria-hidden="true"></i>
                     </a>
-                    <a href="#story-stage" class="btn-ksd-glass-pill hero-secondary-btn" id="heroLearnBtn">
-                        <i data-lucide="compass" style="width: 16px; height: 16px;" stroke-width="2" aria-hidden="true"></i>
-                        <span>Jelajahi Alur Komando 4 Tahap</span>
-                    </a>
+                    <button type="button" class="btn-ksd-glass-pill hero-secondary-btn" id="heroTourTriggerBtn">
+                        <i data-lucide="play-circle" style="width: 18px; height: 18px; color: #F59E0B;" aria-hidden="true"></i>
+                        <span>Putar Simulasi Alur Kerja ↓</span>
+                    </button>
+                    <div class="hero-cta-latency-tag">
+                        <span class="pulse-beacon-green"></span>
+                        <span>14ms Latensi SSE · Kiln #3 Active</span>
+                    </div>
+                </div>
+
+                <!-- Floating Field Audio Soundscape Pill Button -->
+                <div class="hero-audio-pill-wrap">
+                    <button type="button" class="hero-soundscape-btn" id="heroSoundscapeBtn" aria-label="Aktifkan Suara Kiln Lapangan">
+                        <span class="sound-wave-icon" aria-hidden="true">
+                            <span class="bar"></span>
+                            <span class="bar"></span>
+                            <span class="bar"></span>
+                            <span class="bar"></span>
+                        </span>
+                        <span id="heroSoundscapeLabel">SUARA LAPANGAN: NONAKTIF (KLIK UNTUK BUNYI 🔊)</span>
+                    </button>
                 </div>
             </div>
 
-            <!-- Direct Telemetry HUD on Video (Bottom Strip) -->
-            <div class="hero-bottom-telemetry">
-                <!-- Left HUD Widget -->
-                <div class="telemetry-corner-block left-block">
-                    <div class="telemetry-row-main">
-                        <span class="telemetry-dot"></span>
-                        <span class="telemetry-label">ROTARY KILN #3</span>
-                        <span class="telemetry-spec">65.0M × Ø4.2M</span>
-                    </div>
-                    <div class="telemetry-meta">
-                        <span>ESTIMASI TONASE: <strong class="text-amber">108.33 TON</strong></span>
-                        <span class="telemetry-pipe">|</span>
-                        <span>CRITICAL PATH: <strong>TYRE 2 &amp; BURNING ZONE</strong></span>
-                    </div>
-                </div>
-
-                <!-- Center Scroll Indicator -->
-                <a href="#story-problem" class="hero-scroll-indicator" aria-label="Gulir ke konten utama">
-                    <span class="scroll-caption">SCROLL TO EXPLORE</span>
-                    <div class="scroll-mouse-icon">
-                        <span class="scroll-wheel"></span>
-                    </div>
+            <!-- Minimalist Scroll Cue -->
+            <div class="hero-bottom-cue">
+                <a href="#story-problem" class="hero-scroll-cue-link" aria-label="Gulir ke babak berikutnya">
+                    <span class="scroll-cue-text">SCROLL TO EXPLORE</span>
+                    <div class="scroll-cue-indicator"></div>
                 </a>
-
-                <!-- Right HUD Widget -->
-                <div class="telemetry-corner-block right-block">
-                    <div class="telemetry-row-main">
-                        <span class="telemetry-label">KURVA-S TELEMETRI</span>
-                        <span class="telemetry-badge-live">80.2% (+1.7% AHEAD)</span>
-                    </div>
-                    <div class="telemetry-meta">
-                        <span>SHIFT A (PAGI) · QC VERIFIKASI 34/34 FOTO</span>
-                        <span class="telemetry-pipe">|</span>
-                        <button type="button" class="hero-audio-toggle" id="heroAudioToggle" aria-label="Toggle Ambience Sound">
-                            <i data-lucide="volume-x" style="width: 12px; height: 12px;"></i>
-                            <span id="audioToggleText">AMBIENCE: OFF</span>
-                        </button>
-                    </div>
-                </div>
             </div>
         </section>
 
@@ -2497,6 +2561,31 @@
                     </div>
                 </div>
 
+                <!-- Showcase Workflow Simulation Tour Controller Bar -->
+                <div class="showcase-simulation-bar">
+                    <div class="sim-tour-left">
+                        <button type="button" class="sim-play-toggle-btn" id="simTourToggleBtn" aria-label="Putar atau Jeda Simulasi Alur Kerja">
+                            <i data-lucide="play" id="simTourIcon" style="width: 13px; height: 13px;"></i>
+                            <span id="simTourBtnTxt">PUTAR SIMULASI ALUR KERJA</span>
+                        </button>
+                        <div class="sim-stepper">
+                            <span class="sim-step-dot active" data-step="0" id="simStep0">01 Kurva-S</span>
+                            <span class="sim-step-arrow">→</span>
+                            <span class="sim-step-dot" data-step="1" id="simStep1">02 Audit QC</span>
+                            <span class="sim-step-arrow">→</span>
+                            <span class="sim-step-dot" data-step="2" id="simStep2">03 Tonase</span>
+                            <span class="sim-step-arrow">→</span>
+                            <span class="sim-step-dot" data-step="3" id="simStep3">04 Handover</span>
+                        </div>
+                    </div>
+                    <div class="sim-tour-right">
+                        <span class="sim-tour-lbl" id="simTourStageLabel">TAHAP 1: TELEMETRI KURVA-S</span>
+                        <div class="sim-progress-track">
+                            <div class="sim-progress-fill" id="simTourProgress"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Module Navigation Tabs -->
                 <div class="showcase-tab-bar" role="tablist" aria-label="Modul Showcase KSD Monitor">
                     <button class="showcase-tab-btn active-stage-nav" data-stage="0" role="tab" aria-selected="true" id="stgBtn0">
@@ -2541,59 +2630,51 @@
                             </div>
                         </div>
 
-                        <!-- High-Fidelity SVG Trajectory Chart -->
-                        <div class="stage-svg-wrap">
-                            <svg viewBox="0 0 900 220" style="width: 100%; height: 100%;" preserveAspectRatio="none">
-                                <defs>
-                                    <linearGradient id="scurveAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.3"/>
-                                        <stop offset="100%" stop-color="#3B82F6" stop-opacity="0.0"/>
-                                    </linearGradient>
-                                </defs>
-                                <!-- Grid Lines -->
-                                <line x1="60" y1="180" x2="860" y2="180" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-                                <line x1="60" y1="130" x2="860" y2="130" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-                                <line x1="60" y1="80" x2="860" y2="80" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-                                <line x1="60" y1="30" x2="860" y2="30" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+                        <!-- Authentic 3-Line Chart.js S-Curve Container -->
+                        <div class="scurve-chart-container">
+                            <div class="scurve-chart-toolbar">
+                                <div class="scurve-legend-pills">
+                                    <span class="legend-pill"><span class="line-swatch planned"></span> Baseline Rencana (Sigmoid)</span>
+                                    <span class="legend-pill"><span class="line-swatch actual"></span> Realisasi Kumulatif (78.50%)</span>
+                                    <span class="legend-pill"><span class="line-swatch forecast"></span> Smart Forecast Site Planner</span>
+                                </div>
+                                <div class="scurve-filter-btns" role="group" aria-label="Filter Rentang Kurva-S">
+                                    <button type="button" class="chart-range-btn active" data-range="all">30 Hari (Full)</button>
+                                    <button type="button" class="chart-range-btn" data-range="actual">14 Hari Realisasi</button>
+                                    <button type="button" class="chart-range-btn" data-range="critical">Fase Kritis (Ring 14-16)</button>
+                                </div>
+                            </div>
+                            <div class="scurve-canvas-wrapper">
+                                <canvas id="showcaseScurveChart"></canvas>
+                            </div>
+                        </div>
 
-                                <!-- Axis Labels -->
-                                <text x="25" y="184" fill="#64748B" font-family="'JetBrains Mono', monospace" font-size="10">0%</text>
-                                <text x="20" y="134" fill="#64748B" font-family="'JetBrains Mono', monospace" font-size="10">35%</text>
-                                <text x="20" y="84" fill="#64748B" font-family="'JetBrains Mono', monospace" font-size="10">70%</text>
-                                <text x="15" y="34" fill="#64748B" font-family="'JetBrains Mono', monospace" font-size="10">100%</text>
-
-                                <!-- Vertical Day Markers -->
-                                <line x1="60" y1="20" x2="60" y2="185" stroke="rgba(255,255,255,0.05)"/>
-                                <line x1="220" y1="20" x2="220" y2="185" stroke="rgba(255,255,255,0.05)"/>
-                                <line x1="380" y1="20" x2="380" y2="185" stroke="rgba(255,255,255,0.05)"/>
-                                <line x1="510" y1="20" x2="510" y2="185" stroke="rgba(59,130,246,0.3)" stroke-dasharray="2 2"/>
-                                <line x1="680" y1="20" x2="680" y2="185" stroke="rgba(255,255,255,0.05)"/>
-                                <line x1="860" y1="20" x2="860" y2="185" stroke="rgba(255,255,255,0.05)"/>
-
-                                <text x="50" y="202" fill="#64748B" font-family="'JetBrains Mono', monospace" font-size="10">H-01</text>
-                                <text x="210" y="202" fill="#64748B" font-family="'JetBrains Mono', monospace" font-size="10">H-05</text>
-                                <text x="370" y="202" fill="#64748B" font-family="'JetBrains Mono', monospace" font-size="10">H-10</text>
-                                <text x="480" y="202" fill="#60A5FA" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700">H-14 (HARI INI)</text>
-                                <text x="670" y="202" fill="#64748B" font-family="'JetBrains Mono', monospace" font-size="10">H-20</text>
-                                <text x="815" y="202" fill="#10B981" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700">H-26 FIRING</text>
-
-                                <!-- Planned S-Curve (Dashed Silver) -->
-                                <path d="M 60 180 C 200 176, 300 155, 420 105 C 500 70, 650 38, 860 30" fill="none" stroke="#94A3B8" stroke-width="2" stroke-dasharray="5 4"/>
-
-                                <!-- Actual Progress Fill & Curve -->
-                                <path d="M 60 180 C 200 176, 300 158, 420 110 C 470 88, 510 68, 510 68 L 510 180 Z" fill="url(#scurveAreaGrad)"/>
-                                <path d="M 60 180 C 200 176, 300 158, 420 110 C 470 88, 510 68, 510 68" fill="none" stroke="#3B82F6" stroke-width="3.5"/>
-
-                                <!-- Active Point at Day 14 -->
-                                <circle cx="510" cy="68" r="6" fill="#3B82F6" stroke="#FFFFFF" stroke-width="2"/>
-                                <circle cx="510" cy="68" r="14" fill="none" stroke="#3B82F6" stroke-width="1.5" opacity="0.5"/>
-
-                                <!-- Callout Tooltip Tag -->
-                                <rect x="525" y="52" width="130" height="28" rx="6" fill="#0B1322" stroke="#3B82F6" stroke-width="1"/>
-                                <text x="535" y="70" fill="#FFFFFF" font-family="'JetBrains Mono', monospace" font-size="10.5" font-weight="700">AKTUAL: 78.50%</text>
-
-                                <text x="700" y="55" fill="#94A3B8" font-family="'JetBrains Mono', monospace" font-size="10">-- RENCANA: 80.20%</text>
-                            </svg>
+                        <!-- Predictive Site Planner Forecast Intelligence Card -->
+                        <div class="forecast-intelligence-card">
+                            <div class="forecast-intel-header">
+                                <div class="intel-badge">
+                                    <span class="pulse-beacon" style="background: #3B82F6; box-shadow: 0 0 10px #3B82F6; width: 7px; height: 7px;"></span>
+                                    <span>ANALISIS PREDIKTIF SITE PLANNER // KSD SMART FORECAST ENGINE</span>
+                                </div>
+                                <span class="intel-status-pill">ESTIMASI HANDOVER: 26 SEP 2026 (ON TRACK)</span>
+                            </div>
+                            <div class="forecast-intel-grid">
+                                <div class="intel-metric">
+                                    <span class="metric-lbl">Kecepatan Lapangan (Velocity):</span>
+                                    <strong class="metric-val" style="color: #60A5FA;">5.61% <span style="font-size: 11px; font-weight: normal; color: #94A3B8;">/ hari</span></strong>
+                                    <span class="metric-hint">Target ideal: 5.80% / hari</span>
+                                </div>
+                                <div class="intel-metric">
+                                    <span class="metric-lbl">Sisa Pekerjaan Refraktori:</span>
+                                    <strong class="metric-val" style="color: var(--flame-amber);">21.50% <span style="font-size: 11px; font-weight: normal; color: #94A3B8;">(3.8 Ring)</span></strong>
+                                    <span class="metric-hint">Key Brick Jacking Zone 16</span>
+                                </div>
+                                <div class="intel-metric">
+                                    <span class="metric-lbl">Status Deviasi Kumulatif:</span>
+                                    <strong class="metric-val" style="color: #34D399;">-1.70% <span style="font-size: 11px; font-weight: normal; color: #94A3B8;">(Aman)</span></strong>
+                                    <span class="metric-hint">Toleransi batas kritis: ±3.0%</span>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Interactive Tolerance Simulator -->
@@ -3158,12 +3239,13 @@
 
                     <div class="cta-action-group">
                         <a href="index.html" class="btn-ksd-white-pill cta-btn-hero" id="footerCtaBtn">
-                            <span>Buka Dashboard KSD Monitor Sekarang</span>
-                            <i data-lucide="arrow-right" style="width: 17px; height: 17px;" stroke-width="2.5" aria-hidden="true"></i>
+                            <span class="btn-pulse-dot"></span>
+                            <span>Buka Konsol Kiln #3 (Live Demo)</span>
+                            <i data-lucide="arrow-up-right" style="width: 17px; height: 17px;" stroke-width="2.5" aria-hidden="true"></i>
                         </a>
-                        <a href="#story-stage" class="btn-ksd-glass-pill cta-btn-sub">
-                            <i data-lucide="compass" style="width: 16px; height: 16px;" stroke-width="2" aria-hidden="true"></i>
-                            <span>Jelajahi Alur Komando 4 Tahap</span>
+                        <a href="#story-stage" class="btn-ksd-glass-pill cta-btn-sub" onclick="if(window.startWorkflowTour) window.startWorkflowTour();">
+                            <i data-lucide="play-circle" style="width: 17px; height: 17px; color: #F59E0B;" aria-hidden="true"></i>
+                            <span>Putar Simulasi Alur Kerja ↓</span>
                         </a>
                     </div>
 
@@ -3473,29 +3555,254 @@
 
 
         // ==========================================================================
-        // 5. IN-STAGE TAB SWITCHER (STAGE DOCK)
+        // 5. IN-STAGE TAB SWITCHER & WORKFLOW SIMULATION TOUR ENGINE
         // ==========================================================================
-        // Showcase Module Tab Navigation
-        const stageNavBtns = document.querySelectorAll('.showcase-tab-btn, .stage-nav-btn');
+        const stageNavBtns = document.querySelectorAll('.showcase-tab-btn');
         const screenPanels = document.querySelectorAll('.screen-panel');
+        let currentStageIdx = 0;
+
+        function switchToStage(stageIdx, isManual = false) {
+            currentStageIdx = parseInt(stageIdx, 10);
+
+            stageNavBtns.forEach(b => {
+                const bIdx = parseInt(b.getAttribute('data-stage'), 10);
+                if (bIdx === currentStageIdx) {
+                    b.classList.add('active-stage-nav');
+                    b.setAttribute('aria-selected', 'true');
+                } else {
+                    b.classList.remove('active-stage-nav');
+                    b.setAttribute('aria-selected', 'false');
+                }
+            });
+
+            screenPanels.forEach(p => p.classList.remove('active-screen'));
+            const targetPanel = document.getElementById(`scPanel${currentStageIdx}`);
+            if (targetPanel) {
+                targetPanel.classList.add('active-screen');
+            }
+
+            // Update tour stepper dots
+            for (let i = 0; i < 4; i++) {
+                const dot = document.getElementById(`simStep${i}`);
+                if (dot) {
+                    if (i === currentStageIdx) dot.classList.add('active');
+                    else dot.classList.remove('active');
+                }
+            }
+
+            // Update tour label
+            const labelEl = document.getElementById('simTourStageLabel');
+            if (labelEl) {
+                const stageNames = [
+                    'TAHAP 1: TELEMETRI REAL-TIME & S-CURVE',
+                    'TAHAP 2: VALIDASI AUDIT FOTO 3-TAHAP (QC SHA-256)',
+                    'TAHAP 3: KALKULASI TONASE & SAFETY BUFFER (+5%)',
+                    'TAHAP 4: DISPATCH SHIFT & 1-KLIK EKSPOR SPK'
+                ];
+                labelEl.textContent = stageNames[currentStageIdx] || '';
+            }
+
+            // Trigger stage-specific micro animations
+            if (currentStageIdx === 0 && showcaseChart) {
+                showcaseChart.update();
+            } else if (currentStageIdx === 2) {
+                // Trigger refractory calculation update
+                if (calcLengthSlider) calcLengthSlider.dispatchEvent(new Event('input'));
+            }
+
+            if (isManual && isTourPlaying) {
+                pauseWorkflowTour();
+            }
+        }
 
         stageNavBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const stageIdx = btn.getAttribute('data-stage');
+                switchToStage(stageIdx, true);
+            });
+        });
 
-                stageNavBtns.forEach(b => {
-                    b.classList.remove('active-stage-nav');
-                    b.setAttribute('aria-selected', 'false');
-                });
-                screenPanels.forEach(p => p.classList.remove('active-screen'));
+        // ==========================================================================
+        // 6. AUTHENTIC 3-LINE CHART.JS S-CURVE ENGINE (Planned, Actual, Forecast)
+        // ==========================================================================
+        let showcaseChart = null;
+        let currentRangeFilter = 'all';
 
-                btn.classList.add('active-stage-nav');
-                btn.setAttribute('aria-selected', 'true');
+        const totalDays = 30;
+        const elapsedDays = 14;
+        const actualProgressHistory = [
+            1.8, 4.2, 8.5, 14.1, 20.6, 27.8, 35.4, 43.1, 50.8, 58.2, 64.9, 70.3, 74.8, 78.50
+        ];
+        const latestActualPct = 78.50;
+        const actualVelocity = Math.round((latestActualPct / elapsedDays) * 100) / 100; // 5.61% per day
 
-                const targetPanel = document.getElementById(`scPanel${stageIdx}`);
-                if (targetPanel) {
-                    targetPanel.classList.add('active-screen');
+        function buildSCurveData(range) {
+            let startIdx = 1;
+            let endIdx = totalDays;
+
+            if (range === 'actual') {
+                startIdx = 1;
+                endIdx = 14;
+            } else if (range === 'critical') {
+                startIdx = 10;
+                endIdx = 22;
+            }
+
+            const labels = [];
+            const plannedData = [];
+            const actualData = [];
+            const forecastData = [];
+
+            let forecastProgress = latestActualPct;
+
+            for (let d = startIdx; d <= endIdx; d++) {
+                labels.push(d === 14 ? `H-${d < 10 ? '0' + d : d} (HARI INI)` : `H-${d < 10 ? '0' + d : d}`);
+
+                // Planned Baseline Formula: 3*(t/N)^2 - 2*(t/N)^3
+                const ratio = d / totalDays;
+                const plannedPct = Math.min(100, Math.round((3 * Math.pow(ratio, 2) - 2 * Math.pow(ratio, 3)) * 1000) / 10);
+                plannedData.push(plannedPct);
+
+                // Actual Cumulative Progress (up to Day 14)
+                if (d <= 14) {
+                    actualData.push(actualProgressHistory[d - 1]);
+                } else {
+                    actualData.push(null);
                 }
+
+                // Smart Forecast Trendline (from Day 14 onwards)
+                if (d < 14) {
+                    forecastData.push(null);
+                } else if (d === 14) {
+                    forecastData.push(latestActualPct);
+                } else {
+                    forecastProgress = Math.min(100, Math.round((forecastProgress + actualVelocity) * 10) / 10);
+                    forecastData.push(forecastProgress);
+                }
+            }
+
+            return { labels, plannedData, actualData, forecastData };
+        }
+
+        function renderShowcaseScurve(range = 'all') {
+            currentRangeFilter = range;
+            const canvas = document.getElementById('showcaseScurveChart');
+            if (!canvas || typeof Chart === 'undefined') return;
+
+            const { labels, plannedData, actualData, forecastData } = buildSCurveData(range);
+
+            if (showcaseChart) {
+                showcaseChart.destroy();
+            }
+
+            const ctx = canvas.getContext('2d');
+            const actualGrad = ctx.createLinearGradient(0, 0, 0, 240);
+            actualGrad.addColorStop(0, 'rgba(16, 185, 129, 0.28)');
+            actualGrad.addColorStop(1, 'rgba(16, 185, 129, 0.00)');
+
+            showcaseChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Baseline Rencana (Sigmoid)',
+                            data: plannedData,
+                            borderColor: '#3B82F6',
+                            borderWidth: 2,
+                            borderDash: [5, 4],
+                            pointRadius: 2.5,
+                            pointBackgroundColor: '#3B82F6',
+                            fill: false,
+                            tension: 0.35
+                        },
+                        {
+                            label: 'Realisasi Aktual Kumulatif',
+                            data: actualData,
+                            borderColor: '#10B981',
+                            borderWidth: 3.5,
+                            backgroundColor: actualGrad,
+                            pointRadius: (ctx) => {
+                                const idx = ctx.dataIndex;
+                                return (range === 'all' && idx === 13) || (range === 'actual' && idx === 13) || (range === 'critical' && idx === 4) ? 7 : 3;
+                            },
+                            pointHoverRadius: 8,
+                            pointBackgroundColor: '#10B981',
+                            pointBorderColor: '#FFFFFF',
+                            pointBorderWidth: 2,
+                            fill: true,
+                            tension: 0.25
+                        },
+                        {
+                            label: 'Smart Forecast Site Planner',
+                            data: forecastData,
+                            borderColor: '#8B5CF6',
+                            borderWidth: 2.5,
+                            borderDash: [4, 4],
+                            pointRadius: 3,
+                            pointBackgroundColor: '#8B5CF6',
+                            fill: false,
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(6, 10, 18, 0.94)',
+                            titleColor: '#FFFFFF',
+                            bodyColor: '#CBD5E1',
+                            borderColor: 'rgba(255, 255, 255, 0.16)',
+                            borderWidth: 1,
+                            padding: 12,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.parsed.y === null || context.parsed.y === undefined) return '';
+                                    return ` ${context.dataset.label}: ${context.parsed.y}%`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#64748B', font: { family: "'JetBrains Mono', monospace", size: 10 } }
+                        },
+                        y: {
+                            min: range === 'critical' ? 40 : 0,
+                            max: 100,
+                            grid: { color: 'rgba(255, 255, 255, 0.06)' },
+                            ticks: {
+                                color: '#64748B',
+                                font: { family: "'JetBrains Mono', monospace", size: 10 },
+                                callback: (v) => v + '%'
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 1100,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+        }
+
+        // Initialize S-Curve
+        renderShowcaseScurve('all');
+
+        // Range Filter Buttons Listener
+        const rangeBtns = document.querySelectorAll('.chart-range-btn');
+        rangeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                rangeBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const range = btn.getAttribute('data-range');
+                renderShowcaseScurve(range);
             });
         });
 
@@ -3504,27 +3811,31 @@
         const mStageValTxt = document.getElementById('mStageValTxt');
         const mStageGuard = document.getElementById('mStageGuard');
 
-        if (mStageSlider && mStageValTxt) {
-            mStageSlider.addEventListener('input', () => {
-                const val = parseFloat(mStageSlider.value);
-                mStageValTxt.textContent = `${val.toFixed(1)}%`;
+        function updateToleranceGuard(val) {
+            if (!mStageValTxt || !mStageGuard) return;
+            mStageValTxt.textContent = `${val.toFixed(1)}%`;
 
-                if (val > 88) {
-                    mStageGuard.className = "guard-tag-live guard-warn";
-                    mStageGuard.innerHTML = `
-                        <span>[DEV-ALERT] Deviasi per shift melebihi toleransi wajar (+5%). Memerlukan otorisasi Lead Superintendent.</span>
-                    `;
-                } else if (val < 65) {
-                    mStageGuard.className = "guard-tag-live guard-warn";
-                    mStageGuard.innerHTML = `
-                        <span>[DEV-WARN] Progres berada di bawah batas minimum critical path shift malam (-13.5%).</span>
-                    `;
-                } else {
-                    mStageGuard.className = "guard-tag-live guard-ok";
-                    mStageGuard.innerHTML = `
-                        <span>[STATUS AMAN] Input Valid: Sesuai Master Schedule Overhaul (Deviasi &lt; 3%)</span>
-                    `;
-                }
+            if (val > 88) {
+                mStageGuard.className = "guard-tag-live guard-warn";
+                mStageGuard.innerHTML = `
+                    <span>[DEV-ALERT] Deviasi per shift melebihi toleransi wajar (+5%). Memerlukan otorisasi Lead Superintendent.</span>
+                `;
+            } else if (val < 65) {
+                mStageGuard.className = "guard-tag-live guard-warn";
+                mStageGuard.innerHTML = `
+                    <span>[DEV-WARN] Progres berada di bawah batas minimum critical path shift malam (-13.5%).</span>
+                `;
+            } else {
+                mStageGuard.className = "guard-tag-live guard-ok";
+                mStageGuard.innerHTML = `
+                    <span>[STATUS AMAN] Input Valid: Sesuai Master Schedule Overhaul (Deviasi &lt; 3%)</span>
+                `;
+            }
+        }
+
+        if (mStageSlider) {
+            mStageSlider.addEventListener('input', () => {
+                updateToleranceGuard(parseFloat(mStageSlider.value));
             });
         }
 
@@ -3537,46 +3848,229 @@
         const calcMortar = document.getElementById('calcMortar');
         const calcBuffer = document.getElementById('calcBuffer');
 
-        if (calcLengthSlider && calcPanjangTxt) {
+        function updateRefractoryCalc(L) {
+            if (calcPanjangTxt) calcPanjangTxt.textContent = `${L.toFixed(1)} Meter`;
+
+            const deltaArea = Math.PI * (Math.pow(2.10, 2) - Math.pow(1.88, 2));
+            const volume = deltaArea * L;
+            const density = 2.85; // Ton/m3 for Magnesite Spinel
+            const tonnage = volume * density;
+            const brickPcs = Math.round(L * 405);
+            const mortarBags = Math.round(L * 35);
+            const bufferTon = tonnage * 1.05;
+
+            if (calcVol) calcVol.textContent = `${volume.toFixed(2)} m³`;
+            if (calcTon) calcTon.textContent = `${tonnage.toFixed(2)} Ton`;
+            if (calcBatu) calcBatu.textContent = `${brickPcs.toLocaleString('id-ID')} Pcs`;
+            if (calcMortar) calcMortar.textContent = `${mortarBags.toLocaleString('id-ID')} Zak (@ 25 kg)`;
+            if (calcBuffer) calcBuffer.textContent = `${bufferTon.toFixed(2)} Ton`;
+        }
+
+        if (calcLengthSlider) {
             calcLengthSlider.addEventListener('input', () => {
-                const L = parseFloat(calcLengthSlider.value);
-                calcPanjangTxt.textContent = `${L.toFixed(1)} Meter`;
-
-                // Formula: Do = 4.20m (Ro = 2.10m), t = 0.22m (Ri = 1.88m)
-                // Delta Area = pi * (2.10^2 - 1.88^2) = 2.7508 m2
-                const deltaArea = Math.PI * (Math.pow(2.10, 2) - Math.pow(1.88, 2));
-                const volume = deltaArea * L;
-                const density = 2.85; // Ton/m3 for Magnesite Spinel
-                const tonnage = volume * density;
-                const brickPcs = Math.round(L * 405);
-                const mortarBags = Math.round(L * 35);
-                const bufferTon = tonnage * 1.05;
-
-                if (calcVol) calcVol.textContent = `${volume.toFixed(2)} m³`;
-                if (calcTon) calcTon.textContent = `${tonnage.toFixed(2)} Ton`;
-                if (calcBatu) calcBatu.textContent = `${brickPcs.toLocaleString('id-ID')} Pcs`;
-                if (calcMortar) calcMortar.textContent = `${mortarBags.toLocaleString('id-ID')} Zak (@ 25 kg)`;
-                if (calcBuffer) calcBuffer.textContent = `${bufferTon.toFixed(2)} Ton`;
+                updateRefractoryCalc(parseFloat(calcLengthSlider.value));
             });
         }
 
         // ==========================================================================
-        // 6. HERO INTERACTIVE AMBIENCE SYNTHESIZER (WEB AUDIO API)
+        // 7. DASHBOARD WORKFLOW SIMULATION AUTO-TOUR ENGINE
         // ==========================================================================
-        const heroAudioToggle = document.getElementById('heroAudioToggle');
+        let isTourPlaying = false;
+        let tourInterval = null;
+        let tourProgressMs = 0;
+        const STAGE_DURATION_MS = 6500;
+        const TICK_MS = 50;
+
+        const simTourToggleBtn = document.getElementById('simTourToggleBtn');
+        const simTourBtnTxt = document.getElementById('simTourBtnTxt');
+        const simTourIcon = document.getElementById('simTourIcon');
+        const simTourProgress = document.getElementById('simTourProgress');
+        const heroTourTriggerBtn = document.getElementById('heroTourTriggerBtn');
+
+        // Stepper dots click handler
+        for (let i = 0; i < 4; i++) {
+            const dot = document.getElementById(`simStep${i}`);
+            if (dot) {
+                dot.addEventListener('click', () => {
+                    tourProgressMs = 0;
+                    switchToStage(i, false);
+                });
+            }
+        }
+
+        function runStageSimulationAnimation(stageIdx) {
+            if (stageIdx === 0) {
+                // Simulate curve micro-adjustment & slider safety check
+                if (mStageSlider) {
+                    let step = 0;
+                    const simTimer = setInterval(() => {
+                        step++;
+                        if (step <= 10) {
+                            const val = 78.5 + step * 0.4;
+                            mStageSlider.value = val;
+                            updateToleranceGuard(val);
+                        } else if (step <= 20) {
+                            const val = 82.5 - (step - 10) * 0.4;
+                            mStageSlider.value = val;
+                            updateToleranceGuard(val);
+                        } else {
+                            clearInterval(simTimer);
+                            mStageSlider.value = 78.5;
+                            updateToleranceGuard(78.5);
+                        }
+                    }, 80);
+                }
+            } else if (stageIdx === 1) {
+                // Photo audit sequential glow
+                const cards = document.querySelectorAll('.stage-qc-card');
+                cards.forEach((card, idx) => {
+                    card.style.transition = 'all 0.4s ease';
+                    setTimeout(() => {
+                        card.style.boxShadow = '0 0 24px rgba(59, 130, 246, 0.5)';
+                        card.style.borderColor = '#3B82F6';
+                        setTimeout(() => {
+                            card.style.boxShadow = '';
+                            card.style.borderColor = '';
+                        }, 1200);
+                    }, idx * 600);
+                });
+            } else if (stageIdx === 2) {
+                // Refractory calculator slider dynamic crawl
+                if (calcLengthSlider) {
+                    let step = 0;
+                    const calcTimer = setInterval(() => {
+                        step++;
+                        if (step <= 12) {
+                            const L = 12.0 + (step * 0.4);
+                            calcLengthSlider.value = L;
+                            updateRefractoryCalc(L);
+                        } else if (step <= 24) {
+                            const L = 16.8 - ((step - 12) * 0.4);
+                            calcLengthSlider.value = L;
+                            updateRefractoryCalc(L);
+                        } else {
+                            clearInterval(calcTimer);
+                            calcLengthSlider.value = 12.0;
+                            updateRefractoryCalc(12.0);
+                        }
+                    }, 80);
+                }
+            } else if (stageIdx === 3) {
+                // Highlight critical path SPK row
+                const rows = document.querySelectorAll('.dispatch-real-table tbody tr');
+                if (rows.length > 1) {
+                    rows[1].style.transition = 'background 0.3s ease';
+                    rows[1].style.background = 'rgba(245, 158, 11, 0.16)';
+                    setTimeout(() => {
+                        rows[1].style.background = '';
+                    }, 2400);
+                }
+            }
+        }
+
+        function startWorkflowTour() {
+            if (isTourPlaying) return;
+            isTourPlaying = true;
+            if (simTourToggleBtn) simTourToggleBtn.classList.add('is-playing');
+            if (simTourBtnTxt) simTourBtnTxt.textContent = 'JEDA SIMULASI ALUR KERJA';
+            if (simTourIcon) simTourIcon.setAttribute('data-lucide', 'pause');
+            if (window.lucide) window.lucide.createIcons();
+
+            runStageSimulationAnimation(currentStageIdx);
+
+            tourInterval = setInterval(() => {
+                tourProgressMs += TICK_MS;
+                const pct = Math.min(100, (tourProgressMs / STAGE_DURATION_MS) * 100);
+                if (simTourProgress) simTourProgress.style.width = `${pct}%`;
+
+                if (tourProgressMs >= STAGE_DURATION_MS) {
+                    tourProgressMs = 0;
+                    const nextStage = (currentStageIdx + 1) % 4;
+                    switchToStage(nextStage, false);
+                    runStageSimulationAnimation(nextStage);
+                }
+            }, TICK_MS);
+        }
+
+        function pauseWorkflowTour() {
+            isTourPlaying = false;
+            if (tourInterval) {
+                clearInterval(tourInterval);
+                tourInterval = null;
+            }
+            if (simTourToggleBtn) simTourToggleBtn.classList.remove('is-playing');
+            if (simTourBtnTxt) simTourBtnTxt.textContent = 'PUTAR SIMULASI ALUR KERJA';
+            if (simTourIcon) simTourIcon.setAttribute('data-lucide', 'play');
+            if (window.lucide) window.lucide.createIcons();
+        }
+
+        function toggleWorkflowTour() {
+            if (isTourPlaying) {
+                pauseWorkflowTour();
+            } else {
+                startWorkflowTour();
+            }
+        }
+
+        if (simTourToggleBtn) {
+            simTourToggleBtn.addEventListener('click', toggleWorkflowTour);
+        }
+
+        // Hero Cinematic Secondary CTA: Scroll & Play Tour
+        if (heroTourTriggerBtn) {
+            heroTourTriggerBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetElem = document.querySelector('.showcase-terminal-frame') || document.getElementById('story-stage');
+                if (targetElem) {
+                    if (globalLenis) {
+                        globalLenis.scrollTo(targetElem, { offset: -96 });
+                    } else {
+                        const elementPosition = targetElem.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - 96;
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                    setTimeout(() => {
+                        startWorkflowTour();
+                    }, 500);
+                }
+            });
+        }
+
+        // Make startWorkflowTour globally accessible for links
+        window.startWorkflowTour = startWorkflowTour;
+
+        // ==========================================================================
+        // 8. DUAL VIDEO AUDIO UNMUTE & 55Hz KILN SYNTHESIZER
+        // ==========================================================================
+        const heroSoundscapeBtn = document.getElementById('heroSoundscapeBtn');
+        const heroSoundscapeLabel = document.getElementById('heroSoundscapeLabel');
         const navbarAudioToggle = document.getElementById('navbarAudioToggle');
-        const audioToggleText = document.getElementById('audioToggleText');
+
         let audioCtx = null;
         let ambientOsc = null;
         let ambientGain = null;
         let isAudioPlaying = false;
 
-        function toggleKilnAmbience() {
+        function toggleKilnSoundscape() {
+            // 1. Unmute/mute the video audio stream
+            if (heroVideo) {
+                if (isAudioPlaying) {
+                    heroVideo.muted = true;
+                } else {
+                    heroVideo.muted = false;
+                    heroVideo.volume = 0.85;
+                    heroVideo.play().catch(() => {});
+                }
+            }
+
+            // 2. Synthesize complementary 55Hz machine hum drone
             if (!audioCtx) {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
                 audioCtx = new AudioContext();
 
-                // Low-frequency rotating machinery drone (55Hz + warm low-pass)
                 ambientOsc = audioCtx.createOscillator();
                 ambientOsc.type = 'sine';
                 ambientOsc.frequency.setValueAtTime(55, audioCtx.currentTime);
@@ -3599,61 +4093,38 @@
             }
 
             if (!isAudioPlaying) {
-                ambientGain.gain.setTargetAtTime(0.08, audioCtx.currentTime, 0.4);
+                ambientGain.gain.setTargetAtTime(0.08, audioCtx.currentTime, 0.3);
                 isAudioPlaying = true;
-                if (heroAudioToggle) {
-                    heroAudioToggle.classList.add('active');
-                    const icon = heroAudioToggle.querySelector('i');
-                    if (icon) icon.setAttribute('data-lucide', 'volume-2');
+
+                if (heroSoundscapeBtn) {
+                    heroSoundscapeBtn.classList.add('is-active');
+                }
+                if (heroSoundscapeLabel) {
+                    heroSoundscapeLabel.textContent = 'SUARA LAPANGAN: AKTIF (55Hz KILN AMBIENCE 🔊)';
                 }
                 if (navbarAudioToggle) {
                     navbarAudioToggle.classList.add('is-active');
                 }
-                if (audioToggleText) audioToggleText.textContent = 'AMBIENCE: ON';
             } else {
-                ambientGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.3);
+                ambientGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.2);
                 isAudioPlaying = false;
-                if (heroAudioToggle) {
-                    heroAudioToggle.classList.remove('active');
-                    const icon = heroAudioToggle.querySelector('i');
-                    if (icon) icon.setAttribute('data-lucide', 'volume-x');
+
+                if (heroSoundscapeBtn) {
+                    heroSoundscapeBtn.classList.remove('is-active');
+                }
+                if (heroSoundscapeLabel) {
+                    heroSoundscapeLabel.textContent = 'SUARA LAPANGAN: NONAKTIF (KLIK UNTUK BUNYI 🔊)';
                 }
                 if (navbarAudioToggle) {
                     navbarAudioToggle.classList.remove('is-active');
                 }
-                if (audioToggleText) audioToggleText.textContent = 'AMBIENCE: OFF';
             }
+
             if (window.lucide) window.lucide.createIcons();
         }
 
-        if (heroAudioToggle) heroAudioToggle.addEventListener('click', toggleKilnAmbience);
-        if (navbarAudioToggle) navbarAudioToggle.addEventListener('click', toggleKilnAmbience);
-
-
-        // ==========================================================================
-        // 7. LIVE PROMO COUNTDOWN TICKER
-        // ==========================================================================
-        const liveCountdown = document.getElementById('liveCountdown');
-        if (liveCountdown) {
-            let targetHours = 120;
-            let targetMins = 0;
-            let targetSecs = 45;
-            setInterval(() => {
-                if (targetSecs > 0) {
-                    targetSecs--;
-                } else {
-                    targetSecs = 59;
-                    if (targetMins > 0) targetMins--;
-                    else {
-                        targetMins = 59;
-                        if (targetHours > 0) targetHours--;
-                    }
-                }
-                const sSec = targetSecs < 10 ? '0' + targetSecs : targetSecs;
-                const sMin = targetMins < 10 ? '0' + targetMins : targetMins;
-                liveCountdown.textContent = `D-09 / 14 HARI · ${targetHours}H ${sMin}M ${sSec}S MENUJU FIRING`;
-            }, 1000);
-        }
+        if (heroSoundscapeBtn) heroSoundscapeBtn.addEventListener('click', toggleKilnSoundscape);
+        if (navbarAudioToggle) navbarAudioToggle.addEventListener('click', toggleKilnSoundscape);
     </script>
 </body>
 </html>
