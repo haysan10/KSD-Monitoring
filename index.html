@@ -228,6 +228,9 @@
             min-height: 100dvh;
             background: var(--surface-0);
             overscroll-behavior-y: none;
+            overflow-x: hidden;
+            max-width: 100vw;
+            width: 100%;
         }
 
         body {
@@ -238,6 +241,8 @@
             min-height: 100vh;
             min-height: 100dvh;
             overflow-x: hidden;
+            max-width: 100vw;
+            width: 100%;
             overscroll-behavior-y: none;
             letter-spacing: -0.01em;
         }
@@ -679,14 +684,19 @@
         /* ============================================================
        =================== LOGIN PAGE ===================
        ============================================================ */
+        body:has(#page-login:not(.page-hidden)) {
+            background-color: #0C101A !important;
+        }
+
         #page-login {
             min-height: 100vh;
             min-height: 100dvh;
             width: 100%;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: var(--sp-6);
+            justify-content: flex-start;
+            padding: var(--sp-6) var(--sp-4);
             background-color: #0C101A;
             background-image: 
                 linear-gradient(180deg, rgba(30, 35, 55, 0.6) 0%, rgba(20, 25, 40, 0.85) 100%),
@@ -697,17 +707,21 @@
             position: relative;
             box-sizing: border-box;
             overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .login-wrapper {
             width: 100%;
             max-width: 420px;
+            margin: auto 0;
             position: relative;
             z-index: 2;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: var(--sp-8);
+            gap: var(--sp-6);
+            padding: var(--sp-4) 0 calc(var(--sp-8) + env(safe-area-inset-bottom, 0px));
         }
 
         .login-brand {
@@ -716,45 +730,6 @@
             align-items: center;
             gap: var(--sp-4);
             text-align: center;
-        }
-
-        /* Red Logo untuk aksen engineering berani di atas slate gelap */
-        .login-logo {
-            width: 56px;
-            height: 56px;
-            background: var(--danger);
-            border-radius: var(--r-lg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 16px var(--danger-bg), 0 1px 3px rgba(220, 38, 38, 0.3);
-            position: relative;
-        }
-
-        .login-logo::after {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            border: 1px solid rgba(220, 38, 38, 0.4);
-            border-radius: calc(var(--r-lg) + 4px);
-            animation: pulse-ring 2.5s ease infinite;
-        }
-
-        @keyframes pulse-ring {
-            0% {
-                opacity: 0.6;
-                transform: scale(1);
-            }
-
-            50% {
-                opacity: 0.15;
-                transform: scale(1.08);
-            }
-
-            100% {
-                opacity: 0.6;
-                transform: scale(1);
-            }
         }
 
         .login-brand h1 {
@@ -1069,6 +1044,10 @@
             min-height: 100vh;
             min-height: 100dvh;
             background: var(--surface-0);
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden;
+            box-sizing: border-box;
         }
 
         /* ---------- 2-TIER STICKY TOPBAR ---------- */
@@ -1886,13 +1865,14 @@
         }
 
         .project-banner__inner {
-            padding: var(--sp-4) var(--sp-8);
+            padding: var(--sp-3) var(--sp-4);
             display: flex;
             flex-direction: column;
             gap: var(--sp-3);
             max-width: 1600px;
             margin: 0 auto;
             width: 100%;
+            box-sizing: border-box;
         }
 
         @media (min-width: 768px) {
@@ -1900,6 +1880,12 @@
                 flex-direction: row;
                 align-items: center;
                 justify-content: space-between;
+                padding: var(--sp-4) var(--sp-6);
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .project-banner__inner {
                 padding: var(--sp-5) var(--sp-8);
             }
         }
@@ -2248,27 +2234,52 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: var(--sp-8) var(--sp-6);
+            padding: var(--sp-4) var(--sp-3);
             background: var(--surface-1);
             border: 1px dashed var(--border-medium);
-            border-radius: var(--r-xl);
+            border-radius: var(--r-lg);
             color: var(--text-tertiary);
             font-size: 12px;
             text-align: center;
-            gap: 10px;
+            gap: 4px;
+            min-height: auto;
+            max-height: 160px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .empty-state::before {
             content: '';
-            width: 76px;
-            height: 76px;
+            width: 36px;
+            height: 36px;
             background-image: url('/assets/branding/supergraphics/empty-state-graphic.svg');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
             opacity: 0.95;
-            filter: drop-shadow(0 0 16px rgba(245, 158, 11, 0.45));
-            margin-bottom: 6px;
+            filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.35));
+            margin-bottom: 2px;
+        }
+
+        .empty-state p {
+            margin: 0;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            line-height: 1.3;
+            max-width: 280px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .empty-state .empty-sub {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            max-width: 260px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .empty-state--success {
@@ -3058,19 +3069,22 @@
             text-transform: uppercase;
             letter-spacing: 0.04em;
             cursor: pointer;
-            transition: all 180ms ease;
+            transition: color 180ms ease, transform 150ms ease;
             min-height: var(--bottomnav-h);
             padding: 4px 1px;
             position: relative;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
         }
 
         .bnav-item svg {
             width: 20px;
             height: 20px;
+            color: var(--text-tertiary);
             transition: transform 180ms ease, color 180ms ease;
         }
 
-        .bnav-item:active,
+        /* Strictly ONE active tab gets the active brand highlight */
         .bnav-item.active {
             color: var(--accent) !important;
         }
@@ -3081,25 +3095,52 @@
             filter: drop-shadow(0 0 8px var(--accent-glow-strong));
         }
 
+        /* Highlight button (center) is neutral unless active */
         .bnav-item-highlight {
-            color: var(--brand-amber) !important;
+            color: var(--text-tertiary);
         }
 
         .bnav-item-highlight .bnav-icon-wrap {
-            background: linear-gradient(135deg, var(--brand-amber), var(--brand-amber-dark));
+            background: var(--surface-3);
+            border: 1px solid var(--border-medium);
             border-radius: var(--r-md);
-            padding: 5px 14px;
-            color: #fff !important;
-            box-shadow: 0 4px 14px var(--brand-amber-glow);
-            margin-top: -6px;
-            transition: transform 0.15s ease;
+            padding: 4px 12px;
+            color: var(--text-secondary);
+            margin-top: -4px;
+            transition: all 0.18s ease;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
+        .bnav-item-highlight.active {
+            color: var(--brand-amber) !important;
+        }
+
+        .bnav-item-highlight.active .bnav-icon-wrap {
+            background: linear-gradient(135deg, var(--brand-amber), var(--brand-amber-dark));
+            border-color: var(--brand-amber);
+            color: #FFFFFF !important;
+            box-shadow: 0 4px 14px var(--brand-amber-glow);
+            transform: translateY(-2px);
+        }
+
+        .bnav-item-highlight.active .bnav-icon-wrap svg {
+            color: #FFFFFF !important;
+            filter: none;
+        }
+
         .bnav-item-highlight:active .bnav-icon-wrap {
             transform: scale(0.92);
+        }
+
+        @media (hover: none) {
+            .bnav-item:hover {
+                color: var(--text-tertiary);
+            }
+            .bnav-item.active:hover {
+                color: var(--accent) !important;
+            }
         }
 
         @keyframes slideUpDrawer {
@@ -3224,16 +3265,22 @@
             }
 
             .topbar-row-primary {
-                padding: 0 12px;
+                padding: 0 16px;
                 height: 56px;
+                width: 100%;
+                box-sizing: border-box;
             }
 
             .topbar-row-switcher {
-                padding: 0 12px 8px 12px;
+                padding: 0 16px 8px 16px;
+                width: 100%;
+                box-sizing: border-box;
             }
 
             .project-switcher-card {
-                padding: 6px 10px;
+                padding: 6px 12px;
+                width: 100%;
+                box-sizing: border-box;
             }
 
             .metric-card--primary {
@@ -3252,16 +3299,22 @@
             }
 
             .page-content {
-                padding: var(--sp-3) var(--sp-3) var(--sp-6) var(--sp-3);
+                padding: 16px 16px calc(var(--bottomnav-h) + env(safe-area-inset-bottom, 0px) + 24px) 16px;
+                width: 100%;
+                box-sizing: border-box;
             }
 
             .card {
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
                 border-radius: var(--r-md);
             }
 
             .card-body,
             .card-header {
-                padding: var(--sp-4);
+                padding: 16px;
+                box-sizing: border-box;
             }
 
             /* Responsive Metrics Grid */
@@ -3330,17 +3383,33 @@
 
         @media (max-width: 479px) {
             .topbar {
-                padding: 0 6px;
-                gap: 4px;
+                padding: 0 !important;
             }
 
-            .project-selector-wrap {
-                max-width: min(180px, 42vw);
-                font-size: 11px;
+            .topbar-row-primary {
+                padding: 0 14px;
+                height: 56px;
+            }
+
+            .topbar-row-switcher {
+                padding: 0 14px 8px 14px;
+            }
+
+            .project-switcher-card {
+                padding: 6px 10px;
+            }
+
+            .project-banner__inner {
+                padding: 10px 14px;
             }
 
             .page-content {
-                padding: var(--sp-2) var(--sp-2) var(--sp-5) var(--sp-2);
+                padding: 12px 14px calc(var(--bottomnav-h) + env(safe-area-inset-bottom, 0px) + 24px) 14px;
+            }
+
+            .card-body,
+            .card-header {
+                padding: 12px;
             }
 
             .metrics-grid {
@@ -3349,14 +3418,14 @@
             }
 
             .bnav-item {
-                min-width: 60px;
-                font-size: 10px;
-                padding: 6px 4px;
+                min-width: 50px;
+                font-size: 9.5px;
+                padding: 4px 1px;
             }
 
             .bnav-item svg {
-                width: 20px;
-                height: 20px;
+                width: 18px;
+                height: 18px;
             }
         }
 
@@ -3460,14 +3529,14 @@
                 <div>
                     <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);border-radius:9999px;padding:3px 12px;margin-bottom:8px;">
                         <span style="width:6px;height:6px;border-radius:50%;background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></span>
-                        <span style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:0.12em;color:#f59e0b;text-transform:uppercase;">KSD Kiln Intelligence</span>
+                        <span style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:0.12em;color:#f59e0b;text-transform:uppercase;">TRUNOVA Kiln Intelligence</span>
                     </div>
                     <p class="brand-sub" style="margin:0;font-size:11.5px;letter-spacing:0.15em;color:var(--text-on-dark-dim);">Kiln Shutdown &amp; Overhaul Operations</p>
                 </div>
             </div>
             <div class="login-card">
                 <h2>Portal Akses</h2>
-                <p>Masukkan kredensial akun Trunova KSD Anda untuk membuka konsol operasi.</p>
+                <p>Masukkan kredensial akun TRUNOVA Anda untuk membuka konsol operasi.</p>
                 <form onsubmit="handleLoginSubmit(event)" class="field-group">
                     <div class="field">
                         <label for="loginUsername">Nama Pengguna / Email</label>
@@ -3560,11 +3629,11 @@
             <div class="topbar-row-primary">
                 <div class="topbar-brand" onclick="switchTab('dashboard')" title="TRUNOVA — Kiln Shutdown Intelligence">
                     <div class="topbar-brand-mark">
-                        <img src="/assets/branding/tr-monogram-white.svg" alt="Trunova" class="topbar-monogram-img">
+                        <img src="/assets/branding/tr-monogram-white.svg" alt="TRUNOVA" class="topbar-monogram-img">
                     </div>
                     <div class="topbar-brand-text">
-                        <span class="topbar-brand-title">TRU KSD</span>
-                        <span class="topbar-brand-sub">OVERHAUL OS</span>
+                        <span class="topbar-brand-title">TRUNOVA</span>
+                        <span class="topbar-brand-sub">KILN SHUTDOWN</span>
                     </div>
                 </div>
 
@@ -4380,20 +4449,20 @@
                         </div>
 
                         <!-- Smart AI Forecasting & Manpower Recommendation Card -->
-                        <div id="scurveForecastWidget" class="card section" style="background:#ffffff;border:1px solid #c7d2fe;border-radius:12px;margin-top:var(--sp-4);">
-                            <div class="card-header" style="background:#eff6ff;border-bottom:1px solid #bfdbfe;display:flex;justify-content:space-between;align-items:center;">
+                        <div id="scurveForecastWidget" class="card section" style="background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:var(--r-xl);margin-top:var(--sp-4);">
+                            <div class="card-header" style="background:var(--surface-2);border-bottom:1px solid var(--border-subtle);display:flex;justify-content:space-between;align-items:center;">
                                 <div style="display:flex;align-items:center;gap:8px;">
-                                    <h3 style="color:#1e3a8a;font-size:14px;font-weight:800;margin:0;">Smart S-Curve Forecasting &amp; Rekomendasi Alokasi Tim</h3>
+                                    <h3 style="color:var(--text-primary);font-size:14px;font-weight:800;margin:0;">Smart S-Curve Forecasting &amp; Rekomendasi Alokasi Tim</h3>
                                 </div>
                                 <span id="forecastBadgeStatus" class="badge accent" style="font-weight:800;">Analisis Real-Time</span>
                             </div>
-                            <div class="card-body" id="forecastRecommendationBody" style="padding:16px;display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:14px;">
+                            <div class="card-body" id="forecastRecommendationBody" style="padding:16px;display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 220px), 1fr));gap:14px;">
                                 <!-- Dynamic forecast stats -->
                             </div>
                         </div>
 
                         <!-- Multi-Chart Engineering Analytics Dashboard -->
-                        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(480px, 1fr));gap:var(--sp-5);margin-top:var(--sp-4);">
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 340px), 1fr));gap:var(--sp-4);margin-top:var(--sp-4);">
                             <!-- Chart A: Distribusi Progres vs Bobot per IAC -->
                             <div class="card" style="margin:0;">
                                 <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
@@ -4836,31 +4905,31 @@
 
                     <div id="view-setup" class="view-panel">
                         <!-- Excel Project Setup Generator & Importer -->
-                        <div class="card section" style="background:#ffffff;border:2px solid #3b82f6;border-radius:14px;overflow:hidden;box-shadow:0 8px 24px rgba(59,130,246,0.1);margin-bottom:var(--sp-6);">
-                            <div class="card-header" style="background:#0f172a;color:#ffffff;display:flex;justify-content:space-between;align-items:center;padding:16px 20px;flex-wrap:wrap;gap:10px;">
+                        <div class="card section" style="background:var(--surface-1);border:1px solid var(--accent);border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--shadow-card);margin-bottom:var(--sp-6);">
+                            <div class="card-header" style="background:var(--surface-2);color:var(--text-primary);border-bottom:1px solid var(--border-subtle);display:flex;justify-content:space-between;align-items:center;padding:16px 20px;flex-wrap:wrap;gap:10px;">
                                 <div>
-                                    <h3 style="color:#ffffff;font-size:15px;font-weight:800;margin:0;">Setup Proyek Penuh Melalui Excel (.xlsx)</h3>
-                                    <p style="color:#94a3b8;font-size:12px;margin:2px 0 0 0;">Isi template Excel tanpa perlu membuka web app, lalu unggah untuk membuat struktur proyek, IAC, Sub-Jobdesk &amp; Baseline secara instan.</p>
+                                    <h3 style="color:var(--text-primary);font-size:15px;font-weight:800;margin:0;">Setup Proyek Penuh Melalui Excel (.xlsx)</h3>
+                                    <p style="color:var(--text-tertiary);font-size:12px;margin:2px 0 0 0;">Isi template Excel tanpa perlu membuka web app, lalu unggah untuk membuat struktur proyek, IAC, Sub-Jobdesk &amp; Baseline secara instan.</p>
                                 </div>
                                 <button onclick="downloadSetupTemplateExcel()" class="btn btn-sm" style="background:#10b981;color:#ffffff;font-weight:800;border:none;padding:8px 14px;border-radius:8px;display:flex;align-items:center;gap:6px;cursor:pointer;">
                                     Unduh Template Excel (.xlsx)
                                 </button>
                             </div>
-                            <div class="card-body" style="padding:20px;display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:20px;background:#f8fafc;">
-                                <div style="background:#ffffff;border:1px solid #cbd5e1;border-radius:10px;padding:16px;">
-                                    <h4 style="font-size:13px;font-weight:800;color:#0f172a;margin-bottom:8px;">
+                            <div class="card-body" style="padding:16px;display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 280px), 1fr));gap:16px;background:var(--surface-0);">
+                                <div style="background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:10px;padding:16px;">
+                                    <h4 style="font-size:13px;font-weight:800;color:var(--text-primary);margin-bottom:8px;">
                                         Panduan Format Template Excel
                                     </h4>
-                                    <ul style="font-size:12px;color:#475569;line-height:1.6;margin:0;padding-left:18px;">
+                                    <ul style="font-size:12px;color:var(--text-secondary);line-height:1.6;margin:0;padding-left:18px;">
                                         <li><strong>Sheet 1 (Info_Proyek)</strong>: Kode Proyek, Nama Proyek, Area, Tanggal Mulai, Durasi Hari.</li>
                                         <li><strong>Sheet 2 (Struktur_IAC)</strong>: Daftar IAC dan Bobot % (Total bobot seluruh IAC wajib 100%).</li>
                                         <li><strong>Sheet 3 (Sub_Jobdesk)</strong>: Sub ID, IAC ID, Deskripsi, PT Kontraktor, Bobot % (Total per IAC wajib 100%), Jadwal Start-Finish, Predecessor &amp; Jalur Kritis.</li>
                                         <li><strong>Sheet 4 (Daftar_Kontraktor)</strong>: Kode PT, Nama Perusahaan, dan Kontak PIC.</li>
                                     </ul>
                                 </div>
-                                <div style="border:2px dashed #3b82f6;border-radius:10px;padding:20px;text-align:center;background:#eff6ff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;">
-                                    <div style="font-size:13px;font-weight:800;color:#1e3a8a;">Unggah File Excel Setup Proyek</div>
-                                    <div style="font-size:11.5px;color:#64748b;">Pilih file .xlsx yang telah diisi sesuai template</div>
+                                <div style="border:2px dashed var(--accent);border-radius:10px;padding:20px;text-align:center;background:var(--accent-glow);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;">
+                                    <div style="font-size:13px;font-weight:800;color:var(--text-primary);">Unggah File Excel Setup Proyek</div>
+                                    <div style="font-size:11.5px;color:var(--text-tertiary);">Pilih file .xlsx yang telah diisi sesuai template</div>
                                     <input type="file" id="excelProjectSetupFileInput" accept=".xlsx, .xls" style="display:none;" onchange="handleProjectExcelUpload(event)">
                                     <button onclick="document.getElementById('excelProjectSetupFileInput').click()" class="btn btn-accent" style="font-weight:800;padding:8px 18px;font-size:12px;">
                                         Pilih File Excel &amp; Terapkan
@@ -6977,11 +7046,13 @@
 
             if (pageId === 'login') {
                 loginEl.classList.remove("page-hidden");
+                document.body.style.backgroundColor = "#0C101A";
                 showLoading(false);
             } else {
                 appEl.classList.remove("page-hidden");
                 appEl.style.display = "flex";
                 appEl.style.flexDirection = "column";
+                document.body.style.removeProperty("background-color");
                 triggerSync();
             }
             lucideRefresh();
@@ -9156,22 +9227,22 @@ function renderAlertNotifications() {
                 }
 
                 recBody.innerHTML = `
-                    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px;">
-                        <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;">Kecepatan Harian (Velocity)</div>
-                        <div style="font-size:20px;font-weight:900;color:#1e293b;margin-top:4px;">${actualVelocity}% <span style="font-size:12px;font-weight:600;color:#64748b;">/ hari</span></div>
-                        <div style="font-size:11.5px;color:${actualVelocity >= requiredVelocity ? '#10b981' : '#ef4444'};margin-top:4px;font-weight:700;">
+                    <div style="background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:10px;padding:14px;">
+                        <div style="font-size:11px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;">Kecepatan Harian (Velocity)</div>
+                        <div style="font-size:20px;font-weight:900;color:var(--text-primary);margin-top:4px;">${actualVelocity}% <span style="font-size:12px;font-weight:600;color:var(--text-tertiary);">/ hari</span></div>
+                        <div style="font-size:11.5px;color:${actualVelocity >= requiredVelocity ? 'var(--success)' : 'var(--danger)'};margin-top:4px;font-weight:700;">
                             Target dibutuhkan: ${requiredVelocity}% / hari
                         </div>
                     </div>
-                    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px;">
-                        <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;">Estimasi Selesai Aktual</div>
-                        <div style="font-size:18px;font-weight:900;color:${isBehind ? '#dc2626' : '#059669'};margin-top:4px;">${projectedFinishStr}</div>
-                        <div style="font-size:11.5px;color:#64748b;margin-top:4px;">
-                            Target Rencana: <strong>${plannedEndStr}</strong>
+                    <div style="background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:10px;padding:14px;">
+                        <div style="font-size:11px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;">Estimasi Selesai Aktual</div>
+                        <div style="font-size:18px;font-weight:900;color:${isBehind ? 'var(--danger)' : 'var(--success)'};margin-top:4px;">${projectedFinishStr}</div>
+                        <div style="font-size:11.5px;color:var(--text-tertiary);margin-top:4px;">
+                            Target Rencana: <strong style="color:var(--text-secondary);">${plannedEndStr}</strong>
                         </div>
                     </div>
-                    <div style="background:${isBehind ? '#fef2f2' : '#f0fdf4'};border:1px solid ${isBehind ? '#fecaca' : '#bbf7d0'};border-radius:10px;padding:14px;grid-column:1 / -1;">
-                        <div style="font-size:12.5px;color:${isBehind ? '#991b1b' : '#166534'};line-height:1.6;">
+                    <div style="background:${isBehind ? 'var(--danger-bg)' : 'var(--success-bg)'};border:1px solid ${isBehind ? 'rgba(239,68,68,0.3)' : 'rgba(16,185,129,0.3)'};border-radius:10px;padding:14px;grid-column:1 / -1;">
+                        <div style="font-size:12.5px;color:${isBehind ? 'var(--danger)' : 'var(--success)'};line-height:1.6;">
                             ${recommendationMsg}
                         </div>
                     </div>
@@ -12674,7 +12745,10 @@ function formatHeader(sheet) {
 
             document.querySelectorAll(".nav-item").forEach(b => b.classList.remove("active"));
             const sideBtn = document.getElementById(`tab-${effectiveTabId}`); if (sideBtn) { sideBtn.classList.add("active"); sideBtn.setAttribute("aria-current", "page"); }
-            document.querySelectorAll(".bnav-item").forEach(b => b.classList.remove("active"));
+            document.querySelectorAll(".bnav-item").forEach(b => {
+                b.classList.remove("active");
+                if (typeof b.blur === "function") b.blur();
+            });
             const bnavBtn = document.getElementById(`bnav-${effectiveTabId}`);
             if (bnavBtn) {
                 bnavBtn.classList.add("active");
