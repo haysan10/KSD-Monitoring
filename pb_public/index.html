@@ -1024,6 +1024,77 @@
             80% { transform: translateX(2px); }
         }
 
+        /* ── Page Lapor (Input Progres) Enhanced Styles ── */
+        .lapor-hud-banner {
+            background: var(--surface-1);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--r-xl);
+            padding: 14px 18px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: var(--sp-5);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .form-section-block {
+            background: var(--surface-2);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--r-lg);
+            padding: 18px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .form-section-block:focus-within {
+            border-color: var(--border-medium);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        .photo-dropzone {
+            border: 2px dashed var(--border-medium);
+            border-radius: var(--r-lg);
+            padding: 18px 14px;
+            text-align: center;
+            background: var(--surface-1);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .photo-dropzone:hover {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+        .photo-dropzone:active {
+            transform: scale(0.99);
+        }
+
+        .preset-chip-btn {
+            padding: 5px 12px;
+            font-size: 11.5px;
+            font-weight: 700;
+            border-radius: var(--r-md);
+            border: 1px solid var(--border-subtle);
+            background: var(--surface-2);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            min-height: 32px;
+            touch-action: manipulation;
+        }
+        .preset-chip-btn:hover {
+            background: var(--surface-3);
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+        .preset-chip-btn:active {
+            transform: scale(0.95);
+        }
+
         /* ============================================================
        =================== APP SHELL ===================
        ============================================================ */
@@ -2716,29 +2787,36 @@
         input[type="range"] {
             -webkit-appearance: none;
             width: 100%;
-            height: 4px;
+            height: 8px;
             background: var(--surface-3);
             border-radius: var(--r-full);
             outline: none;
             cursor: pointer;
+            transition: background 150ms ease;
         }
 
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 18px;
-            height: 18px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             background: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-glow), var(--shadow-accent);
+            box-shadow: 0 0 0 4px var(--accent-glow), var(--shadow-accent);
             cursor: pointer;
+            transition: transform 150ms ease, box-shadow 150ms ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.12);
         }
 
         input[type="range"]::-moz-range-thumb {
-            width: 18px;
-            height: 18px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             background: var(--accent);
             border: none;
+            box-shadow: 0 0 0 4px var(--accent-glow), var(--shadow-accent);
+            cursor: pointer;
         }
 
         /* ============================================================
@@ -4175,38 +4253,79 @@
                     </div>
 
                     <div id="view-input" class="view-panel">
-                        <div style="display:grid;grid-template-columns:1fr;gap:var(--sp-5);">
-                            <div style="display:grid;gap:var(--sp-5);" id="inputLayoutGrid">
-                                <div class="card" id="inputProgressFormCard">
-                                    <div class="card-header">
-                                        <div>
-                                            <h3>Form Lapor Harian</h3>
-                                            <p>Masukkan data progres pekerjaan hari ini</p>
-                                        </div>
+                        <!-- Header Status Strip -->
+                        <div class="lapor-hud-banner">
+                            <div style="display:flex;align-items:center;gap:12px;">
+                                <div style="width:40px;height:40px;border-radius:var(--r-md);background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);display:flex;align-items:center;justify-content:center;color:var(--brand-amber);flex-shrink:0;">
+                                    <i data-lucide="pencil-line" style="width:20px;height:20px;"></i>
+                                </div>
+                                <div>
+                                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                                        <h3 style="font-size:16px;font-weight:800;color:var(--text-primary);margin:0;letter-spacing:-0.01em;">Pelaporan Progres Fisik Lapangan</h3>
+                                        <span style="display:inline-flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:9.5px;font-weight:700;letter-spacing:0.08em;padding:2px 8px;border-radius:9999px;background:rgba(245,158,11,0.14);color:var(--brand-amber);border:1px solid rgba(245,158,11,0.3);text-transform:uppercase;">
+                                            <span style="width:5px;height:5px;border-radius:50%;background:var(--brand-amber);animation:pulse 2s infinite;"></span>
+                                            SHIFT OPERATION
+                                        </span>
                                     </div>
-                                    <div class="card-body">
-                                        <form id="progressForm" onsubmit="handleProgressSubmit(event)"
-                                            class="form-grid form-grid-2">
-                                            <div class="field-light"><label>Tanggal</label><input type="date"
-                                                    id="inputDate" required
-                                                    onchange="syncSliderWithCurrentProgress()" /></div>
-                                            <div class="field-light">
-                                                <label>Head Jobdesk (IAC)</label>
-                                                <select id="inputIacSelect" onchange="populateSubJobdeskDropdown()"
-                                                    required>
-                                                    <option value="">-- Pilih IAC --</option>
-                                                </select>
+                                    <p style="font-size:12px;color:var(--text-secondary);margin:2px 0 0 0;">Input volume realisasi pekerjaan harian, tenaga kerja, dokumentasi foto, dan kendala lapangan.</p>
+                                </div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                                <span class="badge badge-accent" id="laporProjectBadge" style="font-size:11.5px;padding:4px 10px;font-weight:700;">
+                                    Proyek Aktif
+                                </span>
+                                <span style="display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:var(--success);background:var(--success-bg);border:1px solid rgba(16,185,129,0.3);padding:4px 10px;border-radius:var(--r-md);">
+                                    <i data-lucide="cloud-check" style="width:14px;height:14px;"></i> Offline Ready
+                                </span>
+                            </div>
+                        </div>
+
+                        <div style="display:grid;grid-template-columns:1fr;gap:var(--sp-6);" id="inputLayoutGrid">
+                            <!-- Main Form Card -->
+                            <div class="card" id="inputProgressFormCard" style="border:1px solid var(--border-medium);overflow:hidden;box-shadow:var(--shadow-card);">
+                                <div class="card-header" style="background:var(--surface-2);border-bottom:1px solid var(--border-subtle);display:flex;justify-content:space-between;align-items:center;padding:16px 20px;flex-wrap:wrap;gap:8px;">
+                                    <div style="display:flex;align-items:center;gap:10px;">
+                                        <span style="font-family:var(--font-mono);font-size:11px;font-weight:800;color:var(--accent);background:var(--accent-glow);border:1px solid rgba(37,99,235,0.25);border-radius:var(--r-sm);padding:3px 8px;">STEP 1 – 4</span>
+                                        <span style="font-size:14px;font-weight:800;color:var(--text-primary);">Formulir Pencatatan Harian</span>
+                                    </div>
+                                    <div style="font-size:11.5px;color:var(--text-tertiary);">* Kolom bertanda bintang wajib diisi</div>
+                                </div>
+
+                                <div class="card-body" style="padding:20px;background:var(--surface-1);">
+                                    <form id="progressForm" onsubmit="handleProgressSubmit(event)" style="display:flex;flex-direction:column;gap:18px;">
+                                        
+                                        <!-- SECTION 1: IDENTIFIKASI & LOKASI PEKERJAAN -->
+                                        <div class="form-section-block">
+                                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;border-bottom:1px solid var(--border-subtle);padding-bottom:10px;">
+                                                <div style="width:24px;height:24px;border-radius:var(--r-sm);background:var(--accent-glow);color:var(--accent);display:flex;align-items:center;justify-content:center;">
+                                                    <i data-lucide="map-pin" style="width:14px;height:14px;"></i>
+                                                </div>
+                                                <h4 style="font-size:12.5px;font-weight:800;color:var(--text-primary);text-transform:uppercase;letter-spacing:0.06em;margin:0;">1. Identifikasi Pekerjaan &amp; Area Kiln</h4>
                                             </div>
-                                            <div class="field-light" style="grid-column:1/-1;">
-                                                <label>Sub-Jobdesk</label>
-                                                <select id="inputSubSelect" onchange="syncSliderWithCurrentProgress()"
-                                                    required>
+                                            
+                                            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 240px), 1fr));gap:14px;">
+                                                <div class="field-light">
+                                                    <label for="inputDate">Tanggal Laporan *</label>
+                                                    <input type="date" id="inputDate" required onchange="syncSliderWithCurrentProgress()" style="font-weight:600;" />
+                                                </div>
+                                                <div class="field-light">
+                                                    <label for="inputIacSelect">Head Jobdesk (IAC) *</label>
+                                                    <select id="inputIacSelect" onchange="populateSubJobdeskDropdown()" required style="font-weight:600;">
+                                                        <option value="">-- Pilih IAC --</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div style="margin-top:14px;" class="field-light">
+                                                <label for="inputSubSelect">Sub-Jobdesk Spesifik *</label>
+                                                <select id="inputSubSelect" onchange="syncSliderWithCurrentProgress()" required style="font-weight:600;">
                                                     <option value="">-- Pilih Sub-Jobdesk --</option>
                                                 </select>
                                             </div>
-                                            <div class="field-light" style="grid-column:1/-1;">
-                                                <label>Lokasi Kerja (Master Terverifikasi)</label>
-                                                <select id="inputProgLocation" required>
+
+                                            <div style="margin-top:14px;" class="field-light">
+                                                <label for="inputProgLocation">Sektor / Lokasi Kerja (Master Terverifikasi) *</label>
+                                                <select id="inputProgLocation" required style="font-weight:600;">
                                                     <option value="">-- Pilih Sektor Kiln Shutdown --</option>
                                                     <optgroup label="🔥 Area Kiln Shell &amp; Refraktori">
                                                         <option value="Kiln Body &amp; Shell Replacement">Kiln Body &amp; Shell Replacement</option>
@@ -4238,116 +4357,198 @@
                                                     </optgroup>
                                                 </select>
                                             </div>
-                                            <div class="field-light" style="grid-column:1/-1;">
-                                                <label style="display:flex;justify-content:space-between;">
-                                                    Capaian Progres (Kumulatif)
-                                                    <span class="mono"
-                                                        style="font-size:14px;font-weight:700;color:var(--accent);"
-                                                        id="sliderValueTxt">0%</span>
-                                                </label>
-                                                <div style="padding:var(--sp-3) var(--sp-2);">
-                                                    <input type="range" id="inputProgressSlider" min="0" max="100"
-                                                        value="0"
-                                                        oninput="document.getElementById('sliderValueTxt').innerText = this.value + '%'" />
-                                                    <div id="sliderMinInfo" style="display:none;margin-top:6px;font-size:11px;font-weight:700;color:#2563eb;background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:6px 10px;">
-                                                        🔒 Capaian progres sebelum tanggal ini: <strong>0%</strong> (Progres kumulatif tidak dapat diturunkan)
+                                        </div>
+
+                                        <!-- SECTION 2: CAPAIAN PROGRES & BUKTI FOTO -->
+                                        <div class="form-section-block">
+                                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;border-bottom:1px solid var(--border-subtle);padding-bottom:10px;">
+                                                <div style="width:24px;height:24px;border-radius:var(--r-sm);background:rgba(245,158,11,0.12);color:var(--brand-amber);display:flex;align-items:center;justify-content:center;">
+                                                    <i data-lucide="trending-up" style="width:14px;height:14px;"></i>
+                                                </div>
+                                                <h4 style="font-size:12.5px;font-weight:800;color:var(--text-primary);text-transform:uppercase;letter-spacing:0.06em;margin:0;">2. Realisasi Progres &amp; Dokumentasi Visual</h4>
+                                            </div>
+
+                                            <!-- Tactile Progress Meter -->
+                                            <div style="background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:var(--r-lg);padding:16px;margin-bottom:16px;">
+                                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                                                    <div>
+                                                        <div style="font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.08em;">Capaian Progres Kumulatif *</div>
+                                                        <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px;">Geser slider atau gunakan tombol preset di bawah</div>
+                                                    </div>
+                                                    <div style="display:flex;align-items:baseline;gap:4px;">
+                                                        <span class="mono" id="sliderValueTxt" style="font-size:28px;font-weight:900;color:var(--accent);line-height:1;">0%</span>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="field-light" style="grid-column:1/-1;">
-                                                <label>Dokumentasi Foto (Opsional)</label>
-                                                <div style="display:flex;align-items:center;gap:var(--sp-3);">
-                                                    <input type="file" id="inputPhoto" accept="image/*" class="hidden"
-                                                        onchange="handlePhotoSelect(event)" />
-                                                    <button type="button"
-                                                        onclick="document.getElementById('inputPhoto').click()"
-                                                        class="btn btn-ghost btn-sm">Pilih Foto</button>
-                                                    <span id="photoFileName"
-                                                        style="font-size:12px;color:var(--text-tertiary);font-style:italic;">Belum
-                                                        ada foto</span>
+
+                                                <!-- Range Slider with larger touch ergonomics -->
+                                                <div style="padding:10px 2px;">
+                                                    <input type="range" id="inputProgressSlider" min="0" max="100" value="0"
+                                                        oninput="document.getElementById('sliderValueTxt').innerText = this.value + '%'"
+                                                        style="width:100%;" />
                                                 </div>
+
+                                                <!-- Quick Preset Buttons -->
+                                                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px;">
+                                                    <span style="font-size:10.5px;font-weight:700;color:var(--text-tertiary);margin-right:2px;">PRESET:</span>
+                                                    <button type="button" onclick="setProgressPreset(25)" class="preset-chip-btn">25%</button>
+                                                    <button type="button" onclick="setProgressPreset(50)" class="preset-chip-btn">50%</button>
+                                                    <button type="button" onclick="setProgressPreset(75)" class="preset-chip-btn">75%</button>
+                                                    <button type="button" onclick="setProgressPreset(100)" class="preset-chip-btn" style="color:var(--success);font-weight:800;">100%</button>
+                                                    <button type="button" onclick="adjustProgressStep(5)" class="preset-chip-btn" style="margin-left:auto;">+5%</button>
+                                                    <button type="button" onclick="adjustProgressStep(10)" class="preset-chip-btn">+10%</button>
+                                                </div>
+
+                                                <!-- Monotonic Guard Alert (Harmonized CSS Tokens) -->
+                                                <div id="sliderMinInfo" style="display:none;margin-top:12px;font-size:11.5px;font-weight:700;color:var(--accent);background:var(--accent-glow);border:1px solid rgba(37,99,235,0.3);border-radius:var(--r-md);padding:8px 12px;display:flex;align-items:center;gap:8px;">
+                                                    🔒 Capaian progres sebelum tanggal ini: <strong>0%</strong> (Progres kumulatif tidak dapat diturunkan)
+                                                </div>
+                                            </div>
+
+                                            <!-- Photo Upload Dropzone -->
+                                            <div class="field-light">
+                                                <label>Dokumentasi Foto Fisik (Opsional)</label>
+                                                <input type="file" id="inputPhoto" accept="image/*" class="hidden" onchange="handlePhotoSelect(event)" />
+                                                
+                                                <div class="photo-dropzone" onclick="document.getElementById('inputPhoto').click()">
+                                                    <div style="width:40px;height:40px;border-radius:50%;background:var(--surface-3);display:flex;align-items:center;justify-content:center;color:var(--accent);">
+                                                        <i data-lucide="camera" style="width:20px;height:20px;"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div style="font-size:13px;font-weight:700;color:var(--text-primary);">Ketuk untuk Buka Kamera / Pilih Foto</div>
+                                                        <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px;">Format JPG/PNG · Kompresi otomatis 800px untuk hemat kuota offline</div>
+                                                    </div>
+                                                    <span id="photoFileName" style="font-size:11.5px;font-weight:600;color:var(--accent);margin-top:2px;">Belum ada foto terpilih</span>
+                                                </div>
+
                                                 <div id="photoPreviewContainer" class="hidden"
-                                                    style="margin-top:var(--sp-3);position:relative;width:80px;height:60px;border-radius:var(--r-md);overflow:hidden;border:1px solid var(--border-subtle);">
-                                                    <img id="photoPreview"
-                                                        style="width:100%;height:100%;object-fit:cover;" />
+                                                    style="margin-top:12px;position:relative;width:120px;height:90px;border-radius:var(--r-md);overflow:hidden;border:2px solid var(--accent);box-shadow:var(--shadow-md);">
+                                                    <img id="photoPreview" style="width:100%;height:100%;object-fit:cover;" alt="Pratinjau Foto Dokumentasi" />
                                                     <button type="button" onclick="clearSelectedPhoto()" aria-label="Hapus foto terpilih" title="Hapus foto"
-                                                        style="position:absolute;top:3px;right:3px;background:var(--danger);color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;"><i
-                                                            data-lucide="x" aria-hidden="true"
-                                                            style="width:12px;height:12px;"></i></button>
+                                                        style="position:absolute;top:4px;right:4px;background:var(--danger);color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.3);">
+                                                        <i data-lucide="x" aria-hidden="true" style="width:13px;height:13px;"></i>
+                                                    </button>
                                                 </div>
                                             </div>
-                                            <div class="field-light" style="grid-column:1/-1;">
-                                                <label>Shift</label>
-                                                <select id="inputProgShift">
-                                                    <option value="">-- Pilih Shift --</option>
-                                                    <option value="Shift 1">Shift 1</option>
-                                                    <option value="Shift 2">Shift 2</option>
-                                                    <option value="Shift 3">Shift 3</option>
-                                                </select>
+                                        </div>
+
+                                        <!-- SECTION 3: OPERASIONAL & SUMBER DAYA -->
+                                        <div class="form-section-block">
+                                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;border-bottom:1px solid var(--border-subtle);padding-bottom:10px;">
+                                                <div style="width:24px;height:24px;border-radius:var(--r-sm);background:rgba(59,130,246,0.12);color:var(--accent);display:flex;align-items:center;justify-content:center;">
+                                                    <i data-lucide="users" style="width:14px;height:14px;"></i>
+                                                </div>
+                                                <h4 style="font-size:12.5px;font-weight:800;color:var(--text-primary);text-transform:uppercase;letter-spacing:0.06em;margin:0;">3. Shift Kerja &amp; Tenaga Lapangan</h4>
                                             </div>
-                                            <div class="field-light" style="grid-column:1/-1;">
-                                                <label>Manpower (Jumlah Orang)</label>
-                                                <input type="number" id="inputProgManpower" min="0">
+
+                                            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 200px), 1fr));gap:14px;">
+                                                <div class="field-light">
+                                                    <label for="inputProgShift">Shift Kerja *</label>
+                                                    <select id="inputProgShift" style="font-weight:600;">
+                                                        <option value="">-- Pilih Shift --</option>
+                                                        <option value="Shift 1">Shift 1 (Pagi 07:00 - 15:00)</option>
+                                                        <option value="Shift 2">Shift 2 (Sore 15:00 - 23:00)</option>
+                                                        <option value="Shift 3">Shift 3 (Malam 23:00 - 07:00)</option>
+                                                    </select>
+                                                </div>
+                                                <div class="field-light">
+                                                    <label for="inputProgManpower">Manpower (Jumlah Orang)</label>
+                                                    <input type="number" id="inputProgManpower" min="0" placeholder="Contoh: 8" style="font-weight:600;" />
+                                                </div>
                                             </div>
-                                            <div class="field-light" style="grid-column:1/-1;">
-                                                <label>Kode Delay</label>
-                                                <select id="inputProgDelay">
-                                                    <option value="">-- Pilih Kode Delay (Opsional) --</option>
-                                                    <option value="MATERIAL_DELAY">Material Delay</option>
-                                                    <option value="WEATHER">Cuaca Buruk / Hujan</option>
-                                                    <option value="EQUIPMENT">Kerusakan Alat / Equipment</option>
-                                                    <option value="MANPOWER">Kekurangan Manpower</option>
-                                                    <option value="DESIGN_CHANGE">Perubahan Desain</option>
-                                                    <option value="ACCESS">Akses Lokasi Terkendala</option>
+                                        </div>
+
+                                        <!-- SECTION 4: KENDALA, RECOVERY & CATATAN -->
+                                        <div class="form-section-block">
+                                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;border-bottom:1px solid var(--border-subtle);padding-bottom:10px;">
+                                                <div style="width:24px;height:24px;border-radius:var(--r-sm);background:rgba(239,68,68,0.12);color:var(--danger);display:flex;align-items:center;justify-content:center;">
+                                                    <i data-lucide="alert-triangle" style="width:14px;height:14px;"></i>
+                                                </div>
+                                                <h4 style="font-size:12.5px;font-weight:800;color:var(--text-primary);text-transform:uppercase;letter-spacing:0.06em;margin:0;">4. Kendala Lapangan &amp; Tindakan Mitigasi (Opsional)</h4>
+                                            </div>
+
+                                            <div class="field-light">
+                                                <label for="inputProgDelay">Kode Delay (Bila Ada Hambatan)</label>
+                                                <select id="inputProgDelay" style="font-weight:600;">
+                                                    <option value="">-- Tidak Ada Delay (Normal) --</option>
+                                                    <option value="MATERIAL_DELAY">Material Delay (Pasokan bata/castable tertunda)</option>
+                                                    <option value="WEATHER">Cuaca Buruk / Hujan Deras</option>
+                                                    <option value="EQUIPMENT">Kerusakan Alat / Mesin Bricklaying / Crane</option>
+                                                    <option value="MANPOWER">Kekurangan Tenaga Kerja</option>
+                                                    <option value="DESIGN_CHANGE">Perubahan Desain / Instruksi Engineering</option>
+                                                    <option value="ACCESS">Akses Lokasi Terkendala (Scaffolding / Confined Space)</option>
                                                     <option value="OTHER">Lain-lain</option>
                                                 </select>
                                             </div>
-                                            <div class="field-light" style="grid-column:1/-1;">
-                                                <label>Constraint (Kendala)</label>
-                                                <textarea id="inputProgConstraint" rows="2"></textarea>
-                                            </div>
-                                            <div class="field-light" style="grid-column:1/-1;">
-                                                <label>Recovery Action</label>
-                                                <textarea id="inputProgRecovery" rows="2"></textarea>
-                                            </div>
-                                            <div class="field-light" style="grid-column:1/-1;">
-                                                <label>Keterangan Lapangan (Opsional)</label>
-                                                <textarea id="inputRemarks"
-                                                    placeholder="Tuliskan catatan teknis..."></textarea>
-                                            </div>
-                                            <div style="grid-column:1/-1;">
-                                                <button type="submit" class="btn btn-accent" id="inputProgressSubmitBtn"
-                                                    style="width:100%;">Kirim Progres</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
 
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h3>Riwayat Pelaporan Terakhir</h3>
+                                            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 260px), 1fr));gap:14px;margin-top:14px;">
+                                                <div class="field-light">
+                                                    <label for="inputProgConstraint">Deskripsi Kendala (Constraint)</label>
+                                                    <textarea id="inputProgConstraint" rows="2" placeholder="Uraikan kendala bila ada..."></textarea>
+                                                </div>
+                                                <div class="field-light">
+                                                    <label for="inputProgRecovery">Tindakan Pemulihan (Recovery Action)</label>
+                                                    <textarea id="inputProgRecovery" rows="2" placeholder="Tindakan korektif yang dilakukan..."></textarea>
+                                                </div>
+                                            </div>
+
+                                            <div style="margin-top:14px;" class="field-light">
+                                                <label for="inputRemarks">Catatan Teknis Lapangan (Opsional)</label>
+                                                <textarea id="inputRemarks" rows="2" placeholder="Tuliskan catatan teknis tambahan, volume batching, dll..."></textarea>
+                                            </div>
+                                        </div>
+
+                                        <!-- SUBMIT BUTTON -->
+                                        <div style="margin-top:6px;">
+                                            <button type="submit" class="btn btn-accent" id="inputProgressSubmitBtn"
+                                                style="width:100%;min-height:50px;font-size:15px;font-weight:800;letter-spacing:0.02em;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:var(--shadow-md);">
+                                                <i data-lucide="send" style="width:18px;height:18px;"></i>
+                                                <span>Kirim &amp; Validasi Laporan Progres</span>
+                                            </button>
+                                            <div style="text-align:center;font-size:11.5px;color:var(--text-tertiary);margin-top:8px;">
+                                                Laporan akan langsung memperbarui kalkulasi Kurva-S dan disimpan secara aman ke database.
+                                            </div>
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- Recent Logs Table Card -->
+                            <div class="card" style="border:1px solid var(--border-medium);overflow:hidden;box-shadow:var(--shadow-card);">
+                                <div class="card-header" style="background:var(--surface-2);border-bottom:1px solid var(--border-subtle);display:flex;justify-content:space-between;align-items:center;padding:16px 20px;flex-wrap:wrap;gap:10px;">
+                                    <div style="display:flex;align-items:center;gap:10px;">
+                                        <div style="width:28px;height:28px;border-radius:var(--r-sm);background:var(--surface-3);display:flex;align-items:center;justify-content:center;color:var(--text-primary);">
+                                            <i data-lucide="clock" style="width:16px;height:16px;"></i>
+                                        </div>
+                                        <div>
+                                            <h3 style="font-size:14px;font-weight:800;color:var(--text-primary);margin:0;">Riwayat Pelaporan Terakhir</h3>
+                                            <p style="font-size:11.5px;color:var(--text-secondary);margin:2px 0 0 0;">10 entri pelaporan progres fisik terbaru pada proyek aktif</p>
+                                        </div>
                                     </div>
-                                    <div style="overflow-x:auto;" class="custom-scroll">
-                                        <table class="data-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Tanggal</th>
-                                                    <th>Sub ID</th>
-                                                    <th>Progres</th>
-                                                    <th>Keterangan</th>
-                                                    <th>Pelapor</th>
-                                                    <th style="text-align:right;">Foto</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="inputLogTableBody">
-                                                <tr>
-                                                    <td colspan="6"
-                                                        style="text-align:center;color:var(--text-tertiary);padding:var(--sp-8);">
-                                                        Belum ada riwayat.</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                    <span class="badge" style="font-family:var(--font-mono);font-size:10.5px;padding:3px 8px;background:var(--surface-1);border:1px solid var(--border-subtle);color:var(--text-secondary);">
+                                        REAL-TIME LOG
+                                    </span>
+                                </div>
+                                <div style="overflow-x:auto;" class="custom-scroll">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Tanggal</th>
+                                                <th>Sub ID</th>
+                                                <th>Progres</th>
+                                                <th>Keterangan</th>
+                                                <th>Pelapor</th>
+                                                <th style="text-align:right;">Foto</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="inputLogTableBody">
+                                            <tr>
+                                                <td colspan="6"
+                                                    style="text-align:center;color:var(--text-tertiary);padding:var(--sp-8);">
+                                                    Belum ada riwayat.</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -8557,6 +8758,27 @@ function renderAlertNotifications() {
             }
         }
 
+        function setProgressPreset(val) {
+            const slider = document.getElementById("inputProgressSlider");
+            const sliderText = document.getElementById("sliderValueTxt");
+            if (!slider) return;
+            const min = parseFloat(slider.min) || 0;
+            const target = Math.max(min, Math.min(100, Math.round(val)));
+            slider.value = target;
+            if (sliderText) sliderText.textContent = target + "%";
+        }
+
+        function adjustProgressStep(delta) {
+            const slider = document.getElementById("inputProgressSlider");
+            const sliderText = document.getElementById("sliderValueTxt");
+            if (!slider) return;
+            const min = parseFloat(slider.min) || 0;
+            const current = parseFloat(slider.value) || 0;
+            const target = Math.max(min, Math.min(100, Math.round(current + delta)));
+            slider.value = target;
+            if (sliderText) sliderText.textContent = target + "%";
+        }
+
         function setMatrixViewMode(mode) {
             state.matrixViewMode = mode;
             const wBtn = document.getElementById("matrixModeWeeklyBtn");
@@ -9065,9 +9287,17 @@ function renderAlertNotifications() {
                 const sub = (state.subs || []).find(s => s.id === log.subId);
                 const escapedRemarks = escapeHTML(log.remarks);
                 const escapedInputBy = escapeHTML(log.inputBy);
-                const photoBtn = log.photoUrl ? `<button onclick="openPhotoLightbox('${log.photoUrl}','${escapeHTML(sub?.title || log.subId)}','${escapedRemarks}','${escapedInputBy}','${log.date}')" style="color:var(--accent);font-weight:700;font-size:11px;cursor:pointer;background:none;border:none;">Buka</button>` : "—";
-                return `<tr><td>${log.date}</td><td class="mono" style="color:var(--text-secondary);font-weight:600;">${log.subId}</td><td style="font-weight:800;color:var(--accent);">${log.progress}%</td><td style="color:var(--text-secondary);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escapedRemarks}">${escapedRemarks}</td><td>${escapedInputBy}</td><td style="text-align:right;">${photoBtn}</td></tr>`;
+                const photoBtn = log.photoUrl ? `<button onclick="openPhotoLightbox('${log.photoUrl}','${escapeHTML(sub?.title || log.subId)}','${escapedRemarks}','${escapedInputBy}','${log.date}')" class="btn btn-ghost btn-xs" style="color:var(--accent);font-weight:700;font-size:11px;padding:3px 8px;border:1px solid var(--border-subtle);background:var(--surface-2);"><i data-lucide="image" style="width:12px;height:12px;"></i> Foto</button>` : `<span style="color:var(--text-tertiary);">—</span>`;
+                return `<tr>
+                    <td style="font-size:12px;font-weight:600;white-space:nowrap;">${log.date}</td>
+                    <td><span class="mono" style="font-size:11px;font-weight:700;color:var(--text-secondary);background:var(--surface-3);padding:2px 6px;border-radius:var(--r-sm);border:1px solid var(--border-subtle);">${log.subId}</span></td>
+                    <td><span style="font-weight:900;color:var(--accent);font-size:13.5px;">${log.progress}%</span></td>
+                    <td style="color:var(--text-secondary);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;" title="${escapedRemarks}">${escapedRemarks || "—"}</td>
+                    <td style="font-size:12px;color:var(--text-primary);font-weight:600;">${escapedInputBy || "—"}</td>
+                    <td style="text-align:right;">${photoBtn}</td>
+                </tr>`;
             }).join("") : `<tr><td colspan="6" style="text-align:center;color:var(--text-secondary);padding:var(--sp-8);">Belum ada riwayat progres.</td></tr>`;
+            lucideRefresh();
 
             const filterRange = document.getElementById("reportRangeFilter").value;
             
