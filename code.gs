@@ -1,2009 +1,1732 @@
 /**
- * KSD KILN Project Monitoring — Multi-Project Edition
- * Google Apps Script Backend Engine - Version 3.2 (Enterprise Custom Token Auth)
- * Berbasis ECMAScript 2023 & Google Spreadsheet Database
- */
+* ╔══════════════════════════════════════════════════════════════════╗
+* ║ GUDANG KILN — INVENTORY MANAGEMENT SYSTEM ║
+* ║ Backend Server (Google Apps Script) ║
+* ║ Version: 8.0 FINAL ║
+* ║ Author: Sandy @ VisualLab ║
+* ║ Last Updated: 2026-02-26 ║
+* ╚══════════════════════════════════════════════════════════════════╝
+*
+* CHANGELOG v8.0 (dari v7.5):
+* 📨 NEW: Telegram notifikasi SETIAP mutasi — detail per item
+* 📊 NEW: Laporan harian otomatis setiap jam 07:00 WIB
+* 📎 NEW: Laporan stok semua gudang dikirim sebagai file CSV via Telegram
+* 🔔 NEW: sendDailyStockReport() — dipanggil oleh Time-based Trigger
+* 🔔 NEW: setupDailyTrigger() — helper setup trigger otomatis
+* 🔔 NEW: removeDailyTrigger() — helper hapus trigger
+* ✨ KEEP: logStokSnapshot() — point-in-time tracking
+* 🐛 KEEP: getMutasiHistory() — fix nama kosong & paginasi
+* 🐛 KEEP: submitTransaction() — fix tanggal mutasi
+*
+* STRUKTUR SHEET:
+* ===============
+* 1. database — Master Data Barang
+* 2. mutasi — Transaction Log (16 kolom)
+* 3. audit — Adjustment Log
+* 4. stok_snapshot — Point-in-Time Inventory
+*
+* SETUP TRIGGER HARIAN:
+* =====================
+* Setelah deploy, jalankan fungsi setupDailyTrigger() SATU KALI
+* dari Apps Script Editor → Run → setupDailyTrigger
+* Trigger akan menjalankan sendDailyStockReport() setiap hari jam 07:00 WIB
+*/
 
-const SPREADSHEET_ID = ""; // Kosongkan jika script terikat ke spreadsheet terkait [cite: 1, 2]
+// ═══════════════════════════════════════════════════════════════════
+// CONFIGURATION
+// ═══════════════════════════════════════════════════════════════════
+
+const SS_ID = '1laPXicp0nNYUHDCts0IOLec7Caa16k3YzNwlTziRNgI';
+const DB_SHEET = 'database';
+const DEFAULT_PIN = '100700';
+const TIMEZONE = 'Asia/Jakarta';
+
+// ═══════════════════════════════════════════════════════════════════
+// UTILITY FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════
 
 /**
- * Mendapatkan objek spreadsheet aktif
- */
-function getDb() {
-  if (SPREADSHEET_ID && SPREADSHEET_ID !== "") {
-    return SpreadsheetApp.openById(SPREADSHEET_ID); // [cite: 2]
-  }
-  return SpreadsheetApp.getActiveSpreadsheet(); // [cite: 3]
+* Creates a header-to-index mapping for fast column lookup
+*/
+function getHeaderMap(sheet) {
+const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+return headers.reduce((acc, h, i) => {
+const key = h.toString().toLowerCase().trim().replace(/ /g, '_');
+acc[key] = i;
+return acc;
+}, {});
 }
 
 /**
- * Render halaman web utama
+* Parses HTML date input (YYYY-MM-DD) to JavaScript Date object
+*/
+function parseHtmlDate_(s) {
+if (!s || s === '') return '';
+if (Object.prototype.toString.call(s) === '[object Date]') return s;
+s = String(s).trim();
+const m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+if (!m) return '';
+return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+}
+
+/**
+* Formats Date object to human-readable string
+*/
+function formatDate_(val, includeTime = false) {
+if (!val) return '';
+const d = val instanceof Date ? val : new Date(val);
+if (isNaN(d.getTime())) return String(val);
+const format = includeTime ? 'yyyy-MM-dd HH:mm:ss' : 'yyyy-MM-dd';
+return Utilities.formatDate(d, TIMEZONE, format);
+}
+
+/**
+* Format angka dengan pemisah ribuan (misal: 1000 → "1.000")
+*/
+function fmtNum(n) {
+return Number(n || 0).toLocaleString('id-ID');
+}
+
+/**
+* Escape karakter khusus Telegram Markdown v1
+*/
+function escapeTg(str) {
+return String(str || '')
+.replace(/\*/g, '\\*')
+.replace(/_/g, '\\_');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// WEB APP & API ENTRY POINTS (KSD MONITOR INTEGRATION)
+// ═══════════════════════════════════════════════════════════════════
+
+/**
+ * Helper pembuat respons JSON untuk integrasi API eksternal
  */
-function doGet() {
-  const template = HtmlService.createTemplateFromFile('index'); // [cite: 3]
-  return template.evaluate()
-    .setTitle('KSD KILN Multi-Project Monitoring')
-    .setSandboxMode(HtmlService.SandboxMode.IFRAME)
+function createJsonResponse_(data) {
+  return ContentService.createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+/**
+ * HTTP GET Entry Point
+ * 1. Menangani request API dari KSD Monitor (?action=get_stock&category=Angkur,Castable)
+ * 2. Merender Web App UI Gudang Kiln jika diakses via browser secara langsung
+ */
+function doGet(e) {
+  // ── 1. API GET Handler dari KSD Monitor ────────────────────────────
+  if (e && e.parameter && e.parameter.action) {
+    const action = String(e.parameter.action).trim().toLowerCase();
+    if (action === 'get_stock') {
+      return handleApiGetStock_(e.parameter);
+    }
+  }
+
+  // ── 2. Render Tampilan Web App Bawaan ──────────────────────────────
+  return HtmlService.createHtmlOutputFromFile('index')
+    .setTitle('Gudang Kiln — Inventory System')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
-    .addMetaTag('viewport', 'width=device-width, initial-scale=1'); // [cite: 4]
+    .addMetaTag('viewport',
+      'width=device-width, initial-scale=1.0, maximum-scale=1.0, ' +
+      'user-scalable=no, viewport-fit=cover');
 }
 
 /**
- * Helper Enkripsi SHA-256 untuk Kata Sandi
+ * Handler HTTP GET untuk mengambil sisa stok fisik (Live Stock)
+ * Digunakan oleh Modul 08 KSD Monitor saat memilih item Angkur / Castable
  */
-function computeSHA256(input) {
-  const rawHash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_2_256 || Utilities.DigestAlgorithm.SHA_256, input, Utilities.Charset.UTF_8); // [cite: 5]
-  let output = ""; // [cite: 6]
-  for (let i = 0; i < rawHash.length; i++) {
-    let byteVal = rawHash[i]; // [cite: 6]
-    if (byteVal < 0) byteVal += 256; // [cite: 7]
-    let byteString = byteVal.toString(16); // [cite: 7]
-    if (byteString.length == 1) byteString = "0" + byteString; // [cite: 7]
-    output += byteString; // [cite: 8]
-  }
-  return output; // [cite: 8]
-}
-
-/**
- * Inisialisasi Database Multi-Project & Enkripsi Pengguna Bawaan
- */
-function setupDatabase() {
-  const db = getDb(); // [cite: 9]
-  
-  // 1. Tambahkan/Inisialisasi sheet-sheet utama jika belum ada, atau update headernya
-  const mainSheets = {
-    "Projects": ["Project_ID", "Name", "Area", "StartDate", "Status", "CreatedBy", "Timestamp"],
-    "Users": ["Username", "Name", "Role", "Password_Hash", "Session_Token", "Token_Expiry", "Must_Change_Password"],
-    "IAC": ["Project_ID", "IAC_ID", "Title", "Weight"],
-    "SubJobdesk": ["Project_ID", "Sub_ID", "IAC_ID", "Title", "Contractor", "Weight"],
-    "DailyProgress": ["Project_ID", "Date", "Sub_ID", "Progress", "Remarks", "InputBy", "Timestamp", "Photo_URL"],
-    "Validation": ["Project_ID", "Type", "User", "Timestamp", "Status", "Comment"],
-    "Alerts": ["Project_ID", "Alert_ID", "Type", "Item_ID", "Details", "Timestamp"]
-  };
-
-  for (let sheetName in mainSheets) {
-    let sheet = db.getSheetByName(sheetName);
+function handleApiGetStock_(params) {
+  try {
+    ensureSheets();
+    const ss = SpreadsheetApp.openById(SS_ID);
+    const sheet = ss.getSheetByName(DB_SHEET);
     if (!sheet) {
-      sheet = db.insertSheet(sheetName);
-      sheet.getRange(1, 1, 1, mainSheets[sheetName].length).setValues([mainSheets[sheetName]]);
-      sheet.getRange(1, 1, 1, mainSheets[sheetName].length).setFontWeight("bold").setBackground("#f1f5f9");
-    }
-  }
-
-  // Tambahkan user default jika kosong
-  let usersSheet = db.getSheetByName("Users");
-  if (usersSheet.getLastRow() <= 1) {
-    const defaultAdminHash = computeSHA256("admin123");
-    const defaultManagerHash = computeSHA256("manager123");
-    usersSheet.appendRow(["admin@ksd.com", "Superadmin KSD", "superadmin", defaultAdminHash, "", "", "FALSE"]);
-    usersSheet.appendRow(["manager@ksd.com", "Manager Lapangan", "manager", defaultManagerHash, "", "", "FALSE"]);
-  }
-
-  // 2. Tambah kolom baru V2 di akhir sheet existing
-  const extensionsV2 = {
-    "Projects": ["Planned_Finish_Date", "Shutdown_Type", "Baseline_Locked", "Overall_Status_Gate"],
-    "IAC": ["Phase", "Discipline", "Critical_Flag", "Criticality_Level", "Area_Tag"],
-    "SubJobdesk": ["Area_Detail", "Discipline", "Planned_Start", "Planned_Finish", "Predecessor_Sub_ID", "Critical_Flag", "Milestone_Flag"],
-    "DailyProgress": ["Shift", "Manpower_Actual", "Delay_Reason_Code", "Constraint_Description", "Recovery_Action"],
-    "Material_Log": ["Reported_By", "Timestamp"],
-    "Manpower_Log": ["Reported_By", "Timestamp"]
-  };
-
-  for (let sheetName in extensionsV2) {
-    let sheet = db.getSheetByName(sheetName);
-    if (sheet) {
-      let headers = sheet.getRange(1, 1, 1, sheet.getLastColumn() || 1).getValues()[0];
-      let newCols = extensionsV2[sheetName];
-      for (let i = 0; i < newCols.length; i++) {
-        if (headers.indexOf(newCols[i]) === -1) {
-          let lastCol = sheet.getLastColumn();
-          sheet.getRange(1, lastCol + 1).setValue(newCols[i]).setFontWeight("bold").setBackground("#f1f5f9");
-        }
-      }
-    }
-  }
-
-  // 3. Pembuatan sheet baru V2 (BaselineSchedule, Dependencies, Material_Log, Manpower_Log, Lessons_Learned)
-  const newSheetsV2 = {
-    "BaselineSchedule": ["Project_ID", "Sub_ID", "Planned_Start", "Planned_Finish", "Planned_Duration", "Planned_%_by_Date"],
-    "Dependencies": ["Project_ID", "Sub_ID", "Predecessor_Sub_ID"],
-    "Material_Log": ["Project_ID", "Sub_ID", "Material_Code", "Qty_Planned", "Qty_Issued", "Qty_Consumed", "Qty_Return", "Shortage", "Reported_By", "Timestamp"],
-    "Manpower_Log": ["Project_ID", "Sub_ID", "Date", "Contractor", "Shift", "Manpower_Actual", "Manhours_Actual", "Reported_By", "Timestamp"],
-    "Lessons_Learned": ["Project_ID", "Category", "Issue", "Root_Cause", "Impact", "Recommendation"]
-  };
-
-  for (let sheetName in newSheetsV2) {
-    let sheet = db.getSheetByName(sheetName);
-    if (!sheet) {
-      sheet = db.insertSheet(sheetName);
-      sheet.getRange(1, 1, 1, newSheetsV2[sheetName].length).setValues([newSheetsV2[sheetName]]);
-      sheet.getRange(1, 1, 1, newSheetsV2[sheetName].length).setFontWeight("bold").setBackground("#f1f5f9");
-    }
-  }
-
-  return "Database V2 Update Berhasil: Sheet & Kolom baru ditambahkan tanpa merusak data V1.";
-}
-
-
-/**
- * 🔐 ENDPOINT 1: Verifikasi Kredensial Login
- */
-function verifyLogin(username, password) {
-  try {
-    const db = getDb(); // [cite: 23]
-    let sheet = db.getSheetByName("Users"); // [cite: 24]
-    if (!sheet) {
-      setupDatabase(); // [cite: 24]
-      sheet = db.getSheetByName("Users"); // [cite: 24]
-    }
-    const values = sheet.getDataRange().getValues(); // [cite: 25]
-    const inputHash = computeSHA256(password); // [cite: 25]
-    for (let i = 1; i < values.length; i++) {
-      const dbUser = String(values[i][0]).toLowerCase(); // [cite: 26]
-      const inputUser = String(username).toLowerCase(); // [cite: 27]
-
-      if (dbUser === inputUser) {
-        const dbHash = values[i][3]; // [cite: 27]
-        if (dbHash === inputHash) { // [cite: 28]
-          const token = Utilities.getUuid(); // [cite: 28]
-          const expiryDate = new Date(); // [cite: 29]
-          expiryDate.setHours(expiryDate.getHours() + 2); // [cite: 29]
-          const expiryStr = expiryDate.toISOString(); // [cite: 29]
-
-          sheet.getRange(i + 1, 5).setValue(token); // [cite: 29]
-          sheet.getRange(i + 1, 6).setValue(expiryStr); // [cite: 29]
-          const mustChange = String(values[i][6]).toUpperCase() === "TRUE"; // [cite: 30]
-
-          const sessionData = {
-            username: values[i][0],
-            name: values[i][1],
-            role: values[i][2]
-          };
-          CacheService.getScriptCache().put(token, JSON.stringify(sessionData), 7200);
-
-          return {
-            success: true,
-            token: token,
-            username: values[i][0],
-            name: values[i][1],
-            role: values[i][2],
-            mustChange: mustChange
-          }; // [cite: 30]
-        }
-      }
-    }
-    return { success: false, error: "Username atau password salah!" }; // [cite: 31, 32]
-  } catch(e) {
-    return { success: false, error: e.toString() }; // [cite: 32]
-  }
-}
-
-/**
- * 🛡️ HELPER: Validasi Token & Hak Akses Sesi Aktif
- */
-function validateSession(token, allowedRoles = []) {
-  if (!token || token === "") {
-    throw new Error("UNAUTHORIZED"); // [cite: 33]
-  }
-  
-  // -- TAHAP 1: CACHE SERVICE OPTIMIZATION --
-  const cached = CacheService.getScriptCache().get(token);
-  if (cached) {
-    const user = JSON.parse(cached);
-    if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
-      throw new Error("FORBIDDEN");
-    }
-    return user;
-  }
-  // -----------------------------------------
-
-  const db = getDb(); // [cite: 34]
-  let sheet = db.getSheetByName("Users"); // [cite: 34]
-  if (!sheet) {
-    setupDatabase(); // [cite: 34]
-    sheet = db.getSheetByName("Users"); // [cite: 34]
-  }
-  const values = sheet.getDataRange().getValues(); // [cite: 35]
-  const now = new Date(); // [cite: 35]
-  for (let i = 1; i < values.length; i++) {
-    const dbToken = values[i][4]; // [cite: 36]
-    if (dbToken === token) { // [cite: 37]
-      const expiryStr = values[i][5]; // [cite: 37]
-      if (!expiryStr || expiryStr === "") {
-        throw new Error("SESSION_EXPIRED"); // [cite: 38]
-      }
-      const expiryDate = new Date(expiryStr); // [cite: 39]
-      if (now > expiryDate) {
-        throw new Error("SESSION_EXPIRED"); // [cite: 40]
-      }
-
-      const userRole = values[i][2]; // [cite: 41]
-      if (allowedRoles.length > 0 && !allowedRoles.includes(userRole)) {
-        throw new Error("FORBIDDEN"); // [cite: 42]
-      }
-
-      return {
-        username: values[i][0],
-        name: values[i][1],
-        role: userRole
-      }; // [cite: 43]
-    }
-  }
-  throw new Error("UNAUTHORIZED"); // [cite: 44]
-}
-
-/**
- * 🔐 ENDPOINT 2: Logout
- */
-function logout(token) {
-  try {
-    // BUG-22 FIX: Hapus token dari CacheService agar sesi benar-benar tidak valid
-    try { CacheService.getScriptCache().remove(token); } catch(ce) {}
-    const db = getDb();
-    const sheet = db.getSheetByName("Users");
-    const values = sheet.getDataRange().getValues();
-
-    for (let i = 1; i < values.length; i++) {
-      if (values[i][4] === token) {
-        sheet.getRange(i + 1, 5).setValue("");
-        sheet.getRange(i + 1, 6).setValue("");
-        break;
-      }
-    }
-    return { success: true };
-  } catch(e) {
-    return { success: false, error: e.toString() };
-  }
-}
-
-/**
- * 🔐 ENDPOINT 3: Force Change Password
- */
-function changePassword(token, newPassword) {
-  try {
-    const user = validateSession(token);
-    // BUG-23 FIX: Hapus cache agar token lama tidak bisa dipakai setelah ganti password
-    try { CacheService.getScriptCache().remove(token); } catch(ce) {}
-    const db = getDb();
-    const sheet = db.getSheetByName("Users");
-    const values = sheet.getDataRange().getValues();
-    const newHash = computeSHA256(newPassword);
-    for (let i = 1; i < values.length; i++) {
-      if (values[i][0] === user.username) {
-        sheet.getRange(i + 1, 4).setValue(newHash);
-        sheet.getRange(i + 1, 7).setValue("FALSE");
-        break;
-      }
-    }
-    return { success: true };
-  } catch(e) {
-    return { success: false, error: e.toString() };
-  }
-}
-
-/**
- * 👑 ENDPOINT 4: Superadmin membuat User baru
- */
-function createUser(token, username, name, role, initialPassword) {
-  try {
-    validateSession(token, ["superadmin"]); // [cite: 54]
-    const db = getDb(); // [cite: 55]
-    const sheet = db.getSheetByName("Users"); // [cite: 55]
-    const values = sheet.getDataRange().getValues(); // [cite: 55]
-    for (let i = 1; i < values.length; i++) {
-      if (String(values[i][0]).toLowerCase() === username.toLowerCase()) {
-        return { success: false, error: "Username sudah terdaftar!" }; // [cite: 56, 57]
-      }
-    }
-
-    const passHash = computeSHA256(initialPassword); // [cite: 57]
-    sheet.appendRow([username, name, role, passHash, "", "", "TRUE"]); // [cite: 57]
-    return { success: true }; // [cite: 58]
-  } catch (e) {
-    return { success: false, error: e.message === "SESSION_EXPIRED" || e.message === "UNAUTHORIZED" ? "Sesi Anda kedaluwarsa. Silakan login kembali." : e.toString() }; // [cite: 59, 60]
-  }
-}
-
-/**
- * 👑 ENDPOINT 5: Superadmin Reset Password User
- */
-function resetPassword(token, targetUsername, newPassword) {
-  try {
-    validateSession(token, ["superadmin"]); // [cite: 60]
-    const db = getDb(); // [cite: 61]
-    const sheet = db.getSheetByName("Users"); // [cite: 61]
-    const values = sheet.getDataRange().getValues(); // [cite: 61]
-    const newHash = computeSHA256(newPassword); // [cite: 61]
-    for (let i = 1; i < values.length; i++) {
-      if (values[i][0] === targetUsername) {
-        sheet.getRange(i + 1, 4).setValue(newHash); // [cite: 62]
-        sheet.getRange(i + 1, 7).setValue("TRUE"); // [cite: 63]
-        return { success: true }; // [cite: 63]
-      }
-    }
-    return { success: false, error: "User tidak ditemukan!" }; // [cite: 64]
-  } catch(e) {
-    return { success: false, error: e.toString() }; // [cite: 65]
-  }
-}
-
-/**
- * 👑 ENDPOINT 6: Superadmin menarik daftar Users
- */
-function getUsersList(token) {
-  try {
-    validateSession(token, ["superadmin"]); // [cite: 66]
-    const db = getDb(); // [cite: 67]
-    const sheet = db.getSheetByName("Users"); // [cite: 67]
-    const values = sheet.getDataRange().getValues(); // [cite: 67]
-    const users = []; // [cite: 67]
-    for (let i = 1; i < values.length; i++) {
-      users.push({
-        username: values[i][0],
-        name: values[i][1],
-        role: values[i][2],
-        mustChange: String(values[i][6]).toUpperCase() === "TRUE"
-      }); // [cite: 68]
-    }
-    
-    return JSON.parse(JSON.stringify({ success: true, users: users }));
-  } catch (error) {
-    if (error.message === "UNAUTHORIZED" || error.message === "SESSION_EXPIRED") {
-      return { success: false, error: "SESSION_EXPIRED" };
-    }
-    return { success: false, error: error.toString() };
-  }
-}
-
-/**
- * Menyimpan file foto yang diunggah ke Google Drive
- */
-function savePhotoToDrive(photoBase64, photoName) {
-  try {
-    const folders = DriveApp.getFoldersByName("KSD_Project_Photos"); // [cite: 95]
-    let folder; // [cite: 96]
-    if (folders.hasNext()) {
-      folder = folders.next(); // [cite: 96]
-    } else {
-      folder = DriveApp.createFolder("KSD_Project_Photos"); // [cite: 97]
-    }
-
-    const contentType = photoBase64.substring(5, photoBase64.indexOf(";")); // [cite: 97]
-    const base64Data = photoBase64.substring(photoBase64.indexOf(",") + 1); // [cite: 198]
-    const decoded = Utilities.base64Decode(base64Data); // [cite: 98]
-    const blob = Utilities.newBlob(decoded, contentType, photoName); // [cite: 98]
-
-    const file = folder.createFile(blob); // [cite: 98]
-    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW); // [cite: 99]
-    return file.getUrl();
-  } catch (e) {
-    Logger.log("Gagal mengunggah foto ke Google Drive: " + e.toString()); // [cite: 99]
-    return ""; // [cite: 100]
-  }
-}
-
-/**
- * Mendapatkan seluruh daftar proyek
- */
-function getProjectsList() {
-  try {
-    const db = getDb(); // [cite: 100]
-    if (!db.getSheetByName("Projects")) {
-      setupDatabase(); // [cite: 101]
-    }
-    const sheet = db.getSheetByName("Projects"); // [cite: 101]
-    const values = sheet.getDataRange().getValues(); // [cite: 102]
-    const projects = [];
-    for (let i = 1; i < values.length; i++) {
-      projects.push({
-        id: values[i][0],
-        name: values[i][1],
-        area: values[i][2],
-        startDate: formatDate(values[i][3]), // [cite: 102]
-        status: values[i][4]
+      return createJsonResponse_({
+        success: false,
+        error: 'Sheet database "' + DB_SHEET + '" tidak ditemukan.'
       });
     }
-    return projects; // [cite: 103]
-  } catch(e) {
-    return []; // [cite: 103]
-  }
-}
 
+    const data = sheet.getDataRange().getValues();
+    const hMap = getHeaderMap(sheet);
 
-/**
- * 📝 ENDPOINT: Ambil seluruh data satu proyek aktif (dipanggil oleh triggerSync())
- * Mengembalikan semua data yang dibutuhkan frontend: IAC, Sub, Progress, Validasi,
- * Alert, Baseline, Dependencies, dan computed progress.
- */
-function getProjectData(token, projectId) {
-  try {
-    const sessionUser = validateSession(token);
-    const db = getDb();
-
-    if (!db.getSheetByName("Projects")) {
-      setupDatabase();
+    // Filter kategori jika parameter disertakan (contoh: "Angkur,Castable")
+    let targetCats = [];
+    if (params.category) {
+      targetCats = String(params.category)
+        .split(',')
+        .map(c => c.trim().toLowerCase())
+        .filter(Boolean);
     }
 
-    const projects = getProjectsList();
-    if (projects.length === 0) {
-      return { success: false, error: "Tidak ada proyek terdaftar." };
-    }
+    const items = [];
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      const code = String(row[hMap.code_barang] || '').trim();
+      if (!code) continue;
 
-    const activeProjectId = projectId || projects[0].id;
-    const projectInfo = projects.find(p => p.id === activeProjectId) || projects[0];
+      const cat = String(row[hMap.kategori_barang] || '').trim();
+      const catLower = cat.toLowerCase();
 
-    const iacSheet = db.getSheetByName("IAC").getDataRange().getValues();
-    const subSheet = db.getSheetByName("SubJobdesk").getDataRange().getValues();
-    const progressSheet = db.getSheetByName("DailyProgress").getDataRange().getValues();
-    const validationSheet = db.getSheetByName("Validation").getDataRange().getValues();
-
-    // Baca BaselineSchedule & Dependencies (optional — toleran jika belum ada)
-    const depsSheetRaw = db.getSheetByName("Dependencies") ? db.getSheetByName("Dependencies").getDataRange().getValues() : [];
-    const baselineSheetRaw = db.getSheetByName("BaselineSchedule") ? db.getSheetByName("BaselineSchedule").getDataRange().getValues() : [];
-
-    const iacs = [];
-    for (let i = 1; i < iacSheet.length; i++) {
-      if (iacSheet[i][0] === activeProjectId) {
-        iacs.push({
-          id: iacSheet[i][1],
-          title: iacSheet[i][2],
-          weight: parseFloat(iacSheet[i][3]) || 0
-        });
+      if (targetCats.length > 0) {
+        const matches = targetCats.some(tc => catLower.indexOf(tc) !== -1);
+        if (!matches) continue;
       }
+
+      items.push({
+        code: code,
+        name: String(row[hMap.nama_barang] || '').trim(),
+        category: cat,
+        stock: Number(row[hMap.stok_awal]) || 0,
+        unit: String(row[hMap.satuan_barang] || '').trim(),
+        minStock: Number(row[hMap.min_stok]) || 0,
+        gudang: String(row[hMap.gudang] || '').trim()
+      });
     }
 
-    const subs = [];
-    for (let i = 1; i < subSheet.length; i++) {
-      if (subSheet[i][0] === activeProjectId) {
-        subs.push({
-          id: subSheet[i][1],
-          iacId: subSheet[i][2],
-          title: subSheet[i][3],
-          contractor: subSheet[i][4],
-          weight: parseFloat(subSheet[i][5]) || 0
-        });
-      }
-    }
-
-    const progress = [];
-    for (let i = 1; i < progressSheet.length; i++) {
-      if (progressSheet[i][0] === activeProjectId) {
-        progress.push({
-          date: formatDate(progressSheet[i][1]),
-          subId: progressSheet[i][2],
-          progress: parseFloat(progressSheet[i][3]) || 0,
-          remarks: progressSheet[i][4],
-          inputBy: progressSheet[i][5],
-          timestamp: progressSheet[i][6] instanceof Date ? progressSheet[i][6].toISOString() : String(progressSheet[i][6] || ""),
-          photoUrl: progressSheet[i][7] || ""
-        });
-      }
-    }
-    progress.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-    const validations = [];
-    for (let i = 1; i < validationSheet.length; i++) {
-      if (validationSheet[i][0] === activeProjectId) {
-        validations.push({
-          type: validationSheet[i][1],
-          user: validationSheet[i][2],
-          timestamp: validationSheet[i][3] instanceof Date ? validationSheet[i][3].toISOString() : String(validationSheet[i][3] || ""),
-          status: validationSheet[i][4],
-          comment: validationSheet[i][5]
-        });
-      }
-    }
-
-    // dependencies[]: { subId, predecessorId, critical_flag }
-    const dependencies = [];
-    for (let i = 1; i < depsSheetRaw.length; i++) {
-      if (depsSheetRaw[i][0] === activeProjectId) {
-        dependencies.push({
-          subId: depsSheetRaw[i][1],
-          predecessorId: depsSheetRaw[i][2],
-          critical_flag: Boolean(depsSheetRaw[i][3])
-        });
-      }
-    }
-
-    // baseline[]: { subId, plannedStart, plannedFinish, plannedDuration }
-    const baseline = [];
-    for (let i = 1; i < baselineSheetRaw.length; i++) {
-      if (baselineSheetRaw[i][0] === activeProjectId) {
-        baseline.push({
-          subId: baselineSheetRaw[i][1],
-          plannedStart: baselineSheetRaw[i][2] instanceof Date ? baselineSheetRaw[i][2].toISOString().slice(0, 10) : String(baselineSheetRaw[i][2] || ""),
-          plannedFinish: baselineSheetRaw[i][3] instanceof Date ? baselineSheetRaw[i][3].toISOString().slice(0, 10) : String(baselineSheetRaw[i][3] || ""),
-          plannedDuration: baselineSheetRaw[i][4]
-        });
-      }
-    }
-
-    const computedData = calculateProgress(iacs, subs, progress, projectInfo);
-    
-    const alertsSheetObj = db.getSheetByName("Alerts");
-    const alertsSheetValues = alertsSheetObj ? alertsSheetObj.getDataRange().getValues() : [[]];
-    const alerts = runAlertAnalysis(activeProjectId, computedData, progress, projectInfo, alertsSheetValues, false, baselineSheetRaw);
-
-    // Tentukan status "Completed": overallProgress===100 DAN ada superadmin_finalize Approved
-    const isCompleted = computedData.overallProgress === 100 &&
-                        validations.some(v => v.type === "superadmin_finalize" && v.status === "Approved");
-
-    return JSON.parse(JSON.stringify({
+    return createJsonResponse_({
       success: true,
-      projects: projects,
-      activeProjectId: activeProjectId,
-      currentUser: sessionUser,
-      config: {
-        projectName: projectInfo.name,
-        area: projectInfo.area,
-        startDatePlanned: projectInfo.startDate,
-        status: isCompleted ? "Completed" : projectInfo.status
-      },
-      iacs: computedData.iacs,
-      subs: computedData.subs,
-      dailyProgress: progress,
-      validations: validations,
-      alerts: alerts,
-      dependencies: dependencies,
-      baseline: baseline,
-      overallProgress: computedData.overallProgress,
-      actualStartDate: projectInfo.startDate,
-      actualDuration: computedData.actualDuration
-    }));
-  } catch (error) {
-    if (error.message === "UNAUTHORIZED" || error.message === "SESSION_EXPIRED") {
-      return { success: false, error: "SESSION_EXPIRED" };
-    }
-    return { success: false, error: error.toString() };
+      timestamp: new Date().toISOString(),
+      count: items.length,
+      data: items
+    });
+  } catch (err) {
+    return createJsonResponse_({
+      success: false,
+      error: 'Gagal mengambil data stok Gudang Kiln: ' + err.toString()
+    });
   }
 }
 
 /**
- * Membuat Project Baru
+ * HTTP POST Entry Point
+ * Menerima mutasi pemakaian dari KSD Monitor (tipe 'OUT')
+ * Memotong sisa stok fisik di Google Sheet & memicu notifikasi Telegram
  */
-function createNewProject(token, id, name, area, startDate) {
-  const lock = LockService.getScriptLock();
+function doPost(e) {
   try {
-    lock.waitLock(10000);
-    const user = validateSession(token, ["superadmin"]); 
-    const db = getDb(); 
-    const sheet = db.getSheetByName("Projects"); 
-    const data = sheet.getDataRange().getValues(); 
-    for (let i = 1; i < data.length; i++) {
-      if (data[i][0] === id) {
-        return { success: false, error: `ID Project ${id} sudah terdaftar!` }; 
-      }
+    if (!e || !e.postData || !e.postData.contents) {
+      return createJsonResponse_({
+        success: false,
+        error: 'Payload POST kosong atau format tidak didukung.'
+      });
     }
-    sheet.appendRow([id, name, area, startDate, "In Progress", user.name, new Date().toISOString()]); 
-    return { success: true }; 
-  } catch (error) {
-    return { success: false, error: error.message === "SESSION_EXPIRED" ? "SESSION_EXPIRED" : error.toString() }; 
-  } finally {
-    lock.releaseLock();
-  }
-}
 
-/**
- * Menyimpan Konfigurasi Project Multi-Project
- */
-function updateConfig(token, projectId, configData) {
-  try {
-    validateSession(token, ["superadmin"]); // [cite: 109]
-    const db = getDb(); // [cite: 110]
-    const sheet = db.getSheetByName("Projects"); // [cite: 110]
-    const dataRange = sheet.getDataRange(); // [cite: 110]
-    const values = dataRange.getValues(); // [cite: 110]
-    for (let i = 1; i < values.length; i++) {
-      if (values[i][0] === projectId) {
-        sheet.getRange(i + 1, 2).setValue(configData.projectName); // [cite: 111]
-        sheet.getRange(i + 1, 3).setValue(configData.area); // [cite: 112]
-        sheet.getRange(i + 1, 4).setValue(configData.startDatePlanned); // [cite: 112]
-        break;
-      }
+    let payload;
+    try {
+      payload = JSON.parse(e.postData.contents);
+    } catch (parseErr) {
+      return createJsonResponse_({
+        success: false,
+        error: 'Format payload bukan JSON valid: ' + parseErr.message
+      });
     }
-    return { success: true }; // [cite: 112]
-  } catch (error) {
-    return { success: false, error: error.message === "SESSION_EXPIRED" ? "SESSION_EXPIRED" : error.toString() }; // [cite: 113]
-  }
-}
 
-/**
- * Menambahkan data IAC baru
- */
-function addIAC(token, projectId, id, title, weight) {
-  const lock = LockService.getScriptLock();
-  try {
-    lock.waitLock(10000);
-    validateSession(token, ["superadmin"]); 
-    const db = getDb(); 
-    const sheet = db.getSheetByName("IAC"); 
-    const data = sheet.getDataRange().getValues(); 
-    for (let i = 1; i < data.length; i++) {
-      if (data[i][0] === projectId && data[i][1] === id) {
-        return { success: false, error: `ID IAC ${id} sudah terdaftar di proyek ini!` }; 
-      }
-    }
-    sheet.appendRow([projectId, id, title, weight]); 
-    return { success: true }; 
-  } catch (error) {
-    return { success: false, error: error.message === "SESSION_EXPIRED" ? "SESSION_EXPIRED" : error.toString() }; 
-  } finally {
-    lock.releaseLock();
-  }
-}
+    const actionType = String(payload.type || payload.action || 'OUT').toUpperCase();
+    const nik = String(payload.nik || payload.user || payload.reportedBy || 'KSD_CONTRACTOR').trim();
+    const section = String(payload.section || 'KSD Monitor - Kiln Overhaul').trim();
+    const note = String(payload.note || payload.remarks || 'Pemotongan stok otomatis dari KSD Monitor').trim();
+    const dateStr = payload.tanggal_pengambilan_barang || formatDate_(new Date());
 
-/**
- * Menambahkan SubJobdesk baru
- */
-function addSubJobdesk(token, projectId, id, iacId, title, contractor, weight) {
-  const lock = LockService.getScriptLock();
-  try {
-    lock.waitLock(10000);
-    validateSession(token, ["superadmin"]); 
-    const db = getDb(); 
-    const sheet = db.getSheetByName("SubJobdesk"); 
-    const data = sheet.getDataRange().getValues(); 
-    for (let i = 1; i < data.length; i++) {
-      if (data[i][0] === projectId && data[i][1] === id) {
-        return { success: false, error: `ID Sub-Jobdesk ${id} sudah terdaftar di proyek ini!` }; 
-      }
-    }
-    sheet.appendRow([projectId, id, iacId, title, contractor, weight]); 
-    return { success: true }; 
-  } catch (error) {
-    return { success: false, error: error.message === "SESSION_EXPIRED" ? "SESSION_EXPIRED" : error.toString() }; 
-  } finally {
-    lock.releaseLock();
-  }
-}
-
-/**
- * 🛠️ SETUP BASELINE SCHEDULE & DEPENDENCIES
- */
-function setupBaselineAndDependencies(token, projectId, subId, plannedStart, plannedFinish, predId, criticalFlag) {
-  const lock = LockService.getScriptLock();
-  try {
-    lock.waitLock(10000);
-  } catch (e) {
-    return { success: false, error: "Sistem sibuk diproses user lain. Coba lagi." };
-  }
-  
-  try {
-    validateSession(token);
-    
-    // Validasi & Sanitasi Input
-    if (!subId || !subId.trim()) return { success: false, error: "Sub-Jobdesk ID tidak boleh kosong." };
-    subId = subId.trim();
-    if (!plannedStart || !/^\d{4}-\d{2}-\d{2}$/.test(plannedStart)) return { success: false, error: "Format Planned Start tidak valid." };
-    if (!plannedFinish || !/^\d{4}-\d{2}-\d{2}$/.test(plannedFinish)) return { success: false, error: "Format Planned Finish tidak valid." };
-    
-    const startObj = new Date(plannedStart);
-    const finishObj = new Date(plannedFinish);
-    if (startObj > finishObj) return { success: false, error: "Planned Start tidak boleh melewati Planned Finish." };
-    
-    predId = String(predId || "").trim();
-    criticalFlag = !!criticalFlag;
-    
-    const db = getDb();
-    
-    // Update BaselineSchedule
-    const baseSheet = db.getSheetByName("BaselineSchedule");
-    if (!baseSheet) return { success: false, error: "Sheet BaselineSchedule tidak ditemukan. Hubungi Admin." };
-    
-    const duration = Math.ceil((finishObj - startObj) / (1000 * 60 * 60 * 24)) + 1;
-    const baseValues = baseSheet.getDataRange().getValues();
-    let baseRowIndex = -1;
-    for (let i = 1; i < baseValues.length; i++) {
-      if (baseValues[i][0] === projectId && baseValues[i][1] === subId) {
-        baseRowIndex = i + 1;
-        break;
-      }
-    }
-    
-    if (baseRowIndex > -1) {
-      baseSheet.getRange(baseRowIndex, 3).setValue(plannedStart);
-      baseSheet.getRange(baseRowIndex, 4).setValue(plannedFinish);
-      baseSheet.getRange(baseRowIndex, 5).setValue(duration);
+    let rawItems = [];
+    if (Array.isArray(payload.items) && payload.items.length > 0) {
+      rawItems = payload.items;
+    } else if (payload.code || payload.materialCode || payload.itemCode) {
+      rawItems = [{
+        code: payload.code || payload.materialCode || payload.itemCode,
+        qty: Number(payload.qty || payload.qtyConsumed || payload.quantity) || 0
+      }];
     } else {
-      baseSheet.appendRow([projectId, subId, plannedStart, plannedFinish, duration, ""]);
+      return createJsonResponse_({
+        success: false,
+        error: 'Item barang mutasi tidak ditemukan dalam payload.'
+      });
     }
-    
-    // Update Dependencies
-    const depSheet = db.getSheetByName("Dependencies");
-    if (!depSheet) return { success: false, error: "Sheet Dependencies tidak ditemukan." };
-    
-    const depValues = depSheet.getDataRange().getValues();
-    let depRowIndex = -1;
-    for (let i = 1; i < depValues.length; i++) {
-      if (depValues[i][0] === projectId && depValues[i][1] === subId) {
-        depRowIndex = i + 1;
-        break;
-      }
-    }
-    
-    // Ensure header length for Critical_Flag
-    if (depValues[0].length < 4) {
-        depSheet.getRange(1, 4).setValue("Critical_Flag");
-    }
-    
-    if (depRowIndex > -1) {
-      depSheet.getRange(depRowIndex, 3).setValue(predId);
-      depSheet.getRange(depRowIndex, 4).setValue(criticalFlag);
-    } else {
-      depSheet.appendRow([projectId, subId, predId, criticalFlag]);
-    }
-    
-    return { success: true };
-  } catch (error) {
-    return { success: false, error: error.message === "SESSION_EXPIRED" ? "SESSION_EXPIRED" : error.toString() };
-  } finally {
-    lock.releaseLock();
-  }
-}
 
-/**
- * 🛠️ SETUP MATERIAL LOG
- */
-function submitMaterialLog(token, projectId, subId, materialCode, qtyPlanned, qtyIssued, qtyConsumed, qtyReturn, shortage) {
-  const lock = LockService.getScriptLock();
-  try {
-    lock.waitLock(10000);
-  } catch (e) {
-    return { success: false, error: "Sistem sibuk diproses user lain. Coba lagi." };
-  }
-  
-  try {
-    const user = validateSession(token);
-    if (!subId || !subId.trim() || !materialCode || !materialCode.trim()) {
-      return { success: false, error: "Sub-Jobdesk ID dan Kode Material wajib diisi." };
-    }
-    
-    const db = getDb();
-    const sheet = db.getSheetByName("Material_Log");
-    if (!sheet) return { success: false, error: "Sheet Material_Log tidak ditemukan." };
-    
-    sheet.appendRow([
-      projectId, 
-      subId.trim(), 
-      materialCode.trim(), 
-      parseFloat(qtyPlanned) || 0,
-      parseFloat(qtyIssued) || 0,
-      parseFloat(qtyConsumed) || 0,
-      parseFloat(qtyReturn) || 0,
-      parseFloat(shortage) || 0,
-      user.name,
-      new Date().toISOString()
-    ]);
-    
-    return { success: true };
-  } catch (error) {
-    return { success: false, error: error.message === "SESSION_EXPIRED" ? "SESSION_EXPIRED" : error.toString() };
-  } finally {
-    lock.releaseLock();
-  }
-}
-
-/**
- * 🛠️ SETUP MANPOWER LOG
- */
-function submitManpowerLog(token, projectId, subId, dateStr, contractor, shift, manpowerCount, manhours) {
-  const lock = LockService.getScriptLock();
-  try {
-    lock.waitLock(10000);
-  } catch (e) {
-    return { success: false, error: "Sistem sibuk diproses user lain. Coba lagi." };
-  }
-  
-  try {
-    const user = validateSession(token);
-    if (!subId || !subId.trim() || !dateStr) {
-      return { success: false, error: "Sub-Jobdesk ID dan Tanggal wajib diisi." };
-    }
-    
-    const db = getDb();
-    const sheet = db.getSheetByName("Manpower_Log");
-    if (!sheet) return { success: false, error: "Sheet Manpower_Log tidak ditemukan." };
-    
-    sheet.appendRow([
-      projectId, 
-      subId.trim(), 
-      dateStr,
-      String(contractor || "").trim(),
-      String(shift || "").trim(),
-      parseInt(manpowerCount, 10) || 0,
-      parseFloat(manhours) || 0,
-      user.name,
-      new Date().toISOString()
-    ]);
-    
-    return { success: true };
-  } catch (error) {
-    return { success: false, error: error.message === "SESSION_EXPIRED" ? "SESSION_EXPIRED" : error.toString() };
-  } finally {
-    lock.releaseLock();
-  }
-}
-
-/**
- * 🛠️ SUBMIT LESSONS LEARNED
- */
-function submitLessonsLearned(token, projectId, category, issue, rootCause, impact, recommendation) {
-  const lock = LockService.getScriptLock();
-  try {
-    lock.waitLock(10000);
-  } catch (e) {
-    return { success: false, error: "Sistem sibuk diproses user lain. Coba lagi." };
-  }
-  
-  try {
-    const user = validateSession(token);
-    if (!category || !category.trim() || !issue || !issue.trim()) {
-      return { success: false, error: "Kategori dan Isu/Kendala wajib diisi." };
-    }
-    
-    const db = getDb();
-    const sheet = db.getSheetByName("Lessons_Learned");
-    if (!sheet) return { success: false, error: "Sheet Lessons_Learned tidak ditemukan." };
-    
-    sheet.appendRow([
-      projectId, 
-      String(category).trim(),
-      String(issue).trim(),
-      String(rootCause || "").trim(),
-      String(impact || "").trim(),
-      String(recommendation || "").trim()
-    ]);
-    
-    return { success: true };
-  } catch (error) {
-    return { success: false, error: error.message === "SESSION_EXPIRED" ? "SESSION_EXPIRED" : error.toString() };
-  } finally {
-    lock.releaseLock();
-  }
-}
-
-/**
- * 🛠️ INPUT PROGRES HARIAN (Sisi Server Idempotent & Validasi Logika Kumulatif)
- */
-function submitDailyProgress(token, projectId, dateStr, subId, progress, remarks, photoBase64, photoName, shift, manpower, delayCode, constraint, recovery) {
-  const lock = LockService.getScriptLock();
-  try {
-    lock.waitLock(15000);
-  } catch (e) {
-    return { success: false, error: "Sistem sibuk diproses user lain. Coba lagi." };
-  }
-  try {
-    const user = validateSession(token);
-    
-    // T2-3b: Input Validation & Sanitization
-    progress = parseFloat(progress);
-    if (isNaN(progress) || progress < 0 || progress > 100) {
-      return { success: false, error: "Progress harus berupa angka antara 0 hingga 100." };
-    }
-    if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
-      return { success: false, error: "Format tanggal tidak valid." };
-    }
-    remarks = String(remarks || "").trim();
-    shift = String(shift || "").trim();
-    manpower = String(manpower || "").trim();
-    delayCode = String(delayCode || "").trim();
-    constraint = String(constraint || "").trim();
-    recovery = String(recovery || "").trim();
-    
-    const db = getDb();
-    
-    // DEPENDENCY CHECK
-    const depsSheet = db.getSheetByName("Dependencies");
-    if (depsSheet) {
-      const depsData = depsSheet.getDataRange().getValues();
-      let predId = null;
-      for (let i = 1; i < depsData.length; i++) {
-        if (depsData[i][0] === projectId && depsData[i][1] === subId) {
-          predId = depsData[i][2];
-          break;
-        }
-      }
-      if (predId) {
-        const progSheet = db.getSheetByName("DailyProgress");
-        const progData = progSheet.getDataRange().getValues();
-        let predMax = 0;
-        for (let j = 1; j < progData.length; j++) {
-          if (progData[j][0] === projectId && progData[j][2] === predId) {
-            const p = parseFloat(progData[j][3]) || 0;
-            if (p > predMax) predMax = p;
+    // Resolusi gudang barang
+    let targetGudang = String(payload.gudang || '').trim();
+    if (!targetGudang) {
+      const ss = SpreadsheetApp.openById(SS_ID);
+      const dbSheet = ss.getSheetByName(DB_SHEET);
+      if (dbSheet) {
+        const dbData = dbSheet.getDataRange().getValues();
+        const hMap = getHeaderMap(dbSheet);
+        const searchCode = String(rawItems[0].code).trim();
+        for (let i = 1; i < dbData.length; i++) {
+          if (String(dbData[i][hMap.code_barang]).trim() === searchCode) {
+            targetGudang = String(dbData[i][hMap.gudang] || '').trim();
+            break;
           }
         }
-        if (predMax < 100) {
-          return { success: false, error: `Predecessor (${predId}) belum 100% selesai (saat ini ${predMax}%). Selesaikan predecessor terlebih dahulu.` };
-        }
       }
     }
-    
-    const sheet = db.getSheetByName("DailyProgress");
-    const values = sheet.getDataRange().getValues();
-    const reporter = user.name;
-    const timestamp = new Date().toISOString();
+    if (!targetGudang) targetGudang = 'Gudang Utama';
 
-    let maxOtherProgress = 0;
-    let rowIndexToUpdate = -1;
-
-    for (let i = 1; i < values.length; i++) {
-      const rowProjId = values[i][0];
-      const rowDateStr = formatDate(values[i][1]);
-      const rowSubId = values[i][2];
-      const rowProg = parseFloat(values[i][3]) || 0;
-
-      if (rowProjId === projectId && rowSubId === subId) {
-        if (rowDateStr === dateStr) {
-          rowIndexToUpdate = i + 1;
-        } else {
-          if (rowProg > maxOtherProgress) maxOtherProgress = rowProg;
-        }
-      }
-    }
-
-    if (progress < maxOtherProgress) {
-      return { 
-        success: false, 
-        error: `Validasi Gagal: Sub-pekerjaan ini sudah memiliki pencapaian ${maxOtherProgress}% di tanggal lain. Progres tidak boleh diturunkan!` 
-      };
-    }
-
-    let photoUrl = "";
-    if (photoBase64 && photoBase64 !== "") {
-      photoUrl = savePhotoToDrive(photoBase64, photoName || `KSD_${subId}_${dateStr}.png`);
-    }
-
-    if (rowIndexToUpdate !== -1) {
-      const finalPhotoUrl = (photoUrl !== "") ? photoUrl : (values[rowIndexToUpdate - 1][7] || "");
-      const rowData = [
-        progress,
-        remarks,
-        reporter,
-        timestamp,
-        finalPhotoUrl,
-        shift || "",
-        manpower || "",
-        delayCode || "",
-        constraint || "",
-        recovery || ""
-      ];
-      // T2-2: Batch Write Optimization
-      sheet.getRange(rowIndexToUpdate, 4, 1, 10).setValues([rowData]);
-    } else {
-      sheet.appendRow([projectId, dateStr, subId, progress, remarks, reporter, timestamp, photoUrl, shift || "", manpower || "", delayCode || "", constraint || "", recovery || ""]);
-    }
-
-    return { success: true };
-  } catch (error) {
-    return { success: false, error: error.message === "SESSION_EXPIRED" ? "SESSION_EXPIRED" : error.toString() };
-  }
-}
-
-/**
- * Alur Kerja Validasi Multi-Project
- */
-function submitValidation(token, projectId, type, status, comment) {
-  const lock = LockService.getScriptLock();
-  try {
-    lock.waitLock(10000);
-    const user = validateSession(token, ["superadmin"]); 
-    
-    // T2-3b: Input Validation & Sanitization
-    if (!["Approved", "Rejected"].includes(status)) {
-      return { success: false, error: "Status validasi tidak valid." };
-    }
-    comment = String(comment || "").trim();
-    
-    const db = getDb();
-    const sheet = db.getSheetByName("Validation"); 
-    const timestamp = new Date().toISOString(); 
-    
-    sheet.appendRow([projectId, type, user.name, timestamp, status, comment]); 
-    return { success: true }; 
-  } catch (error) {
-    return { success: false, error: error.message === "SESSION_EXPIRED" ? "SESSION_EXPIRED" : error.toString() }; 
-  } finally {
-    lock.releaseLock();
-  }
-}
-
-/**
- * Helper memformat objek Date menjadi YYYY-MM-DD
- * BUG-18 FIX: Gunakan Utilities.formatDate agar timezone-safe (tidak off-by-one di UTC+7)
- */
-function formatDate(dateVal) {
-  if (!dateVal) return "";
-  // Jika sudah string format YYYY-MM-DD, kembalikan langsung
-  if (typeof dateVal === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateVal)) return dateVal;
-  const d = new Date(dateVal);
-  if (isNaN(d.getTime())) return "";
-  try {
-    return Utilities.formatDate(d, Session.getScriptTimeZone(), 'yyyy-MM-dd');
-  } catch(e) {
-    // Fallback jika dipanggil di luar GAS context (tes)
-    const month = '' + (d.getMonth() + 1);
-    const day = '' + d.getDate();
-    const year = d.getFullYear();
-    return [year, month.padStart(2, '0'), day.padStart(2, '0')].join('-');
-  }
-}
-
-/**
- * 📊 FUNGSI MATEMATIKA UTAMA: Menghitung Weighted Progress Terbobot
- */
-function calculateProgress(iacs, subs, progress, projectInfo) {
-  const latestSubProgress = {}; // [cite: 142]
-  let latestProgressDate = null; // [cite: 143]
-
-  progress.sort((a, b) => new Date(a.date) - new Date(b.date)); // [cite: 143]
-  progress.forEach(p => {
-    latestSubProgress[p.subId] = p.progress; // [cite: 144]
-    if (!latestProgressDate || new Date(p.date) > new Date(latestProgressDate)) {
-      latestProgressDate = p.date; // [cite: 144]
-    }
-  });
-
-  const startPlanned = new Date(projectInfo.startDate); // [cite: 145]
-  const endCompare = latestProgressDate ? new Date(latestProgressDate) : new Date(); // [cite: 145]
-  const timeDiff = Math.max(0, endCompare - startPlanned); // [cite: 146]
-  const actualDuration = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)) + 1; // [cite: 146]
-  const iacProgressMap = {}; // [cite: 147]
-  const processedSubs = subs.map(sub => {
-    const currentProg = latestSubProgress[sub.id] || 0; // [cite: 147]
-    return {
-      ...sub,
-      currentProgress: currentProg
+    // Bentuk payload transaksi standar yang diterima submitTransaction()
+    const txPayload = {
+      type: actionType,
+      nik: nik,
+      section: section,
+      gudang: targetGudang,
+      note: note,
+      tanggal_pengambilan_barang: dateStr,
+      tanggal_penerimaan_barang: dateStr,
+      items: rawItems.map(it => ({
+        code: String(it.code || it.itemCode || it.materialCode).trim(),
+        qty: Number(it.qty || it.qtyConsumed || it.quantity) || 0
+      }))
     };
-  });
 
-  // T2-2: O(N) Lookup Map Optimization
-  const subsByIac = {};
-  processedSubs.forEach(s => {
-    if (!subsByIac[s.iacId]) subsByIac[s.iacId] = [];
-    subsByIac[s.iacId].push(s);
-  });
+    // Jalankan submitTransaction (mengupdate sheet, mencatat mutasi, dan memicu notifikasi Telegram)
+    const result = submitTransaction(txPayload);
 
-  iacs.forEach(iac => {
-    const relatedSubs = subsByIac[iac.id] || [];
-    let weightedSum = 0; // [cite: 148]
-    let totalWeightUsed = 0; // [cite: 148]
-
-    relatedSubs.forEach(s => {
-      weightedSum += (s.currentProgress * (s.weight / 100)); // [cite: 148]
-      totalWeightUsed += s.weight; // [cite: 148]
+    return createJsonResponse_({
+      success: true,
+      message: result.message || 'Mutasi berhasil diproses di Gudang Kiln.',
+      timestamp: new Date().toISOString()
     });
 
-    const iacProg = totalWeightUsed > 0 ? (weightedSum * (100 / totalWeightUsed)) : 0; // [cite: 148]
-    iacProgressMap[iac.id] = Math.min(100, Math.max(0, iacProg)); // [cite: 148]
-  });
-
-  let overallProgress = 0; // [cite: 149]
-  let totalIacWeight = 0; // [cite: 149]
-  
-  const processedIacs = iacs.map(iac => {
-    const prog = iacProgressMap[iac.id] || 0; // [cite: 149]
-    overallProgress += (prog * (iac.weight / 100)); // [cite: 149]
-    totalIacWeight += iac.weight; // [cite: 149]
-    return {
-      ...iac,
-      currentProgress: Math.round(prog * 100) / 100
-    };
-  });
-
-  if (totalIacWeight > 0) {
-    overallProgress = (overallProgress * (100 / totalIacWeight)); // [cite: 150]
+  } catch (err) {
+    return createJsonResponse_({
+      success: false,
+      error: 'Gagal memproses mutasi stok: ' + err.toString()
+    });
   }
-  overallProgress = Math.min(100, Math.round(overallProgress * 100) / 100); // [cite: 151]
-  return {
-    iacs: processedIacs,
-    subs: processedSubs,
-    overallProgress: overallProgress,
-    actualDuration: actualDuration
-  }; // [cite: 152]
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// INITIALIZATION & METADATA
+// ═══════════════════════════════════════════════════════════════════
+
+function getInitialData() {
+try {
+ensureSheets();
+const ss = SpreadsheetApp.openById(SS_ID);
+const dbSheet = ss.getSheetByName(DB_SHEET);
+const data = dbSheet.getDataRange().getValues();
+const hMap = getHeaderMap(dbSheet);
+
+const gudangSet = new Set();
+const kategoriSet = new Set();
+
+data.slice(1).forEach(r => {
+if (r[hMap.gudang]) gudangSet.add(String(r[hMap.gudang]).trim());
+if (r[hMap.kategori_barang]) kategoriSet.add(String(r[hMap.kategori_barang]).trim());
+});
+
+const props = PropertiesService.getScriptProperties();
+
+return {
+success: true,
+data: {
+gudang: [...gudangSet].sort(),
+kategori: [...kategoriSet].sort(),
+sections: [
+'Finish Mill', 'Kiln', 'Coal Mill',
+'Raw Mill', 'CCP'
+],
+telegramEnabled: props.getProperty('TELEGRAM_ENABLED') === 'true'
+}
+};
+} catch (err) {
+return { success: false, message: 'Gagal inisialisasi: ' + err.toString() };
+}
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// STOCK DATA QUERIES
+// ═══════════════════════════════════════════════════════════════════
+
+function getStockData() {
+try {
+const ss = SpreadsheetApp.openById(SS_ID);
+const sheet = ss.getSheetByName(DB_SHEET);
+const data = sheet.getDataRange().getValues();
+const hMap = getHeaderMap(sheet);
+
+const list = data.slice(1)
+.filter(r => r[hMap.code_barang])
+.map(r => ({
+no: r[hMap.no] || '',
+kategori_barang: r[hMap.kategori_barang] || '',
+code_barang: String(r[hMap.code_barang]).trim(),
+nama_barang: r[hMap.nama_barang] || '',
+satuan_barang: r[hMap.satuan_barang] || '',
+stok_awal: Number(r[hMap.stok_awal]) || 0,
+min_stok: Number(r[hMap.min_stok]) || 0,
+gudang: r[hMap.gudang] || ''
+}));
+
+return {
+success: true,
+list: list,
+lastUpdated: formatDate_(new Date(), true).split(' ')[1]
+};
+} catch (err) {
+return { success: false, message: err.toString() };
+}
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// STOCK SNAPSHOT LOGGING
+// ═══════════════════════════════════════════════════════════════════
+
+function logStokSnapshot(code, gudang, newStok, triggeredBy, notes) {
+try {
+const ss = SpreadsheetApp.openById(SS_ID);
+let snapSheet = ss.getSheetByName('stok_snapshot');
+
+if (!snapSheet) {
+snapSheet = ss.insertSheet('stok_snapshot');
+const headers = [
+'snapshot_id', 'timestamp', 'code_barang', 'nama_barang',
+'gudang', 'stok_qty', 'min_stok', 'kategori', 'satuan',
+'triggered_by', 'notes'
+];
+snapSheet.appendRow(headers);
+snapSheet.getRange(1, 1, 1, headers.length)
+.setFontWeight('bold').setBackground('#1e293b').setFontColor('#ffffff')
+.setBorder(true, true, true, true, true, true);
+snapSheet.setFrozenRows(1);
+}
+
+const dbSheet = ss.getSheetByName(DB_SHEET);
+const dbData = dbSheet.getDataRange().getValues();
+const hMap = getHeaderMap(dbSheet);
+
+const item = dbData.slice(1).find(r =>
+String(r[hMap.code_barang]).trim() === code &&
+String(r[hMap.gudang]).trim() === gudang
+);
+if (!item) return;
+
+const snapId = 'SNAP-' + Date.now().toString().slice(-8);
+const ts = new Date();
+snapSheet.appendRow([
+snapId, ts, code,
+item[hMap.nama_barang], gudang, newStok,
+item[hMap.min_stok], item[hMap.kategori_barang],
+item[hMap.satuan_barang], triggeredBy, notes
+]);
+snapSheet.getRange(snapSheet.getLastRow(), 2).setNumberFormat('yyyy-mm-dd hh:mm:ss');
+
+} catch (err) {
+Logger.log('❌ Snapshot error: ' + err.toString());
+}
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TRANSACTION PROCESSING (IN/OUT)
+// ═══════════════════════════════════════════════════════════════════
+
+/**
+* Memproses mutasi barang dan mengirim notifikasi Telegram per-transaksi
+* dengan detail lengkap setiap item yang berubah.
+*/
+function submitTransaction(payload) {
+const lock = LockService.getDocumentLock();
+
+try {
+lock.waitLock(30000);
+ensureSheets();
+
+const ss = SpreadsheetApp.openById(SS_ID);
+const dbSheet = ss.getSheetByName(DB_SHEET);
+const mutasiSheet = ss.getSheetByName('mutasi');
+const dbData = dbSheet.getDataRange().getValues();
+const hMap = getHeaderMap(dbSheet);
+
+let tglAmbil = '';
+let tglTerima = '';
+if (payload.type === 'OUT') {
+tglAmbil = parseHtmlDate_(payload.tanggal_pengambilan_barang);
+} else {
+tglTerima = parseHtmlDate_(payload.tanggal_penerimaan_barang);
+}
+
+const txId = 'TX' + Date.now().toString().slice(-6);
+const ts = new Date();
+
+// ── Build lookup index ──────────────────────────────────────────
+const lookup = {};
+for (let i = 1; i < dbData.length; i++) {
+const key = String(dbData[i][hMap.code_barang]).trim() + '|' + String(dbData[i][hMap.gudang]).trim();
+lookup[key] = { rowIndex: i + 1, data: dbData[i] };
+}
+
+// ── Validate ALL items first ─────────────────────────────────────
+const validatedItems = [];
+for (const item of payload.items) {
+const key = String(item.code).trim() + '|' + String(payload.gudang).trim();
+const target = lookup[key];
+
+if (!target) {
+throw new Error(
+`❌ Barang [${item.code}] tidak ditemukan di gudang [${payload.gudang}].`
+);
+}
+
+const currentStok = Number(target.data[hMap.stok_awal]);
+const qty = Number(item.qty);
+const newStok = payload.type === 'IN' ? currentStok + qty : currentStok - qty;
+
+if (payload.type === 'OUT' && newStok < 0) {
+throw new Error(
+`❌ Stok tidak cukup untuk ${target.data[hMap.nama_barang]}.\n` +
+`Stok tersedia: ${currentStok} | Diminta: ${qty}`
+);
+}
+
+validatedItems.push({ item, target, currentStok, qty, newStok });
+}
+
+// ── Process & write ──────────────────────────────────────────────
+const kritisAlert = [];
+const itemLines = []; // Untuk Telegram summary
+
+validatedItems.forEach(({ item, target, currentStok, qty, newStok }) => {
+const namaBarang = target.data[hMap.nama_barang];
+const satuanBarang= target.data[hMap.satuan_barang];
+const minStok = Number(target.data[hMap.min_stok]);
+
+// Update stok di database
+dbSheet.getRange(target.rowIndex, hMap.stok_awal + 1).setValue(newStok);
+
+// Snapshot
+logStokSnapshot(
+item.code, payload.gudang, newStok,
+'MUTASI_' + payload.type,
+`TX: ${txId} | NIK: ${payload.nik} | Qty: ${qty}`
+);
+
+// Log ke mutasi sheet
+const rowData = [
+txId, ts, payload.type, payload.nik, payload.section, payload.gudang,
+item.code, namaBarang, qty, satuanBarang,
+payload.note || '', currentStok, newStok, 'WEBAPP',
+tglAmbil || '', tglTerima || ''
+];
+mutasiSheet.appendRow(rowData);
+
+const lastRow = mutasiSheet.getLastRow();
+if (tglAmbil instanceof Date) mutasiSheet.getRange(lastRow, 15).setNumberFormat('yyyy-mm-dd');
+if (tglTerima instanceof Date) mutasiSheet.getRange(lastRow, 16).setNumberFormat('yyyy-mm-dd');
+
+// Siapkan baris info item untuk Telegram
+const arah = payload.type === 'IN' ? '▲' : '▼';
+const stokInfo = `${fmtNum(currentStok)} → *${fmtNum(newStok)}* ${satuanBarang}`;
+itemLines.push(
+`${arah} *${escapeTg(namaBarang)}*\n` +
+` Kode: \`${escapeTg(item.code)}\` | Qty: ${arah === '▲' ? '+' : '-'}${fmtNum(qty)} ${satuanBarang}\n` +
+` Stok: ${stokInfo}`
+);
+
+// Cek kritis
+if (payload.type === 'OUT' && newStok <= minStok) {
+kritisAlert.push({ namaBarang, satuanBarang, newStok, minStok, code: item.code });
+}
+});
+
+// ── Kirim notifikasi Telegram lengkap per transaksi ──────────────
+const props = PropertiesService.getScriptProperties();
+const tgEnabled = props.getProperty('TELEGRAM_ENABLED') === 'true';
+
+if (tgEnabled) {
+const tipeIcon = payload.type === 'OUT' ? '📤' : '📥';
+const tipeTeks = payload.type === 'OUT' ? 'PENGAMBILAN (OUT)' : 'PENERIMAAN (IN)';
+const dateStr = payload.type === 'OUT'
+? (payload.tanggal_pengambilan_barang || formatDate_(ts))
+: (payload.tanggal_penerimaan_barang || formatDate_(ts));
+
+// ── Pesan utama mutasi ────────────────────────────────────────
+const msgMutasi =
+`${tipeIcon} *MUTASI ${tipeTeks}*\n` +
+`━━━━━━━━━━━━━━━━━━━━━━\n` +
+`🆔 TX ID: \`${txId}\`\n` +
+`👤 NIK Operator: *${escapeTg(payload.nik)}*\n` +
+`🏗️ Unit/Seksi: ${escapeTg(payload.section)}\n` +
+`🏢 Gudang: *${escapeTg(payload.gudang)}*\n` +
+`📅 Tanggal: ${escapeTg(dateStr)}\n` +
+`📝 Keterangan: ${escapeTg(payload.note || '-')}\n` +
+`━━━━━━━━━━━━━━━━━━━━━━\n` +
+`*Detail ${validatedItems.length} Item:*\n\n` +
+itemLines.join('\n\n') +
+`\n━━━━━━━━━━━━━━━━━━━━━━\n` +
+`🕐 Waktu: ${formatDate_(ts, true)}`;
+
+sendTelegramMessage(msgMutasi);
+
+// ── Alert stok kritis (per item) ──────────────────────────────
+kritisAlert.forEach(k => {
+const msgKritis =
+`⚠️ *STOK KRITIS!*\n` +
+`━━━━━━━━━━━━━━━━━━━━━━\n` +
+`📦 *${escapeTg(k.namaBarang)}*\n` +
+`🔑 Kode: \`${escapeTg(k.code)}\`\n` +
+`🏢 Gudang: ${escapeTg(payload.gudang)}\n` +
+`📉 Stok sisa: *${fmtNum(k.newStok)} ${escapeTg(k.satuanBarang)}*\n` +
+`🚨 Batas minimum: ${fmtNum(k.minStok)} ${escapeTg(k.satuanBarang)}\n` +
+`👤 Diambil oleh: ${escapeTg(payload.nik)}\n` +
+`🏗️ Unit: ${escapeTg(payload.section)}\n\n` +
+`🔴 *SEGERA LAKUKAN RESTOCK!*`;
+sendTelegramMessage(msgKritis);
+});
+}
+
+return {
+success: true,
+message: `✅ Transaksi ${txId} berhasil disimpan. Total ${validatedItems.length} item diproses.`
+};
+
+} catch (err) {
+return { success: false, message: err.toString() };
+} finally {
+lock.releaseLock();
+}
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// LAPORAN HARIAN OTOMATIS — DIKIRIM VIA TELEGRAM
+// ═══════════════════════════════════════════════════════════════════
+
+/**
+* Fungsi utama laporan harian stok semua gudang.
+* Dipanggil oleh Time-based Trigger setiap hari jam 07:00 WIB.
+*
+* Yang dikirim ke Telegram:
+* 1. Pesan ringkasan stok semua gudang (teks Markdown)
+* 2. File CSV stok lengkap sebagai dokumen (via sendDocument)
+* 3. Pesan ringkasan mutasi kemarin
+*
+* Cara setup:
+* Jalankan setupDailyTrigger() sekali dari Apps Script Editor.
+*/
+function sendDailyStockReport() {
+const props = PropertiesService.getScriptProperties();
+const tgEnabled = props.getProperty('TELEGRAM_ENABLED') === 'true';
+if (!tgEnabled) {
+Logger.log('⚠️ Telegram tidak aktif, laporan harian dilewati.');
+return;
+}
+
+try {
+const ss = SpreadsheetApp.openById(SS_ID);
+const dbSheet = ss.getSheetByName(DB_SHEET);
+const data = dbSheet.getDataRange().getValues();
+const hMap = getHeaderMap(dbSheet);
+const now = new Date();
+const today = formatDate_(now);
+const yesterday = formatDate_(new Date(now.getTime() - 86400000));
+
+// ── Kumpulkan data stok ──────────────────────────────────────────
+const items = data.slice(1).filter(r => r[hMap.code_barang]).map(r => ({
+code: String(r[hMap.code_barang]).trim(),
+nama: r[hMap.nama_barang] || '',
+gudang: String(r[hMap.gudang] || '').trim(),
+kategori: r[hMap.kategori_barang] || '',
+satuan: r[hMap.satuan_barang] || '',
+stok: Number(r[hMap.stok_awal]) || 0,
+min: Number(r[hMap.min_stok]) || 0,
+}));
+
+// ── Statistik global ─────────────────────────────────────────────
+const total = items.length;
+const kritisItems = items.filter(r => r.stok <= r.min);
+const amanItems = items.filter(r => r.stok > r.min);
+
+// ── Kelompokkan per gudang ────────────────────────────────────────
+const byGudang = {};
+items.forEach(r => {
+if (!byGudang[r.gudang]) byGudang[r.gudang] = { items: [], kritis: 0, aman: 0 };
+byGudang[r.gudang].items.push(r);
+if (r.stok <= r.min) byGudang[r.gudang].kritis++;
+else byGudang[r.gudang].aman++;
+});
+
+// ── Pesan 1: Header & Ringkasan Global ──────────────────────────
+let msgHeader =
+`📊 *LAPORAN STOK HARIAN*\n` +
+`🗓️ ${escapeTg(today)} | ${Utilities.formatDate(now, TIMEZONE, 'HH:mm')} WIB\n` +
+`━━━━━━━━━━━━━━━━━━━━━━\n` +
+`📦 Total Item: *${fmtNum(total)}*\n` +
+`✅ Stok Aman: *${fmtNum(amanItems.length)}*\n` +
+`🚨 Stok Kritis: *${fmtNum(kritisItems.length)}*\n` +
+`🏢 Gudang Aktif: *${Object.keys(byGudang).length}*\n` +
+`━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+
+// ── Ringkasan per gudang ─────────────────────────────────────────
+Object.keys(byGudang).sort().forEach(g => {
+const gd = byGudang[g];
+const statusIcon = gd.kritis > 0 ? '⚠️' : '✅';
+msgHeader +=
+`${statusIcon} *${escapeTg(g)}*\n` +
+` Total: ${fmtNum(gd.items.length)} item | ` +
+`Aman: ${fmtNum(gd.aman)} | Kritis: *${fmtNum(gd.kritis)}*\n\n`;
+});
+
+sendTelegramMessage(msgHeader);
+
+// ── Pesan 2: Daftar Stok Kritis (jika ada) ──────────────────────
+if (kritisItems.length > 0) {
+// Bagi menjadi chunk 20 item per pesan agar tidak melebihi batas Telegram
+const chunkSize = 20;
+for (let i = 0; i < kritisItems.length; i += chunkSize) {
+const chunk = kritisItems.slice(i, i + chunkSize);
+let msgKritis =
+`🚨 *DAFTAR STOK KRITIS* ` +
+`(${i + 1}–${Math.min(i + chunkSize, kritisItems.length)} dari ${kritisItems.length})\n` +
+`━━━━━━━━━━━━━━━━━━━━━━\n`;
+chunk.forEach((r, idx) => {
+const kurang = r.min - r.stok;
+msgKritis +=
+`${i + idx + 1}. *${escapeTg(r.nama)}*\n` +
+` \`${escapeTg(r.code)}\` | ${escapeTg(r.gudang)}\n` +
+` Stok: *${fmtNum(r.stok)}* / Min: ${fmtNum(r.min)} ${escapeTg(r.satuan)}\n` +
+` Kurang: *${fmtNum(kurang)} ${escapeTg(r.satuan)}*\n\n`;
+});
+sendTelegramMessage(msgKritis);
+}
+}
+
+// ── CSV: Buat file CSV lengkap semua gudang ──────────────────────
+const csvContent = buildStockCSV(items, today);
+const csvBlob = Utilities.newBlob(
+csvContent,
+'text/csv; charset=utf-8',
+`Stok_Semua_Gudang_${today}.csv`
+);
+
+// Kirim file CSV via Telegram sendDocument
+sendTelegramDocument(
+csvBlob,
+`📎 *Data Stok Lengkap — ${escapeTg(today)}*\n` +
+`Berisi ${fmtNum(total)} item dari ${Object.keys(byGudang).length} gudang.\n` +
+`Import ke Excel/Google Sheets untuk analisis lebih lanjut.`
+);
+
+// ── Pesan 3: Ringkasan Mutasi Kemarin ────────────────────────────
+const mutasiSheet = ss.getSheetByName('mutasi');
+if (mutasiSheet && mutasiSheet.getLastRow() > 1) {
+const mutasiSummary = buildMutasiSummary(mutasiSheet, yesterday);
+if (mutasiSummary) {
+sendTelegramMessage(mutasiSummary);
+}
+}
+
+// Catat waktu laporan terakhir
+props.setProperty('DAILY_REPORT_LAST_RUN', formatDate_(now, true));
+Logger.log('✅ Laporan harian berhasil dikirim: ' + today);
+
+} catch (err) {
+Logger.log('❌ Error sendDailyStockReport: ' + err.toString());
+sendTelegramMessage(
+`❌ *ERROR: Laporan Harian Gagal*\n` +
+`\`${escapeTg(err.toString())}\``
+);
+}
 }
 
 /**
- * 🚨 FUNGSI ANALISIS ALERT UTAMA: Log Otomatis Stuck & Delay Risk Proyek
- */
-function runAlertAnalysis(projectId, computed, progress, projectInfo, alertsSheetValues, saveToDb = false, baselineDataAll = null) {
-  const alerts = [];
-  const today = new Date();
-  const db = getDb();
-  
-  let baselineData = baselineDataAll;
-  if (!baselineData) {
-    const baselineSheet = db.getSheetByName("BaselineSchedule");
-    baselineData = baselineSheet ? baselineSheet.getDataRange().getValues() : [];
-  }
-  
-  const subProgressHistory = {};
-  progress.forEach(p => {
-    if (!subProgressHistory[p.subId]) subProgressHistory[p.subId] = [];
-    subProgressHistory[p.subId].push({ date: new Date(p.date), prog: p.progress });
-  });
+* Membangun konten CSV dari daftar item stok
+* Format: BOM UTF-8 + header + data
+*/
+function buildStockCSV(items, tanggal) {
+const BOM = '\uFEFF'; // BOM agar Excel bisa baca UTF-8
+const SEP = ',';
 
-  for (let subId in subProgressHistory) {
-    const history = subProgressHistory[subId];
-    history.sort((a, b) => b.date - a.date);
-    const latestProg = history[0].prog;
-    
-    let plannedProg = 0;
-    if (baselineData.length > 1) {
-       for (let i = 1; i < baselineData.length; i++) {
-         if (baselineData[i][0] === projectId && baselineData[i][1] === subId) {
-            const plannedStart = new Date(baselineData[i][2]);
-            const plannedFinish = new Date(baselineData[i][3]);
-            if (!isNaN(plannedStart) && !isNaN(plannedFinish)) {
-               const totalDuration = plannedFinish.getTime() - plannedStart.getTime();
-               const elapsed = today.getTime() - plannedStart.getTime();
-               if (elapsed <= 0) plannedProg = 0;
-               else if (elapsed >= totalDuration) plannedProg = 100;
-               else plannedProg = Math.round((elapsed / totalDuration) * 100);
-            }
-            break;
-         }
-       }
-    }
+const header = [
+'Tanggal Laporan', 'Gudang', 'Kategori', 'Kode Barang',
+'Nama Barang', 'Stok', 'Min Stok', 'Satuan', 'Status',
+'Kekurangan'
+].join(SEP);
 
-    if (latestProg < plannedProg - 10 && latestProg < 100) {
-       alerts.push({
-         id: `ALERT-DELAY-${subId}`,
-         type: "delay_risk",
-         itemId: subId,
-         details: `Progres aktual (${latestProg}%) tertinggal >10% dari Baseline Target (${plannedProg}%).`,
-         timestamp: new Date().toISOString()
-       });
-    }
+const rows = items.map(r => {
+const isKritis = r.stok <= r.min;
+const kekurangan = isKritis ? (r.min - r.stok) : 0;
+return [
+tanggal,
+csvCell(r.gudang),
+csvCell(r.kategori),
+csvCell(r.code),
+csvCell(r.nama),
+r.stok,
+r.min,
+csvCell(r.satuan),
+isKritis ? 'KRITIS' : 'AMAN',
+kekurangan
+].join(SEP);
+});
 
-    if (history.length > 0 && latestProg < 100) {
-      const daysSinceLastProgress = Math.floor((today - history[0].date) / (1000 * 60 * 60 * 24));
-      if (daysSinceLastProgress >= 3) {
-        alerts.push({
-          id: `ALERT-STUCK-${subId}`,
-          type: "stagnant",
-          itemId: subId,
-          details: `Tidak ada pergerakan progres selama ${daysSinceLastProgress} hari terakhir.`,
-          timestamp: new Date().toISOString()
-        });
-      }
-    }
-  }
-
-  return alerts;
-}
-
-// ============ MODUL BARU: CASTABLE INSPECTION (Tambahan, tidak mengubah kode existing) ============
-
-/**
- * A. Inisialisasi Database Castable & Seed Data (Idempotent)
- */
-function ensureCastableSheets() {
-  const db = getDb();
-  
-  // 1. Castable_Kategori
-  let sheetKat = db.getSheetByName("Castable_Kategori");
-  if (!sheetKat) {
-    sheetKat = db.insertSheet("Castable_Kategori");
-    const katData = [
-      ["Kategori_ID", "Nama_Kategori"],
-      ["K01", "Castable Preheater"],
-      ["K02", "Castable Kiln-Cooler"]
-    ];
-    sheetKat.getRange(1, 1, katData.length, katData[0].length).setValues(katData);
-    sheetKat.getRange(1, 1, 1, katData[0].length).setFontWeight("bold").setBackground("#f1f5f9");
-  }
-
-  // 2. Castable_DetailArea
-  let sheetDet = db.getSheetByName("Castable_DetailArea");
-  if (!sheetDet) {
-    sheetDet = db.insertSheet("Castable_DetailArea");
-    const detData = [
-      ["Kategori_ID", "Detail_ID", "Nama_Detail"],
-      ["K01", "D01", "Lantai 2"],
-      ["K01", "D02", "Lantai 3"],
-      ["K01", "D03", "Lantai 4"],
-      ["K01", "D04", "Lantai 5"],
-      ["K01", "D05", "Lantai 6"],
-      ["K01", "D06", "Lantai 7"],
-      ["K01", "D07", "Lantai 8"],
-      ["K02", "D08", "Grate 1"],
-      ["K02", "D09", "Grate 2"],
-      ["K02", "D10", "KILN"],
-      ["K02", "D11", "TAD"]
-    ];
-    sheetDet.getRange(1, 1, detData.length, detData[0].length).setValues(detData);
-    sheetDet.getRange(1, 1, 1, detData[0].length).setFontWeight("bold").setBackground("#f1f5f9");
-  }
-
-  // 3. Castable_TypeMaterial
-  let sheetType = db.getSheetByName("Castable_TypeMaterial");
-  if (!sheetType) {
-    sheetType = db.insertSheet("Castable_TypeMaterial");
-    const typeData = [
-      ["Type_ID", "Nama_Type", "Densitas"],
-      ["T01", "Refgun 165 SIC", 2.20]
-    ];
-    sheetType.getRange(1, 1, typeData.length, typeData[0].length).setValues(typeData);
-    sheetType.getRange(1, 1, 1, typeData[0].length).setFontWeight("bold").setBackground("#f1f5f9");
-  }
-
-  // 4. Castable_Settings
-  let sheetSet = db.getSheetByName("Castable_Settings");
-  if (!sheetSet) {
-    sheetSet = db.insertSheet("Castable_Settings");
-    const setData = [
-      ["Key", "Value"],
-      ["WASTE_FACTOR", 1.1],
-      ["PERSEN_CASTABLE", 80],
-      ["PERSEN_INSULATING", 20]
-    ];
-    sheetSet.getRange(1, 1, setData.length, setData[0].length).setValues(setData);
-    sheetSet.getRange(1, 1, 1, setData[0].length).setFontWeight("bold").setBackground("#f1f5f9");
-  }
-
-  // 5. Castable_Inspeksi
-  let sheetInsp = db.getSheetByName("Castable_Inspeksi");
-  if (!sheetInsp) {
-    sheetInsp = db.insertSheet("Castable_Inspeksi");
-    const headerInsp = [["ID_LOG", "Timestamp", "Inspektor", "Tanggal_Inspeksi", "Vendor", "Kategori_ID", "Detail_ID", "Lebar_mm", "Panjang_mm", "Diameter_Angkur_mm", "Panjang_Angkur_mm", "Type_ID", "Densitas", "Volume_m3", "Tonase_Akhir_Ton", "Tonase_Castable_Ton", "Tonase_Insulating_Ton", "Remarks", "Photo_URL"]];
-    sheetInsp.getRange(1, 1, 1, headerInsp[0].length).setValues(headerInsp);
-    sheetInsp.getRange(1, 1, 1, headerInsp[0].length).setFontWeight("bold").setBackground("#f1f5f9");
-  }
+return BOM + [header, ...rows].join('\n');
 }
 
 /**
- * B. Menarik Config & Master Data Castable
- */
-function getCastableConfig(token) {
-  try {
-    validateSession(token); // Semua role bisa baca
-    ensureCastableSheets();
-    const db = getDb();
-
-    // Mapping Kategori
-    const katValues = db.getSheetByName("Castable_Kategori").getDataRange().getValues();
-    const kategori = [];
-    for (let i = 1; i < katValues.length; i++) {
-      kategori.push({ id: katValues[i][0], nama: katValues[i][1] });
-    }
-
-    // Mapping Detail Area
-    const detValues = db.getSheetByName("Castable_DetailArea").getDataRange().getValues();
-    const detailArea = [];
-    for (let i = 1; i < detValues.length; i++) {
-      detailArea.push({ kategoriId: detValues[i][0], id: detValues[i][1], nama: detValues[i][2] });
-    }
-
-    // Mapping Type Material
-    const typeValues = db.getSheetByName("Castable_TypeMaterial").getDataRange().getValues();
-    const typeMaterial = [];
-    for (let i = 1; i < typeValues.length; i++) {
-      typeMaterial.push({ id: typeValues[i][0], nama: typeValues[i][1], densitas: parseFloat(typeValues[i][2]) || 0 });
-    }
-
-    // Mapping Settings
-    const setValues = db.getSheetByName("Castable_Settings").getDataRange().getValues();
-    const settings = { wasteFactor: 1.1, persenCastable: 80, persenInsulating: 20 };
-    for (let i = 1; i < setValues.length; i++) {
-      if (setValues[i][0] === "WASTE_FACTOR") settings.wasteFactor = parseFloat(setValues[i][1]) || 1.1;
-      if (setValues[i][0] === "PERSEN_CASTABLE") settings.persenCastable = parseFloat(setValues[i][1]) || 80;
-      if (setValues[i][0] === "PERSEN_INSULATING") settings.persenInsulating = parseFloat(setValues[i][1]) || 20;
-    }
-
-    return JSON.parse(JSON.stringify({ success: true, kategori: kategori, detailArea: detailArea, typeMaterial: typeMaterial, settings: settings }));
-  } catch (error) {
-    return { success: false, error: error.message === "SESSION_EXPIRED" ? "SESSION_EXPIRED" : error.toString() };
-  }
+* Escape nilai CSV (tambah quote jika mengandung koma/quote/newline)
+*/
+function csvCell(val) {
+const s = String(val === null || val === undefined ? '' : val);
+if (s.includes(',') || s.includes('"') || s.includes('\n')) {
+return '"' + s.replace(/"/g, '""') + '"';
+}
+return s;
 }
 
 /**
- * C. Menarik Master Data sekaligus Log Inspeksi
- */
-function getCastableData(token) {
-  try {
-    validateSession(token);
-    const configResult = getCastableConfig(token);
-    if (!configResult.success) throw new Error(configResult.error);
+* Membangun ringkasan mutasi untuk tanggal tertentu
+*/
+function buildMutasiSummary(mutasiSheet, tanggal) {
+try {
+const rows = mutasiSheet.getDataRange().getValues();
+if (rows.length <= 1) return null;
 
-    const db = getDb();
-    const inspValues = db.getSheetByName("Castable_Inspeksi").getDataRange().getValues();
-    const records = [];
+const hMap = getHeaderMap(mutasiSheet);
+const fromDate = new Date(tanggal + 'T00:00:00');
+const toDate = new Date(tanggal + 'T23:59:59');
 
-    for (let i = 1; i < inspValues.length; i++) {
-      records.push({
-        idLog: inspValues[i][0],
-        timestamp: inspValues[i][1] instanceof Date ? inspValues[i][1].toISOString() : String(inspValues[i][1] || ""),
-        inspektor: inspValues[i][2],
-        tanggalInspeksi: formatDate(inspValues[i][3]),
-        vendor: inspValues[i][4],
-        kategoriId: inspValues[i][5],
-        detailId: inspValues[i][6],
-        lebar: parseFloat(inspValues[i][7]) || 0,
-        panjang: parseFloat(inspValues[i][8]) || 0,
-        diameterAngkur: parseFloat(inspValues[i][9]) || 0,
-        panjangAngkur: parseFloat(inspValues[i][10]) || 0,
-        typeId: inspValues[i][11],
-        densitas: parseFloat(inspValues[i][12]) || 0,
-        volumeM3: parseFloat(inspValues[i][13]) || 0,
-        tonaseAkhir: parseFloat(inspValues[i][14]) || 0,
-        tonaseCastable: parseFloat(inspValues[i][15]) || 0,
-        tonaseInsulating: parseFloat(inspValues[i][16]) || 0,
-        remarks: inspValues[i][17],
-        photoUrl: inspValues[i][18] || ""
-      });
-    }
+let totalIn = 0, totalOut = 0, cIn = 0, cOut = 0;
+const txIds = new Set();
 
-    return JSON.parse(JSON.stringify({ 
-      success: true, 
-      kategori: configResult.kategori,
-      detailArea: configResult.detailArea,
-      typeMaterial: configResult.typeMaterial,
-      settings: configResult.settings,
-      records: records
-    }));
-  } catch (error) {
-    return { success: false, error: error.message === "SESSION_EXPIRED" ? "SESSION_EXPIRED" : error.toString() };
-  }
+rows.slice(1).forEach(r => {
+const ts = r[hMap.timestamp];
+const date = ts instanceof Date ? ts : new Date(ts);
+if (isNaN(date.getTime())) return;
+if (date < fromDate || date > toDate) return;
+
+const qty = Number(r[hMap.qty]) || 0;
+if (r[hMap.type] === 'IN') { totalIn += qty; cIn++; }
+if (r[hMap.type] === 'OUT') { totalOut += qty; cOut++; }
+if (r[hMap.tx_id]) txIds.add(r[hMap.tx_id]);
+});
+
+if (txIds.size === 0) {
+return (
+`📋 *RINGKASAN MUTASI KEMARIN (${escapeTg(tanggal)})*\n` +
+`━━━━━━━━━━━━━━━━━━━━━━\n` +
+`ℹ️ Tidak ada transaksi kemarin.`
+);
+}
+
+return (
+`📋 *RINGKASAN MUTASI KEMARIN (${escapeTg(tanggal)})*\n` +
+`━━━━━━━━━━━━━━━━━━━━━━\n` +
+`🔄 Total Transaksi: *${fmtNum(txIds.size)}* TX\n` +
+`📥 Penerimaan (IN): *${fmtNum(cIn)}* baris | Qty: ${fmtNum(totalIn)}\n` +
+`📤 Pengambilan (OUT): *${fmtNum(cOut)}* baris | Qty: ${fmtNum(totalOut)}`
+);
+} catch (err) {
+Logger.log('⚠️ buildMutasiSummary error: ' + err.toString());
+return null;
+}
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TIME-BASED TRIGGER MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════
+
+/**
+* Setup trigger harian laporan stok jam 07:00 WIB.
+* Jalankan fungsi ini SATU KALI dari Apps Script Editor:
+* Editor → Run → setupDailyTrigger
+*
+* Trigger akan memanggil sendDailyStockReport() setiap hari jam 07:00–08:00 WIB.
+*/
+function setupDailyTrigger() {
+try {
+// Step 1: Hapus trigger lama
+removeDailyTrigger();
+
+// Step 2: Buat trigger baru
+var trigger = ScriptApp.newTrigger('sendDailyStockReport')
+.timeBased()
+.everyDays(1)
+.atHour(7)
+.create();
+
+Logger.log('✅ Trigger ID: ' + trigger.getUniqueId());
+
+// Step 3: Simpan ke properties
+PropertiesService.getScriptProperties()
+.setProperty('DAILY_TRIGGER_SETUP', new Date().toString());
+
+Logger.log('✅ Setup selesai.');
+
+} catch(e) {
+Logger.log('❌ Error: ' + e.toString());
+Logger.log('Stack: ' + e.stack);
+}
 }
 
 /**
- * D. Submit Log Inspeksi Castable Baru (Kalkulasi Server-side)
- */
-function submitCastableInspeksi(token, data) {
-  const lock = LockService.getScriptLock();
-  try {
-    lock.waitLock(10000);
-    const user = validateSession(token);
-    
-    // T2-3b: Input Validation & Sanitization
-    if (!data.tanggalInspeksi || !/^\d{4}-\d{2}-\d{2}$/.test(data.tanggalInspeksi)) {
-      return { success: false, error: "Format tanggal tidak valid." };
-    }
-    data.lebar = parseFloat(data.lebar);
-    data.panjang = parseFloat(data.panjang);
-    data.diameterAngkur = parseFloat(data.diameterAngkur);
-    data.panjangAngkur = parseFloat(data.panjangAngkur);
-    if (isNaN(data.lebar) || data.lebar <= 0 || isNaN(data.panjang) || data.panjang <= 0 || isNaN(data.panjangAngkur) || data.panjangAngkur <= 0) {
-      return { success: false, error: "Dimensi (lebar, panjang, panjang angkur) harus berupa angka > 0." };
-    }
-    data.remarks = String(data.remarks || "").trim();
-
-    const db = getDb();
-    
-    // Ambil Data Settings
-    let wasteFactor = 1.1, persenCastable = 80, persenInsulating = 20;
-    const setValues = db.getSheetByName("Castable_Settings").getDataRange().getValues();
-    for (let i = 1; i < setValues.length; i++) {
-      if (setValues[i][0] === "WASTE_FACTOR") wasteFactor = parseFloat(setValues[i][1]) || 1.1;
-      if (setValues[i][0] === "PERSEN_CASTABLE") persenCastable = parseFloat(setValues[i][1]) || 80;
-      if (setValues[i][0] === "PERSEN_INSULATING") persenInsulating = parseFloat(setValues[i][1]) || 20;
-    }
-
-    // Ambil Densitas dari Type Material
-    let densitas = 0;
-    const typeValues = db.getSheetByName("Castable_TypeMaterial").getDataRange().getValues();
-    for (let i = 1; i < typeValues.length; i++) {
-      if (typeValues[i][0] === data.typeId) {
-        densitas = parseFloat(typeValues[i][2]) || 0;
-        break;
-      }
-    }
-
-    if (densitas === 0) return { success: false, error: "Type Material tidak valid atau densitas 0" };
-
-    // Kalkulasi Berdasarkan Rumus Wajib Server-side
-    const l_m = (parseFloat(data.lebar) || 0) / 1000;
-    const p_m = (parseFloat(data.panjang) || 0) / 1000;
-    const pa_m = (parseFloat(data.panjangAngkur) || 0) / 1000; // ASUMSI: Panjang angkur berperan sebagai kedalaman/tebal
-    
-    const volume_m3 = l_m * p_m * pa_m * wasteFactor;
-    const tonaseAkhir = volume_m3 * densitas;
-    const tonaseCastable = tonaseAkhir * (persenCastable / 100);
-    const tonaseInsulating = tonaseAkhir * (persenInsulating / 100);
-
-    // Persiapan Metadata
-    const idLog = "CST-" + Utilities.getUuid().substring(0, 8).toUpperCase();
-    const timestamp = new Date().toISOString();
-    
-    // Penanganan Foto
-    let photoUrl = "";
-    if (data.photoBase64 && data.photoBase64 !== "") {
-      photoUrl = savePhotoToDrive(data.photoBase64, data.photoName || `KSD_CST_${idLog}.png`);
-    }
-
-    const sheetInsp = db.getSheetByName("Castable_Inspeksi");
-    sheetInsp.appendRow([
-      idLog, timestamp, user.name, data.tanggalInspeksi, data.vendor, data.kategoriId, data.detailId, 
-      data.lebar, data.panjang, data.diameterAngkur, data.panjangAngkur, data.typeId, densitas, 
-      volume_m3, tonaseAkhir, tonaseCastable, tonaseInsulating, data.remarks, photoUrl
-    ]);
-
-    return { success: true, idLog: idLog };
-  } catch (error) {
-    return { success: false, error: error.message === "SESSION_EXPIRED" ? "SESSION_EXPIRED" : error.toString() };
-  } finally {
-    lock.releaseLock();
-  }
+* Hapus semua trigger sendDailyStockReport yang ada.
+* Berguna saat ingin reset atau disable laporan harian.
+*/
+function removeDailyTrigger() {
+const triggers = ScriptApp.getProjectTriggers();
+triggers.forEach(t => {
+if (t.getHandlerFunction() === 'sendDailyStockReport') {
+ScriptApp.deleteTrigger(t);
+Logger.log('🗑️ Trigger dihapus: ' + t.getUniqueId());
+}
+});
 }
 
 /**
- * E. Menghapus Log Inspeksi
- */
-function deleteCastableInspeksi(token, idLog) {
-  try {
-    validateSession(token, ["superadmin", "manager"]);
-    const db = getDb();
-    const sheet = db.getSheetByName("Castable_Inspeksi");
-    const values = sheet.getDataRange().getValues();
+* Cek status trigger harian (untuk keperluan debugging)
+*/
+function checkTriggerStatus() {
+const triggers = ScriptApp.getProjectTriggers();
+const dailyTriggers = triggers.filter(t => t.getHandlerFunction() === 'sendDailyStockReport');
+Logger.log(`Trigger aktif: ${dailyTriggers.length}`);
+dailyTriggers.forEach(t => {
+Logger.log(` - ID: ${t.getUniqueId()} | Type: ${t.getEventType()}`);
+});
+return dailyTriggers.length;
+}
 
-    for (let i = 1; i < values.length; i++) {
-      if (values[i][0] === idLog) {
-        sheet.deleteRow(i + 1);
-        return { success: true };
-      }
-    }
-    return { success: false, error: "Data log inspeksi tidak ditemukan!" };
-  } catch (error) {
-    return { success: false, error: error.message === "SESSION_EXPIRED" ? "SESSION_EXPIRED" : error.toString() };
-  }
+// ═══════════════════════════════════════════════════════════════════
+// ADMIN: CRUD OPERATIONS ON MASTER DATA
+// ═══════════════════════════════════════════════════════════════════
+
+function dbCRUD(payload) {
+if (payload.pin !== DEFAULT_PIN) {
+return { success: false, message: '🔒 Akses ditolak. PIN admin tidak valid.' };
+}
+
+const lock = LockService.getDocumentLock();
+
+try {
+lock.waitLock(15000);
+
+const ss = SpreadsheetApp.openById(SS_ID);
+const sheet = ss.getSheetByName(DB_SHEET);
+const data = sheet.getDataRange().getValues();
+const hMap = getHeaderMap(sheet);
+
+// ── CREATE ──────────────────────────────────────────────────────
+if (payload.op === 'CREATE') {
+const isDup = data.slice(1).some(r =>
+String(r[hMap.code_barang]).trim() === String(payload.code).trim() &&
+String(r[hMap.gudang]).trim() === String(payload.gudang).trim()
+);
+if (isDup) {
+return {
+success: false,
+message: `❌ Kode barang [${payload.code}] sudah terdaftar di gudang [${payload.gudang}].`
+};
+}
+const noUrut = data.length;
+sheet.appendRow([
+noUrut, payload.kategori, payload.code, payload.nama,
+payload.satuan, Number(payload.stok) || 0, Number(payload.min) || 0, payload.gudang
+]);
+logStokSnapshot(payload.code, payload.gudang, Number(payload.stok) || 0,
+'MASTER_CREATE', 'Item baru ditambahkan oleh admin');
+return { success: true, message: `✅ Barang [${payload.code}] berhasil ditambahkan.` };
+}
+
+// ── UPDATE ──────────────────────────────────────────────────────
+else if (payload.op === 'UPDATE') {
+const searchCode = payload.oldCode || payload.code;
+for (let i = 1; i < data.length; i++) {
+if (String(data[i][hMap.code_barang]).trim() === String(searchCode).trim()) {
+const oldStok = Number(data[i][hMap.stok_awal]);
+const newStok = Number(payload.stok) || 0;
+sheet.getRange(i + 1, 1, 1, 8).setValues([[
+data[i][hMap.no], payload.kategori, payload.code, payload.nama,
+payload.satuan, newStok, Number(payload.min) || 0, payload.gudang
+]]);
+if (oldStok !== newStok) {
+logStokSnapshot(payload.code, payload.gudang, newStok,
+'MASTER_UPDATE', `Stok diubah dari ${oldStok} ke ${newStok} oleh admin`);
+}
+return { success: true, message: `✅ Data barang [${payload.code}] berhasil diperbarui.` };
+}
+}
+return { success: false, message: `❌ Barang [${searchCode}] tidak ditemukan.` };
+}
+
+// ── DELETE ──────────────────────────────────────────────────────
+else if (payload.op === 'DELETE') {
+for (let i = 1; i < data.length; i++) {
+if (String(data[i][hMap.code_barang]).trim() === String(payload.code).trim()) {
+sheet.deleteRow(i + 1);
+return { success: true, message: `✅ Barang [${payload.code}] berhasil dihapus.` };
+}
+}
+return { success: false, message: `❌ Barang [${payload.code}] tidak ditemukan.` };
+}
+
+return { success: false, message: '❌ Operasi tidak dikenali.' };
+
+} catch (err) {
+return { success: false, message: '❌ Error: ' + err.toString() };
+} finally {
+lock.releaseLock();
+}
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ADMIN: BULK STOCK ADJUSTMENT (STOCK OPNAME)
+// ═══════════════════════════════════════════════════════════════════
+
+function bulkAudit(payload) {
+if (payload.pin !== DEFAULT_PIN) {
+return { success: false, message: '🔒 Akses ditolak. PIN admin tidak valid.' };
+}
+
+const lock = LockService.getDocumentLock();
+
+try {
+lock.waitLock(20000);
+
+const ss = SpreadsheetApp.openById(SS_ID);
+const dbSheet = ss.getSheetByName(DB_SHEET);
+const auditSheet = ss.getSheetByName('audit');
+const data = dbSheet.getDataRange().getValues();
+const hMap = getHeaderMap(dbSheet);
+
+const ts = new Date();
+const adjId = 'AUD-' + Date.now().toString().slice(-6);
+let changed = 0;
+const kritisList = [];
+
+payload.adjustments.forEach(adj => {
+for (let i = 1; i < data.length; i++) {
+if (String(data[i][hMap.code_barang]).trim() === String(adj.code).trim()) {
+const oldVal = Number(data[i][hMap.stok_awal]);
+const newVal = Number(adj.newVal);
+if (oldVal !== newVal) {
+dbSheet.getRange(i + 1, hMap.stok_awal + 1).setValue(newVal);
+logStokSnapshot(adj.code, data[i][hMap.gudang], newVal,
+'STOCK_OPNAME', `Audit ID: ${adjId} | Reason: ${payload.reason}`);
+auditSheet.appendRow([
+adjId, ts, 'ADMIN', 'BULK_AUDIT',
+data[i][hMap.gudang], adj.code, data[i][hMap.nama_barang],
+payload.reason, oldVal, newVal, newVal - oldVal, 'WEBAPP'
+]);
+changed++;
+if (newVal <= Number(data[i][hMap.min_stok])) {
+kritisList.push(
+`• ${data[i][hMap.nama_barang]} (${newVal}/${data[i][hMap.min_stok]})`
+);
+}
+}
+break;
+}
+}
+});
+
+const props = PropertiesService.getScriptProperties();
+const tgEnabled = props.getProperty('TELEGRAM_ENABLED') === 'true';
+
+if (tgEnabled && changed > 0) {
+let msg =
+`🏠 *STOCK OPNAME SELESAI*\n` +
+`━━━━━━━━━━━━━━━━━━━━━━\n` +
+`📋 Audit ID: \`${adjId}\`\n` +
+`🔄 Item diubah: *${changed}*\n` +
+`📝 Alasan: ${escapeTg(payload.reason)}\n` +
+`🕐 Waktu: ${formatDate_(ts, true)}`;
+if (kritisList.length > 0) {
+msg += `\n\n⚠️ *Masih Kritis Setelah Opname:*\n${kritisList.join('\n')}`;
+}
+sendTelegramMessage(msg);
+}
+
+return {
+success: true,
+message: `✅ Stock opname selesai. ${changed} item berhasil diperbarui.`
+};
+
+} catch (err) {
+return { success: false, message: '❌ Error: ' + err.toString() };
+} finally {
+lock.releaseLock();
+}
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// REPORTING: AGGREGATE MUTATION SUMMARY
+// ═══════════════════════════════════════════════════════════════════
+
+function getReportData(payload) {
+try {
+const ss = SpreadsheetApp.openById(SS_ID);
+const mutasiSheet = ss.getSheetByName('mutasi');
+if (!mutasiSheet) return { success: true, list: [] };
+
+const rows = mutasiSheet.getDataRange().getValues();
+if (rows.length <= 1) return { success: true, list: [] };
+
+const hMap = getHeaderMap(mutasiSheet);
+
+const from = new Date(payload.from); from.setHours(0, 0, 0, 0);
+const to = new Date(payload.to); to.setHours(23, 59, 59, 999);
+
+const rekap = {};
+rows.slice(1).forEach(r => {
+const ts = r[hMap.timestamp];
+const date = ts instanceof Date ? ts : new Date(ts);
+if (isNaN(date.getTime()) || date < from || date > to) return;
+if (payload.gudang && r[hMap.gudang] !== payload.gudang) return;
+
+const key = r[hMap.code_barang] + '|' + r[hMap.gudang];
+if (!rekap[key]) {
+rekap[key] = {
+code: r[hMap.code_barang], nama: r[hMap.nama_barang],
+gudang: r[hMap.gudang], sat: r[hMap.satuan] || '', in: 0, out: 0
+};
+}
+const qty = Number(r[hMap.qty]) || 0;
+if (r[hMap.type] === 'IN') rekap[key].in += qty;
+if (r[hMap.type] === 'OUT') rekap[key].out += qty;
+});
+
+return { success: true, list: Object.values(rekap) };
+} catch (err) {
+return { success: false, message: err.toString() };
+}
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// REPORTING: DETAILED MUTATION HISTORY
+// ═══════════════════════════════════════════════════════════════════
+
+function getMutasiHistory(payload) {
+try {
+const ss = SpreadsheetApp.openById(SS_ID);
+const mutasiSheet = ss.getSheetByName('mutasi');
+
+if (!mutasiSheet) {
+return { success: false, message: '❌ Sheet mutasi tidak ditemukan.', list: [], total: 0 };
+}
+
+const rows = mutasiSheet.getDataRange().getValues();
+if (rows.length <= 1) {
+return { success: true, message: 'Belum ada data transaksi.', list: [], total: 0 };
+}
+
+const hMap = getHeaderMap(mutasiSheet);
+
+const requiredCols = ['tx_id', 'timestamp', 'type', 'code_barang', 'qty', 'gudang'];
+const missingCols = requiredCols.filter(col => !(col in hMap));
+if (missingCols.length > 0) {
+return {
+success: false,
+message: `❌ Header sheet mutasi tidak lengkap. Kolom hilang: ${missingCols.join(', ')}`,
+list: [], total: 0
+};
+}
+
+const from = payload.from ? new Date(payload.from) : null;
+if (from) from.setHours(0, 0, 0, 0);
+const to = payload.to ? new Date(payload.to) : null;
+if (to) to.setHours(23, 59, 59, 999);
+
+const list = [];
+rows.slice(1).forEach((r, idx) => {
+if (!r[hMap.tx_id] || !r[hMap.code_barang]) return;
+
+const ts = r[hMap.timestamp];
+const date = ts instanceof Date ? ts : new Date(ts);
+if (isNaN(date.getTime())) return;
+if (from && date < from) return;
+if (to && date > to) return;
+
+if (payload.gudang && r[hMap.gudang] !== payload.gudang) return;
+if (payload.type && r[hMap.type] !== payload.type) return;
+
+if (payload.search) {
+const q = String(payload.search).toLowerCase();
+const matchCode = String(r[hMap.code_barang] || '').toLowerCase().includes(q);
+const matchNama = String(r[hMap.nama_barang] || '').toLowerCase().includes(q);
+const matchNik = String(r[hMap.nik] || '').toLowerCase().includes(q);
+if (!matchCode && !matchNama && !matchNik) return;
+}
+
+const namaBarang =
+(r[hMap.nama_barang] && String(r[hMap.nama_barang]).trim())
+? String(r[hMap.nama_barang]).trim()
+: (r[hMap.nama_barang_snapshot] && String(r[hMap.nama_barang_snapshot]).trim())
+? String(r[hMap.nama_barang_snapshot]).trim()
+: '';
+
+list.push({
+tx_id: r[hMap.tx_id] || '',
+timestamp: formatDate_(r[hMap.timestamp], true),
+type: r[hMap.type] || '',
+nik: r[hMap.nik] || '',
+section: r[hMap.section] || '',
+gudang: r[hMap.gudang] || '',
+code_barang: r[hMap.code_barang] || '',
+nama_barang: namaBarang,
+qty: Number(r[hMap.qty]) || 0,
+satuan: r[hMap.satuan] || '',
+keterangan: r[hMap.keterangan] || '',
+stok_before: Number(r[hMap.stok_before]) || 0,
+stok_after: Number(r[hMap.stok_after]) || 0,
+tanggal_pengambilan_barang: formatDate_(r[hMap.tanggal_pengambilan_barang]),
+tanggal_penerimaan_barang: formatDate_(r[hMap.tanggal_penerimaan_barang])
+});
+});
+
+list.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+
+const limit = Number(payload.limit) || 1000;
+const offset = Number(payload.offset) || 0;
+const paged = list.slice(offset, offset + limit);
+
+return {
+success: true,
+list: paged,
+total: list.length,
+displayed: paged.length,
+hasMore: list.length > (offset + limit)
+};
+
+} catch (err) {
+return { success: false, message: '❌ Error getMutasiHistory: ' + err.toString(), list: [], total: 0 };
+}
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// QUERY HISTORICAL STOCK SNAPSHOTS
+// ═══════════════════════════════════════════════════════════════════
+
+function getStokSnapshot(payload) {
+try {
+const ss = SpreadsheetApp.openById(SS_ID);
+const snapSheet = ss.getSheetByName('stok_snapshot');
+if (!snapSheet) return getStockData();
+
+const rows = snapSheet.getDataRange().getValues();
+if (rows.length <= 1) return getStockData();
+
+const hMap = getHeaderMap(snapSheet);
+const latest = {};
+
+rows.slice(1).forEach(r => {
+const key = r[hMap.code_barang] + '|' + r[hMap.gudang];
+const ts = r[hMap.timestamp];
+const date = ts instanceof Date ? ts : new Date(ts);
+if (isNaN(date.getTime())) return;
+if (payload.timestamp) {
+const targetDate = new Date(payload.timestamp);
+if (date > targetDate) return;
+}
+if (!latest[key] || date > latest[key].date) {
+latest[key] = { date, data: r };
+}
+});
+
+let list = Object.values(latest).map(item => {
+const r = item.data;
+return {
+snapshot_id: r[hMap.snapshot_id],
+timestamp: formatDate_(item.date, true),
+code_barang: r[hMap.code_barang],
+nama_barang: r[hMap.nama_barang],
+gudang: r[hMap.gudang],
+stok_qty: Number(r[hMap.stok_qty]) || 0,
+min_stok: Number(r[hMap.min_stok]) || 0,
+kategori: r[hMap.kategori],
+satuan: r[hMap.satuan],
+triggered_by: r[hMap.triggered_by],
+notes: r[hMap.notes]
+};
+});
+
+if (payload.gudang) list = list.filter(r => r.gudang === payload.gudang);
+if (payload.kategori) list = list.filter(r => r.kategori === payload.kategori);
+if (payload.code) {
+const q = String(payload.code).toLowerCase();
+list = list.filter(r =>
+r.code_barang.toLowerCase().includes(q) ||
+r.nama_barang.toLowerCase().includes(q)
+);
+}
+
+return { success: true, list, snapshotTime: payload.timestamp || 'LATEST' };
+
+} catch (err) {
+return { success: false, message: err.toString(), list: [] };
+}
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TELEGRAM INTEGRATION
+// ═══════════════════════════════════════════════════════════════════
+
+function getAdminConfig(p) {
+if (p.pin !== DEFAULT_PIN) {
+return { telegramEnabled: false, telegramToken: '', telegramChatId: '' };
+}
+const props = PropertiesService.getScriptProperties();
+return {
+telegramEnabled: props.getProperty('TELEGRAM_ENABLED') === 'true',
+telegramToken: props.getProperty('TELEGRAM_TOKEN') || '',
+telegramChatId: props.getProperty('TELEGRAM_CHAT_ID') || ''
+};
+}
+
+function saveTelegram(p) {
+if (p.pin !== DEFAULT_PIN) {
+return { success: false, message: '🔒 Akses ditolak. PIN admin tidak valid.' };
+}
+try {
+PropertiesService.getScriptProperties().setProperties({
+'TELEGRAM_ENABLED': String(!!p.enabled),
+'TELEGRAM_TOKEN': p.token || '',
+'TELEGRAM_CHAT_ID': p.chatId || ''
+});
+return { success: true, message: '✅ Konfigurasi Telegram berhasil disimpan.' };
+} catch (err) {
+return { success: false, message: '❌ Error: ' + err.toString() };
+}
 }
 
 /**
- * F. Tambah Kategori Baru
- */
-function addCastableKategori(token, namaKategori) {
-  try {
-    validateSession(token, ["superadmin"]);
-    const db = getDb();
-    const sheet = db.getSheetByName("Castable_Kategori");
-    const data = sheet.getDataRange().getValues();
-    
-    let newId = "K01";
-    if (data.length > 1) {
-      const lastId = data[data.length - 1][0];
-      const num = parseInt(lastId.substring(1), 10);
-      newId = "K" + (num + 1).toString().padStart(2, "0");
-    }
-    
-    sheet.appendRow([newId, namaKategori]);
-    return { success: true };
-  } catch (error) {
-    return { success: false, error: error.message === "SESSION_EXPIRED" ? "SESSION_EXPIRED" : error.toString() };
-  }
+* Kirim pesan teks ke Telegram (Markdown mode)
+*/
+function sendTelegramMessage(text) {
+const props = PropertiesService.getScriptProperties();
+const token = props.getProperty('TELEGRAM_TOKEN');
+const chatId = props.getProperty('TELEGRAM_CHAT_ID');
+if (!token || !chatId) return;
+
+try {
+const response = UrlFetchApp.fetch(
+`https://api.telegram.org/bot${token}/sendMessage`,
+{
+method: 'post',
+contentType: 'application/json',
+payload: JSON.stringify({
+chat_id: chatId,
+text: text,
+parse_mode: 'Markdown'
+}),
+muteHttpExceptions: true
+}
+);
+const result = JSON.parse(response.getContentText());
+if (!result.ok) {
+Logger.log('❌ Telegram sendMessage error: ' + result.description);
+}
+} catch (e) {
+Logger.log('❌ Telegram exception: ' + e.toString());
+}
 }
 
 /**
- * G. Tambah Detail Area Baru
- */
-function addCastableDetailArea(token, kategoriId, namaDetail) {
-  try {
-    validateSession(token, ["superadmin"]);
-    const db = getDb();
-    const sheet = db.getSheetByName("Castable_DetailArea");
-    const data = sheet.getDataRange().getValues();
-    
-    let newId = "D01";
-    if (data.length > 1) {
-      const lastId = data[data.length - 1][1];
-      const num = parseInt(lastId.substring(1), 10);
-      newId = "D" + (num + 1).toString().padStart(2, "0");
-    }
-    
-    sheet.appendRow([kategoriId, newId, namaDetail]);
-    return { success: true };
-  } catch (error) {
-    return { success: false, error: error.message === "SESSION_EXPIRED" ? "SESSION_EXPIRED" : error.toString() };
-  }
+* Kirim file (Blob) ke Telegram sebagai dokumen via multipart/form-data
+* Digunakan untuk mengirim CSV laporan harian
+*
+* @param {Blob} blob - File blob yang akan dikirim
+* @param {string} caption - Caption file (mendukung Markdown)
+*/
+function sendTelegramDocument(blob, caption) {
+const props = PropertiesService.getScriptProperties();
+const token = props.getProperty('TELEGRAM_TOKEN');
+const chatId = props.getProperty('TELEGRAM_CHAT_ID');
+if (!token || !chatId) return;
+
+try {
+const boundary = '------GasMultipart' + Date.now();
+
+// Build multipart body manual karena GAS tidak support FormData native
+const metaPart =
+`--${boundary}\r\n` +
+`Content-Disposition: form-data; name="chat_id"\r\n\r\n` +
+`${chatId}\r\n` +
+`--${boundary}\r\n` +
+`Content-Disposition: form-data; name="parse_mode"\r\n\r\nMarkdown\r\n` +
+`--${boundary}\r\n` +
+`Content-Disposition: form-data; name="caption"\r\n\r\n` +
+`${caption || ''}\r\n` +
+`--${boundary}\r\n` +
+`Content-Disposition: form-data; name="document"; filename="${blob.getName()}"\r\n` +
+`Content-Type: ${blob.getContentType()}\r\n\r\n`;
+
+const closingPart = `\r\n--${boundary}--`;
+
+// Gabungkan: metadata + file bytes + penutup
+const metaBytes = Utilities.newBlob(metaPart).getBytes();
+const fileBytes = blob.getBytes();
+const closingBytes = Utilities.newBlob(closingPart).getBytes();
+
+const bodyBytes = metaBytes.concat(fileBytes).concat(closingBytes);
+
+const response = UrlFetchApp.fetch(
+`https://api.telegram.org/bot${token}/sendDocument`,
+{
+method: 'post',
+contentType: `multipart/form-data; boundary=${boundary}`,
+payload: bodyBytes,
+muteHttpExceptions: true
+}
+);
+
+const result = JSON.parse(response.getContentText());
+if (!result.ok) {
+Logger.log('❌ Telegram sendDocument error: ' + result.description);
+// Fallback: kirim pesan teks saja
+sendTelegramMessage(
+`📎 *File CSV Laporan Stok Harian*\n` +
+`Gagal mengirim file langsung. Error: ${result.description}\n\n` +
+caption
+);
+} else {
+Logger.log('✅ File CSV berhasil dikirim ke Telegram.');
+}
+
+} catch (e) {
+Logger.log('❌ Telegram sendDocument exception: ' + e.toString());
+// Fallback: kirim notif saja
+sendTelegramMessage(
+`⚠️ File CSV laporan stok tidak dapat dikirim otomatis.\n` +
+`Error: ${e.toString()}\n\n` +
+`Silakan export manual dari aplikasi.`
+);
+}
 }
 
 /**
- * H. Tambah Type Material Baru
- */
-function addCastableTypeMaterial(token, namaType, densitas) {
-  try {
-    validateSession(token, ["superadmin"]);
-    const db = getDb();
-    const sheet = db.getSheetByName("Castable_TypeMaterial");
-    const data = sheet.getDataRange().getValues();
-    
-    let newId = "T01";
-    if (data.length > 1) {
-      const lastId = data[data.length - 1][0];
-      const num = parseInt(lastId.substring(1), 10);
-      newId = "T" + (num + 1).toString().padStart(2, "0");
-    }
-    
-    sheet.appendRow([newId, namaType, densitas]);
-    return { success: true };
-  } catch (error) {
-    return { success: false, error: error.message === "SESSION_EXPIRED" ? "SESSION_EXPIRED" : error.toString() };
-  }
+* Test kirim pesan Telegram (dipanggil dari frontend)
+*/
+function testTelegram(p) {
+if (p && p.pin && p.pin !== DEFAULT_PIN) {
+return { success: false, message: '🔒 Akses ditolak. PIN admin tidak valid.' };
 }
+try {
+const props = PropertiesService.getScriptProperties();
+const token = props.getProperty('TELEGRAM_TOKEN');
+const chatId = props.getProperty('TELEGRAM_CHAT_ID');
+if (!token || !chatId) {
+return { success: false, message: '❌ Token atau Chat ID belum dikonfigurasi.' };
+}
+
+const ts = formatDate_(new Date(), true);
+sendTelegramMessage(
+`✅ *TEST NOTIFIKASI — GUDANG KILN v8.0*\n` +
+`━━━━━━━━━━━━━━━━━━━━━━\n` +
+`Koneksi bot berhasil!\n` +
+`🕐 Waktu: ${ts}\n\n` +
+`Fitur aktif:\n` +
+`• 📨 Notifikasi setiap mutasi\n` +
+`• 🚨 Alert stok kritis\n` +
+`• 📊 Laporan harian 07:00 WIB\n` +
+`• 📎 File CSV stok harian`
+);
+props.setProperty('TELEGRAM_LAST_TEST', ts);
+return { success: true, message: '✅ Pesan test berhasil dikirim ke Telegram.' };
+} catch (err) {
+return { success: false, message: '❌ Gagal: ' + err.toString() };
+}
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SETUP & INITIALIZATION
+// ═══════════════════════════════════════════════════════════════════
+
+function ensureSheets() {
+const ss = SpreadsheetApp.openById(SS_ID);
+
+const configs = [
+{
+name: 'mutasi',
+headers: [
+'tx_id', 'timestamp', 'type', 'nik', 'section', 'gudang',
+'code_barang', 'nama_barang', 'qty', 'satuan',
+'keterangan', 'stok_before', 'stok_after', 'source',
+'tanggal_pengambilan_barang', 'tanggal_penerimaan_barang'
+]
+},
+{
+name: 'audit',
+headers: [
+'adj_id', 'timestamp', 'user_role', 'method', 'gudang',
+'code_barang', 'nama_barang', 'reason',
+'stok_before', 'stok_after', 'selisih', 'source'
+]
+},
+{
+name: 'stok_snapshot',
+headers: [
+'snapshot_id', 'timestamp', 'code_barang', 'nama_barang',
+'gudang', 'stok_qty', 'min_stok', 'kategori', 'satuan',
+'triggered_by', 'notes'
+]
+}
+];
+
+configs.forEach(conf => {
+let sh = ss.getSheetByName(conf.name);
+
+if (!sh) {
+sh = ss.insertSheet(conf.name);
+const range = sh.getRange(1, 1, 1, conf.headers.length);
+range.setValues([conf.headers]);
+range.setFontWeight('bold').setBackground('#1e293b').setFontColor('#ffffff')
+.setBorder(true, true, true, true, true, true);
+sh.setFrozenRows(1);
+Logger.log(`✅ Created sheet: ${conf.name}`);
+} else {
+const lastCol = Math.max(sh.getLastColumn(), 1);
+const existHdrs = sh.getRange(1, 1, 1, lastCol).getValues()[0];
+const existSet = new Set(existHdrs.map(h => String(h).trim()));
+let appendCol = lastCol;
+
+conf.headers.forEach(h => {
+if (!existSet.has(h)) {
+appendCol++;
+sh.getRange(1, appendCol).setValue(h)
+.setFontWeight('bold').setBackground('#1e293b').setFontColor('#ffffff');
+Logger.log(`✅ Added column "${h}" to sheet ${conf.name}`);
+}
+});
+}
+});
+}
+
+
+function testAuth() {
+Logger.log('SS: ' + SpreadsheetApp.openById(SS_ID).getName());
+Logger.log('Props: ' + PropertiesService.getScriptProperties().getKeys());
+Logger.log('Triggers: ' + ScriptApp.getProjectTriggers().length);
+Logger.log('Auth OK');
+}
+
+function testTelegramDirect() {
+const props = PropertiesService.getScriptProperties();
+const token = props.getProperty('TELEGRAM_TOKEN');
+const chatId = props.getProperty('TELEGRAM_CHAT_ID');
+
+Logger.log('Token ada: ' + (token ? 'YA (' + token.length + ' karakter)' : 'TIDAK ADA'));
+Logger.log('ChatID: ' + (chatId ? chatId : 'TIDAK ADA'));
+
+if (!token || !chatId) {
+Logger.log('❌ Token/ChatID kosong!');
+return;
+}
+
+const url = 'https://api.telegram.org/bot' + token + '/sendMessage';
+const response = UrlFetchApp.fetch(url, {
+method: 'post',
+contentType: 'application/json',
+payload: JSON.stringify({
+chat_id: chatId,
+text: '✅ TEST - Gudang Kiln\nWaktu: ' + new Date().toString()
+}),
+muteHttpExceptions: true
+});
+
+const result = JSON.parse(response.getContentText());
+Logger.log('Response: ' + JSON.stringify(result));
+Logger.log(result.ok ? '✅ SUKSES!' : '❌ GAGAL: ' + result.description);
+}
+
+function cekSemuaProperties() {
+const props = PropertiesService.getScriptProperties().getProperties();
+Logger.log('TELEGRAM_ENABLED : ' + props['TELEGRAM_ENABLED']);
+Logger.log('TELEGRAM_TOKEN : ' + (props['TELEGRAM_TOKEN'] ? '***ada***' : 'KOSONG'));
+Logger.log('TELEGRAM_CHAT_ID : ' + (props['TELEGRAM_CHAT_ID'] ? props['TELEGRAM_CHAT_ID'] : 'KOSONG'));
+Logger.log('DAILY_TRIGGER_SETUP : ' + props['DAILY_TRIGGER_SETUP']);
+Logger.log('DAILY_REPORT_LAST_RUN : ' + props['DAILY_REPORT_LAST_RUN']);
+}
+
+function pakseAktifkanTelegram() {
+PropertiesService.getScriptProperties().setProperty('TELEGRAM_ENABLED', 'true');
+Logger.log('✅ TELEGRAM_ENABLED diset ke true');
+Logger.log('Nilai sekarang: ' + PropertiesService.getScriptProperties().getProperty('TELEGRAM_ENABLED'));
+}
+
+
+
+
+function testLaporanManual() {
+try {
+sendDailyStockReport();
+Logger.log('✅ Fungsi selesai. Cek Telegram sekarang.');
+} catch(e) {
+Logger.log('❌ Error: ' + e.toString());
+Logger.log('Stack: ' + e.stack);
+}
+}
+
+function forceReauthorize() {
+// Fungsi ini memaksa GAS meminta ulang semua izin
+UrlFetchApp.fetch('https://www.google.com', {muteHttpExceptions: true});
+Logger.log('✅ UrlFetchApp authorized!');
+}
+// ═══════════════════════════════════════════════════════════════════
+// 🎉 END OF CODE.GS v8.0
+// ═══════════════════════════════════════════════════════════════════
+function fixDanTestTelegram() {
+// Update Chat ID yang benar
+PropertiesService.getScriptProperties().setProperty('TELEGRAM_CHAT_ID', '7072269592');
+Logger.log('✅ Chat ID diupdate ke: 7072269592');
+
+// Langsung test kirim
+const token = PropertiesService.getScriptProperties().getProperty('TELEGRAM_TOKEN');
+const chatId = '7072269592';
+
+const res = UrlFetchApp.fetch(
+'https://api.telegram.org/bot' + token + '/sendMessage',
+{
+method: 'post',
+contentType: 'application/json',
+payload: JSON.stringify({
+chat_id: chatId,
+text: '✅ Gudang Kiln berhasil terhubung!\nHai Haysan, notifikasi siap dikirim.'
+}),
+muteHttpExceptions: true
+}
+);
+
+const result = JSON.parse(res.getContentText());
+Logger.log(result.ok ? '✅ PESAN MASUK! Cek Telegram.' : '❌ ' + result.description);
+}
+
+function setTokenDanChatId() {
+const TOKEN = '8719610589:AAG34kKff9sVeDM1TAQuuv0CYhiZPWQNKNA'; // token Anda
+const CHATID = '-1003766863451';
+
+PropertiesService.getScriptProperties().setProperties({
+'TELEGRAM_TOKEN' : TOKEN,
+'TELEGRAM_CHAT_ID': CHATID,
+'TELEGRAM_ENABLED': 'true'
+});
+
+Logger.log('Token : ' + PropertiesService.getScriptProperties().getProperty('TELEGRAM_TOKEN'));
+Logger.log('ChatID : ' + PropertiesService.getScriptProperties().getProperty('TELEGRAM_CHAT_ID'));
+Logger.log('Enabled: ' + PropertiesService.getScriptProperties().getProperty('TELEGRAM_ENABLED'));
+
+// Langsung test
+const res = UrlFetchApp.fetch(
+'https://api.telegram.org/bot' + TOKEN + '/sendMessage',
+{
+method: 'post',
+contentType: 'application/json',
+payload: JSON.stringify({
+chat_id: CHATID,
+text: '✅ Gudang Kiln - Koneksi Berhasil!\nHai Haysan, sistem siap.'
+}),
+muteHttpExceptions: true
+}
+);
+
+const result = JSON.parse(res.getContentText());
+Logger.log('Result: ' + res.getContentText());
+Logger.log(result.ok ? '✅ PESAN MASUK! Cek Telegram.' : '❌ Error: ' + result.description);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// NEW v8.0 FUNCTION: BINCARD TRACKER ENGINE
+// ═══════════════════════════════════════════════════════════════════
 
 /**
- * I. Update Konfigurasi Setting Castable
- */
-function updateCastableSettings(token, wasteFactor, persenCastable, persenInsulating) {
-  try {
-    validateSession(token, ["superadmin"]);
-    
-    if (parseFloat(persenCastable) + parseFloat(persenInsulating) !== 100) {
-      return { success: false, error: "Total persentase harus 100%" };
-    }
+* Mengambil riwayat mutasi khusus untuk satu kode barang di gudang tertentu
+* untuk disajikan dalam bentuk Kartu Stok (Bincard).
+* * @param {Object} payload - Objek berisi properti code dan gudang
+* @return {Object} JSON response sukses/gagal beserta list mutasi item
+*/
+function getBincardHistory(payload) {
+try {
+const ss = SpreadsheetApp.openById(SS_ID);
+const mutasiSheet = ss.getSheetByName('mutasi');
 
-    const db = getDb();
-    const sheet = db.getSheetByName("Castable_Settings");
-    const values = sheet.getDataRange().getValues();
-
-    for (let i = 1; i < values.length; i++) {
-      if (values[i][0] === "WASTE_FACTOR") sheet.getRange(i + 1, 2).setValue(wasteFactor);
-      if (values[i][0] === "PERSEN_CASTABLE") sheet.getRange(i + 1, 2).setValue(persenCastable);
-      if (values[i][0] === "PERSEN_INSULATING") sheet.getRange(i + 1, 2).setValue(persenInsulating);
-    }
-
-    return { success: true };
-  } catch (error) {
-    return { success: false, error: error.message === "SESSION_EXPIRED" ? "SESSION_EXPIRED" : error.toString() };
-  }
+if (!mutasiSheet) {
+return { success: true, list: [], message: 'Sheet mutasi belum terbuat.' };
 }
 
+const rows = mutasiSheet.getDataRange().getValues();
+if (rows.length <= 1) {
+return { success: true, list: [], message: 'Belum ada data transaksi masuk/keluar.' };
+}
+
+const hMap = getHeaderMap(mutasiSheet);
+const list = [];
+
+// Lakukan pemindaian log mutasi dari baris pertama setelah header
+rows.slice(1).forEach(r => {
+const matchCode = String(r[hMap.code_barang]).trim() === String(payload.code).trim();
+const matchGudang = String(r[hMap.gudang]).trim() === String(payload.gudang).trim();
+
+if (matchCode && matchGudang) {
+const isIN = r[hMap.type] === 'IN';
+// Ambil tanggal resmi dari form input, fallback ke log timestamp sistem
+const rawDate = isIN
+? (r[hMap.tanggal_penerimaan_barang] || r[hMap.timestamp])
+: (r[hMap.tanggal_pengambilan_barang] || r[hMap.timestamp]);
+
+list.push({
+tx_id: r[hMap.tx_id] || '—',
+tanggal: formatDate_(rawDate, false),
+timestamp: formatDate_(r[hMap.timestamp], true),
+type: r[hMap.type] || 'OUT',
+nik: r[hMap.nik] || '—',
+section: r[hMap.section] || '—',
+qty: Number(r[hMap.qty]) || 0,
+keterangan: r[hMap.keterangan] || '',
+stok_before: Number(r[hMap.stok_before]) || 0,
+stok_after: Number(r[hMap.stok_after]) || 0
+});
+}
+});
+
+// Urutkan riwayat dari yang paling lama ke yang paling baru (kronologis kartu kendali)
+list.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+
+return {
+success: true,
+list: list
+};
+
+} catch (err) {
+return {
+success: false,
+message: 'Gagal memproses kartu bincard: ' + err.toString()
+};
+}
+}
 /**
- * 👑 ENDPOINT 10: Generate ZIP Laporan PDF Semua Proyek (Superadmin & Manager)
- */
-function createProjectArchive(token, projectId) {
-  try {
-    const sessionUser = validateSession(token, ['manager', 'superadmin']);
-    const db = getDb();
-    
-    const ts = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyyMMdd_HHmmss");
-    const ss = SpreadsheetApp.create("Arsip_KSD_" + projectId + "_" + ts);
-    
-    const sheetsToExport = [
-      { name: "Projects", filterColIndex: 0 },
-      { name: "IAC", filterColIndex: 0 },
-      { name: "SubJobdesk", filterColIndex: 0 },
-      { name: "DailyProgress", filterColIndex: 0 },
-      { name: "Validation", filterColIndex: 0 },
-      { name: "Alerts", filterColIndex: 0 },
-      { name: "Castable_Inspeksi", filterColIndex: -1 }
-    ];
-    
-    for (const config of sheetsToExport) {
-      const src = db.getSheetByName(config.name);
-      if (!src) continue;
-      
-      const values = src.getDataRange().getValues();
-      if (values.length === 0) continue;
-      
-      let rowsToExport = [values[0]]; // Header
-      
-      if (config.filterColIndex >= 0) {
-        for (let i = 1; i < values.length; i++) {
-          if (values[i][config.filterColIndex] === projectId) {
-            rowsToExport.push(values[i]);
-          }
-        }
-      } else {
-        for (let i = 1; i < values.length; i++) {
-            rowsToExport.push(values[i]);
-        }
-      }
-      
-      if (rowsToExport.length > 1) { // Only if there's data besides header
-        const newSheet = ss.insertSheet(config.name);
-        newSheet.getRange(1, 1, rowsToExport.length, rowsToExport[0].length).setValues(rowsToExport);
-        newSheet.getRange(1, 1, 1, rowsToExport[0].length).setFontWeight("bold").setBackground("#f1f5f9");
-      }
-    }
-    
-    const defaultSheet = ss.getSheetByName("Sheet1");
-    if (defaultSheet) {
-      ss.deleteSheet(defaultSheet);
-    }
-    
-    const fileId = ss.getId();
-    const url = "https://docs.google.com/spreadsheets/d/" + fileId + "/export?format=xlsx";
-    
-    return { success: true, url: url, fileId: fileId };
-  } catch (e) {
-    return { success: false, error: e.message };
-  }
-}
-
-function generateAllProjectsReportZip(token) {
-  try {
-    validateSession(token, ["superadmin", "manager"]);
-    const db = getDb();
-    const projects = getProjectsList();
-
-    if (projects.length === 0) {
-      return { success: false, error: "Tidak ada proyek terdaftar untuk diekspor." };
-    }
-
-    const now = new Date();
-    const dateStr = Utilities.formatDate(now, Session.getScriptTimeZone(), "yyyyMMdd_HHmm");
-    const folderName = "KSD_Laporan_AllProjects_" + dateStr;
-    
-    const mainFolder = DriveApp.createFolder(folderName);
-    mainFolder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-
-    const iacSheetValues = db.getSheetByName("IAC").getDataRange().getValues();
-    const subSheetValues = db.getSheetByName("SubJobdesk").getDataRange().getValues();
-    const progressSheetValues = db.getSheetByName("DailyProgress").getDataRange().getValues();
-
-    // -- TAHAP 2: Grouping Optimization --
-    const groupedIacs = {};
-    for (let r = 1; r < iacSheetValues.length; r++) {
-      const pId = iacSheetValues[r][0];
-      if (!groupedIacs[pId]) groupedIacs[pId] = [];
-      groupedIacs[pId].push({ id: iacSheetValues[r][1], title: iacSheetValues[r][2], weight: parseFloat(iacSheetValues[r][3]) || 0 });
-    }
-    const groupedSubs = {};
-    for (let r = 1; r < subSheetValues.length; r++) {
-      const pId = subSheetValues[r][0];
-      if (!groupedSubs[pId]) groupedSubs[pId] = [];
-      groupedSubs[pId].push({ id: subSheetValues[r][1], iacId: subSheetValues[r][2], title: subSheetValues[r][3], contractor: subSheetValues[r][4], weight: parseFloat(subSheetValues[r][5]) || 0 });
-    }
-    const groupedProgress = {};
-    for (let r = 1; r < progressSheetValues.length; r++) {
-      const pId = progressSheetValues[r][0];
-      if (!groupedProgress[pId]) groupedProgress[pId] = [];
-      groupedProgress[pId].push({ date: formatDate(progressSheetValues[r][1]), subId: progressSheetValues[r][2], progress: parseFloat(progressSheetValues[r][3]) || 0, remarks: progressSheetValues[r][4], timestamp: progressSheetValues[r][6] instanceof Date ? progressSheetValues[r][6].toISOString() : String(progressSheetValues[r][6] || "") });
-    }
-    // -------------------------------------
-
-    const pdfBlobs = [];
-    let successCount = 0;
-    const failedProjects = [];
-    const startTime = Date.now();
-
-    for (let i = 0; i < projects.length; i++) {
-      if (Date.now() - startTime > 270000) { 
-        break; // TAHAP 5: Timeout safety (4.5 mins limit)
-      }
-
-      const pInfo = projects[i];
-      const pId = pInfo.id;
-      let tempSs = null;
-
-      try {
-        tempSs = SpreadsheetApp.create("Temp_KSD_" + pId);
-        const sheet = tempSs.getSheets()[0];
-        sheet.setName("Report_" + pId);
-
-        const iacs = groupedIacs[pId] || [];
-        const subs = groupedSubs[pId] || [];
-        const progress = groupedProgress[pId] || [];
-
-        const computed = calculateProgress(iacs, subs, progress, pInfo);
-
-        // -- TAHAP 3: Batch Writes --
-        const outData = [];
-        outData.push(["RINGKASAN PROYEK", "", "", ""]);
-        outData.push(["Project ID", pId, "", ""]);
-        outData.push(["Nama Proyek", pInfo.name, "", ""]);
-        outData.push(["Area", pInfo.area, "", ""]);
-        outData.push(["Status", pInfo.status, "", ""]);
-        outData.push(["Progres Keseluruhan", computed.overallProgress + "%", "", ""]);
-        outData.push(["Durasi Aktual", computed.actualDuration + " Hari", "", ""]);
-        outData.push(["", "", "", ""]);
-
-        outData.push(["DAFTAR HEAD JOBDESK (IAC)", "Bobot", "Progres", ""]);
-        computed.iacs.forEach(iac => {
-          outData.push(["[" + iac.id + "] " + iac.title, iac.weight + "%", iac.currentProgress + "%", ""]);
-        });
-        outData.push(["", "", "", ""]);
-
-        outData.push(["DAFTAR SUB-JOBDESK", "Kontraktor", "Bobot", "Progres"]);
-        computed.subs.forEach(sub => {
-          outData.push(["[" + sub.id + "] " + sub.title, sub.contractor || "-", sub.weight + "%", sub.currentProgress + "%"]);
-        });
-        outData.push(["", "", "", ""]);
-
-        outData.push(["LOG PROGRES TERAKHIR (Max 20)", "Sub ID", "Progres", "Catatan"]);
-        progress.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        const recentLogs = progress.slice(0, 20);
-        
-        if (recentLogs.length > 0) {
-          recentLogs.forEach(lg => {
-            outData.push([lg.date, lg.subId, lg.progress + "%", lg.remarks || "-"]);
-          });
-        } else {
-          outData.push(["Belum ada data", "", "", ""]);
-        }
-
-        sheet.getRange(1, 1, outData.length, 4).setValues(outData);
-
-        sheet.getRange(1, 1, 1, 2).setFontWeight("bold").setBackground("#1e293b").setFontColor("white");
-        sheet.getRange(9, 1, 1, 3).setFontWeight("bold").setBackground("#f1f5f9");
-        sheet.getRange(11 + computed.iacs.length, 1, 1, 4).setFontWeight("bold").setBackground("#f1f5f9");
-        sheet.getRange(13 + computed.iacs.length + computed.subs.length, 1, 1, 4).setFontWeight("bold").setBackground("#f1f5f9");
-        // -------------------------------------
-
-        SpreadsheetApp.flush();
-        const url = tempSs.getUrl().replace(/edit$/, '') + 'export?exportFormat=pdf&format=pdf&size=A4&portrait=false&fitw=true&sheetnames=false&printtitle=false&pagenumbers=true&gridlines=true';
-        const tokenOAuth = ScriptApp.getOAuthToken();
-        const response = UrlFetchApp.fetch(url, {
-          headers: { 'Authorization': 'Bearer ' + tokenOAuth },
-          muteHttpExceptions: true
-        });
-
-        if (response.getResponseCode() !== 200) {
-          throw new Error("Gagal export PDF HTTP " + response.getResponseCode());
-        }
-
-        const safeName = pInfo.name.replace(/[^a-zA-Z0-9]/g, "_");
-        const pdfBlob = response.getBlob().setName("Laporan_" + pId + "_" + safeName + ".pdf");
-        
-        mainFolder.createFile(pdfBlob);
-        pdfBlobs.push(pdfBlob);
-        successCount++;
-
-      } catch (projError) {
-        failedProjects.push(pId);
-      } finally {
-        if (tempSs) {
-          try {
-            DriveApp.getFileById(tempSs.getId()).setTrashed(true);
-          } catch (e) {
-            // Abaikan error saat hapus file sementara
-          }
-        }
-      }
-    }
-
-    let zipUrl = "";
-    if (pdfBlobs.length > 0) {
-      const zipName = "Laporan_Lengkap_AllProjects_" + dateStr + ".zip";
-      const zipBlob = Utilities.zip(pdfBlobs, zipName);
-      const zipFile = mainFolder.createFile(zipBlob);
-      zipFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-      zipUrl = zipFile.getUrl();
-    }
-
-    return {
-      success: true,
-      folderUrl: mainFolder.getUrl(),
-      zipUrl: zipUrl,
-      totalReports: successCount,
-      failedProjects: failedProjects
-    };
-
-  } catch (error) {
-    if (error.message === "UNAUTHORIZED" || error.message === "SESSION_EXPIRED" || error.message === "FORBIDDEN") {
-      return { success: false, error: "SESSION_EXPIRED" };
-    }
-    return { success: false, error: error.toString() };
-  }
-}
-
-/**
- * 📦 ENDPOINT: Ambil data utuh semua proyek (untuk frontend ZIP generation)
- */
-function getAllProjectsFullData(token) {
-  const startTime = Date.now();
-  try {
-    validateSession(token);
-    const db = getDb();
-    const projects = getProjectsList();
-
-    if (projects.length === 0) return JSON.parse(JSON.stringify({ success: true, projects: [] }));
-
-    const iacSheetValues = db.getSheetByName("IAC").getDataRange().getValues();
-    const subSheetValues = db.getSheetByName("SubJobdesk").getDataRange().getValues();
-    const progressSheetValues = db.getSheetByName("DailyProgress").getDataRange().getValues();
-    const validationSheet = db.getSheetByName("Validation");
-    const validationSheetValues = validationSheet ? validationSheet.getDataRange().getValues() : [];
-
-    const groupedIacs = {};
-    for (let r = 1; r < iacSheetValues.length; r++) {
-      const pId = iacSheetValues[r][0];
-      if (!groupedIacs[pId]) groupedIacs[pId] = [];
-      groupedIacs[pId].push({ id: iacSheetValues[r][1], title: iacSheetValues[r][2], weight: parseFloat(iacSheetValues[r][3]) || 0 });
-    }
-    const groupedSubs = {};
-    for (let r = 1; r < subSheetValues.length; r++) {
-      const pId = subSheetValues[r][0];
-      if (!groupedSubs[pId]) groupedSubs[pId] = [];
-      groupedSubs[pId].push({ id: subSheetValues[r][1], iacId: subSheetValues[r][2], title: subSheetValues[r][3], contractor: subSheetValues[r][4], weight: parseFloat(subSheetValues[r][5]) || 0 });
-    }
-    const groupedProgress = {};
-    for (let r = 1; r < progressSheetValues.length; r++) {
-      const pId = progressSheetValues[r][0];
-      if (!groupedProgress[pId]) groupedProgress[pId] = [];
-      groupedProgress[pId].push({ date: formatDate(progressSheetValues[r][1]), subId: progressSheetValues[r][2], progress: parseFloat(progressSheetValues[r][3]) || 0, remarks: progressSheetValues[r][4], timestamp: progressSheetValues[r][6] instanceof Date ? progressSheetValues[r][6].toISOString() : String(progressSheetValues[r][6] || "") });
-    }
-    const groupedValidations = {};
-    for (let r = 1; r < validationSheetValues.length; r++) {
-      const pId = validationSheetValues[r][0];
-      if (!groupedValidations[pId]) groupedValidations[pId] = [];
-      groupedValidations[pId].push({ type: validationSheetValues[r][1], status: validationSheetValues[r][4] });
-    }
-
-    let isPartial = false;
-    let processedCount = 0;
-    const fullProjects = [];
-    
-    for (let i = 0; i < projects.length; i++) {
-      if (Date.now() - startTime > 270000) {
-        isPartial = true;
-        break; // T2-1: Guard timeout limit
-      }
-      processedCount++;
-      const pInfo = projects[i];
-      const pId = pInfo.id;
-      const iacs = groupedIacs[pId] || [];
-      const subs = groupedSubs[pId] || [];
-      const progress = groupedProgress[pId] || [];
-      // BUG-19 FIX: Sort progress kronologis
-      progress.sort((a, b) => new Date(a.date) - new Date(b.date));
-      const computed = calculateProgress(iacs, subs, progress, pInfo);
-
-      const validations = groupedValidations[pId] || [];
-      let isSuperadminFinalized = false;
-      for (let v = 0; v < validations.length; v++) {
-        if (validations[v].type === "superadmin_finalize" && validations[v].status === "Approved") {
-          isSuperadminFinalized = true;
-          break;
-        }
-      }
-
-      if (computed.overallProgress === 100 && isSuperadminFinalized) {
-        pInfo.status = "Completed";
-      }
-
-      fullProjects.push({
-        config: pInfo,
-        iacs: computed.iacs,
-        subs: computed.subs,
-        dailyProgress: progress,
-        overallProgress: computed.overallProgress,
-        actualDuration: computed.actualDuration,
-        // BUG-02 FIX: calculateProgress tidak mengembalikan actualStartDate, ambil dari pInfo
-        actualStartDate: pInfo.startDate
-      });
-    }
-
-    return JSON.parse(JSON.stringify({ 
-      success: true, 
-      partial: isPartial,
-      processedCount: processedCount,
-      projects: fullProjects 
-    }));
-  } catch (error) {
-    if (error.message === "UNAUTHORIZED" || error.message === "SESSION_EXPIRED" || error.message === "FORBIDDEN") {
-      return { success: false, error: "SESSION_EXPIRED" };
-    }
-    return { success: false, error: error.toString() };
-  }
-}
-
-/**
- * 📊 ENDPOINT: Summary Dashboard Semua Proyek
- */
-function getAllProjectsDashboardSummary(token) {
-  const startTime = Date.now();
-  try {
-    validateSession(token);
-    const db = getDb();
-    const projects = getProjectsList();
-
-    if (projects.length === 0) {
-      return JSON.parse(JSON.stringify({
-        success: true,
-        generatedAt: new Date().toISOString(),
-        summary: { totalProjects: 0, totalOnTrack: 0, totalAlert: 0, avgOverallProgress: 0 },
-        projects: []
-      }));
-    }
-
-    const iacSheetValues = db.getSheetByName("IAC").getDataRange().getValues();
-    const subSheetValues = db.getSheetByName("SubJobdesk").getDataRange().getValues();
-    const progressSheetValues = db.getSheetByName("DailyProgress").getDataRange().getValues();
-    const alertsSheetValues = db.getSheetByName("Alerts").getDataRange().getValues();
-    const baselineSheet = db.getSheetByName("BaselineSchedule");
-    const baselineDataAll = baselineSheet ? baselineSheet.getDataRange().getValues() : [];
-
-    // -- TAHAP 2: O(N) Grouping Optimization --
-    const groupedIacs = {};
-    for (let r = 1; r < iacSheetValues.length; r++) {
-      const pId = iacSheetValues[r][0];
-      if (!groupedIacs[pId]) groupedIacs[pId] = [];
-      groupedIacs[pId].push({ id: iacSheetValues[r][1], title: iacSheetValues[r][2], weight: parseFloat(iacSheetValues[r][3]) || 0 });
-    }
-
-    const groupedSubs = {};
-    for (let r = 1; r < subSheetValues.length; r++) {
-      const pId = subSheetValues[r][0];
-      if (!groupedSubs[pId]) groupedSubs[pId] = [];
-      groupedSubs[pId].push({ id: subSheetValues[r][1], iacId: subSheetValues[r][2], title: subSheetValues[r][3], contractor: subSheetValues[r][4], weight: parseFloat(subSheetValues[r][5]) || 0 });
-    }
-
-    const groupedProgress = {};
-    for (let r = 1; r < progressSheetValues.length; r++) {
-      const pId = progressSheetValues[r][0];
-      if (!groupedProgress[pId]) groupedProgress[pId] = [];
-      groupedProgress[pId].push({ date: formatDate(progressSheetValues[r][1]), subId: progressSheetValues[r][2], progress: parseFloat(progressSheetValues[r][3]) || 0, remarks: progressSheetValues[r][4], inputBy: progressSheetValues[r][5], timestamp: progressSheetValues[r][6] instanceof Date ? progressSheetValues[r][6].toISOString() : String(progressSheetValues[r][6] || ""), photoUrl: progressSheetValues[r][7] || "" });
-    }
-    // -----------------------------------------
-
-    let totalAlert = 0;
-    let totalOnTrack = 0;
-    let sumOverallProgress = 0;
-    const projectSummaries = [];
-
-    let isPartial = false;
-    let processedCount = 0;
-
-    for (let i = 0; i < projects.length; i++) {
-      if (Date.now() - startTime > 270000) {
-        isPartial = true;
-        break; // T2-1: Guard against 6-min execution limit (Timeout safe)
-      }
-      processedCount++;
-
-      const pInfo = projects[i];
-      const pId = pInfo.id;
-
-      const iacs = groupedIacs[pId] || [];
-      const subs = groupedSubs[pId] || [];
-      const progress = groupedProgress[pId] || [];
-
-      const computed = calculateProgress(iacs, subs, progress, pInfo);
-      const projectAlerts = runAlertAnalysis(pId, computed, progress, pInfo, alertsSheetValues, false, baselineDataAll);
-
-      totalAlert += projectAlerts.length;
-      if (projectAlerts.length === 0) {
-        totalOnTrack++;
-      }
-      sumOverallProgress += computed.overallProgress;
-
-      let lastProgDate = null;
-      let lastProgRem = "";
-      progress.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-      if (progress.length > 0) {
-        lastProgDate = progress[0].date;
-        lastProgRem = progress[0].remarks;
-      }
-
-      projectSummaries.push({
-        id: pId,
-        name: pInfo.name,
-        area: pInfo.area,
-        status: pInfo.status,
-        startDate: pInfo.startDate,
-        overallProgress: computed.overallProgress,
-        actualDuration: computed.actualDuration,
-        alertCount: projectAlerts.length,
-        lastProgressDate: lastProgDate,
-        lastProgressRemarks: lastProgRem
-      });
-    }
-
-    return JSON.parse(JSON.stringify({
-      success: true,
-      partial: isPartial,
-      processedCount: processedCount,
-      generatedAt: new Date().toISOString(),
-      summary: {
-        totalProjects: processedCount, // Update total based on processed
-        totalOnTrack: totalOnTrack,
-        totalAlert: totalAlert,
-        avgOverallProgress: processedCount > 0 ? Math.round((sumOverallProgress / processedCount) * 10) / 10 : 0
-      },
-      projects: projectSummaries
-    }));
-
-  } catch (error) {
-    if (error.message === "UNAUTHORIZED" || error.message === "SESSION_EXPIRED" || error.message === "FORBIDDEN") {
-      return { success: false, error: "SESSION_EXPIRED" };
-    }
-    return { success: false, error: error.toString() };
-  }
-}
-
-function pancingOtorisasi() {
-  DriveApp.getFiles();
-}
+* ╔══════════════════════════════════════════════════════════════════╗
+* ║ PANDUAN SETUP LAPORAN HARIAN ║
+* ╚══════════════════════════════════════════════════════════════════╝
+*
+* LANGKAH 1: Deploy Web App (sama seperti sebelumnya)
+* - Deploy → New Deployment → Web App
+* - Execute as: Me | Who has access: Anyone
+*
+* LANGKAH 2: Aktifkan Telegram dari Panel Admin
+* - Buka aplikasi → Admin → Telegram
+* - Isi Bot Token & Chat ID → Simpan → Test Kirim
+*
+* LANGKAH 3: Setup Trigger Laporan Harian (WAJIB, sekali saja!)
+* - Buka Apps Script Editor
+* - Pilih fungsi: setupDailyTrigger
+* - Klik tombol ▶ Run
+* - Izinkan permission yang diminta
+* - Telegram akan menerima konfirmasi "TRIGGER HARIAN AKTIF"
+*
+* LANGKAH 4: Verifikasi
+* - Editor → Triggers (jam/lonceng icon di sidebar kiri)
+* - Pastikan ada trigger: sendDailyStockReport | Time-driven | Day timer | 7am-8am
+*
+* UNTUK DISABLE LAPORAN HARIAN:
+* - Jalankan fungsi removeDailyTrigger() dari Editor
+*
+* ╔══════════════════════════════════════════════════════════════════╗
+* ║ YANG DIKIRIM KE TELEGRAM ║
+* ╚══════════════════════════════════════════════════════════════════╝
+*
+* A. Saat ada mutasi (real-time):
+* 1. Pesan detail mutasi (TX ID, operator, gudang, semua item)
+* 2. Alert kritis per item jika stok di bawah minimum
+*
+* B. Setiap hari jam 07:00 WIB (otomatis):
+* 1. Pesan ringkasan stok semua gudang
+* 2. Daftar item stok kritis (jika ada)
+* 3. File CSV stok lengkap semua gudang (attachment dokumen)
+* 4. Ringkasan mutasi kemarin (total IN/OUT)
+*/

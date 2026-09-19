@@ -4,23 +4,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KSD Monitor — Kiln Shutdown &amp; Overhaul Management System</title>
+    <title>TRUNOVA — Kiln Shutdown &amp; Overhaul Intelligence</title>
 
     <script>
         (function() {
             try {
-                var savedTheme = localStorage.getItem('ksd_theme_mode') || 'dark';
+                // Default to light mode (warna terang) per user specification
+                if (localStorage.getItem('ksd_theme_v3') !== 'true') {
+                    localStorage.setItem('ksd_theme_mode', 'light');
+                    localStorage.setItem('ksd_theme_v3', 'true');
+                }
+                var savedTheme = localStorage.getItem('ksd_theme_mode') || 'light';
                 document.documentElement.setAttribute('data-theme', savedTheme);
             } catch(e) {}
         })();
     </script>
 
+    <!-- Favicon & Branding -->
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+
     <!-- PWA & Mobile Web App Settings -->
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#1D4ED8">
+    <meta name="theme-color" content="#F1F5F9">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <meta name="apple-mobile-web-app-title" content="TRUNOVA">
+    <meta name="application-name" content="TRUNOVA">
+    <meta name="msapplication-TileColor" content="#2563EB">
 
     <!-- HTMX Library -->
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
@@ -41,27 +54,36 @@
 
     <style>
         /* ============================================================
-           DESIGN TOKEN SYSTEM — LIGHT MODE (TERANG) & DARK MODE (GELAP)
+           TRUNOVA DESIGN TOKEN SYSTEM — INDUSTRIAL MISSION CONTROL
            ============================================================ */
         :root,
         [data-theme="light"] {
-            /* Surface Canvas — Clinical High-Precision White/Slate */
+            /* Surface Canvas — High-Precision Titanium White & Slate */
             --surface-sidebar: #FFFFFF;
             --surface-sidebar-alt: #F8FAFC;
-            --surface-0: #F8FAFC;
+            --surface-0: #F3F5F9;
             --surface-1: #FFFFFF;
-            --surface-2: #FFFFFF;
-            --surface-3: #F1F5F9;
-            --surface-overlay: rgba(15, 23, 42, 0.7);
+            --surface-2: #F8FAFC;
+            --surface-3: #EDF2F7;
+            --surface-overlay: rgba(15, 23, 42, 0.65);
             --surface-footer: #FFFFFF;
-            --surface-bottomnav: rgba(255, 255, 255, 0.95);
+            --surface-bottomnav: rgba(255, 255, 255, 0.96);
 
-            /* Accent Colors (Precision Industrial Blue & Amber) */
-            --accent: #1D4ED8;
-            --accent-dim: #1E40AF;
-            --accent-glow: rgba(29, 78, 216, 0.12);
-            --accent-glow-strong: rgba(29, 78, 216, 0.22);
+            /* Brand Accent Colors (Flame Amber + Precision Cobalt) */
+            --accent: #2563EB;
+            --accent-dim: #1D4ED8;
+            --accent-glow: rgba(37, 99, 235, 0.14);
+            --accent-glow-strong: rgba(37, 99, 235, 0.28);
             --accent-fg: #FFFFFF;
+
+            /* Trunova Kiln Identity (Flame Amber & Fire Radials) */
+            --brand-amber: #D97706;
+            --brand-amber-light: #F59E0B;
+            --brand-amber-dark: #B45309;
+            --brand-amber-glow: rgba(217, 119, 6, 0.2);
+            --brand-amber-subtle: rgba(217, 119, 6, 0.1);
+            --brand-navy: #0F172A;
+            --brand-navy-light: #1E293B;
 
             /* Semantic Colors */
             --danger: #DC2626;
@@ -70,8 +92,8 @@
             --success-bg: rgba(5, 150, 105, 0.08);
             --warning: #D97706;
             --warning-bg: rgba(217, 119, 6, 0.08);
-            --info: #1D4ED8;
-            --info-bg: rgba(29, 78, 216, 0.08);
+            --info: #2563EB;
+            --info-bg: rgba(37, 99, 235, 0.08);
 
             /* Text Colors (High-Contrast Slate Hierarchy) */
             --text-primary: #0F172A;
@@ -88,12 +110,12 @@
             --border-dark-medium: #CBD5E1;
 
             /* Shadows — Machined Double-Bezel Elevation */
-            --shadow-rest: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
-            --shadow-hover: 0 6px 18px -2px rgba(15, 23, 42, 0.07), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
-            --shadow-active: 0 1px 2px rgba(0, 0, 0, 0.05);
-            --shadow-accent: 0 4px 14px rgba(29, 78, 216, 0.2);
-            --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), inset 0 1px 0 #FFFFFF;
-            --shadow-card-hover: 0 10px 24px -4px rgba(15, 23, 42, 0.08), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+            --shadow-rest: 0 1px 3px rgba(15, 23, 42, 0.05), 0 1px 2px rgba(15, 23, 42, 0.03);
+            --shadow-hover: 0 8px 24px -4px rgba(15, 23, 42, 0.1), 0 2px 8px -2px rgba(15, 23, 42, 0.04);
+            --shadow-active: 0 1px 2px rgba(15, 23, 42, 0.08);
+            --shadow-accent: 0 4px 16px rgba(37, 99, 235, 0.22);
+            --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.05), 0 0 0 1px rgba(226, 232, 240, 0.9), inset 0 1px 0 #FFFFFF;
+            --shadow-card-hover: 0 12px 28px -4px rgba(15, 23, 42, 0.1), 0 0 0 1px rgba(37, 99, 235, 0.35), inset 0 1px 0 #FFFFFF;
 
             /* Spacing scale */
             --sp-1: 4px;
@@ -116,43 +138,52 @@
             /* Layout */
             --sidebar-w: 240px;
             --sidebar-w-coll: 68px;
-            --topbar-h: 56px;
-            --bottomnav-h: 64px;
+            --topbar-h: 110px;
+            --bottomnav-h: 60px;
 
             /* Typography */
-            --font-ui: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-ui: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
         }
 
-        /* DARK MODE THEME OVERRIDES — Mission-Control Deep Graphite */
+        /* DARK MODE THEME OVERRIDES — Industrial Mission-Control Deep Graphite */
         [data-theme="dark"] {
-            /* Surface Canvas */
-            --surface-sidebar: #0B111E;
-            --surface-sidebar-alt: #0E1729;
-            --surface-0: #080C14;
-            --surface-1: #0F172A;
-            --surface-2: #131C2E;
-            --surface-3: #1E293B;
-            --surface-overlay: rgba(3, 7, 18, 0.85);
-            --surface-footer: #0B111E;
-            --surface-bottomnav: rgba(11, 17, 30, 0.95);
+            /* Surface Canvas — Deep Obsidian & Titanium Graphite */
+            --surface-sidebar: #0B0F19;
+            --surface-sidebar-alt: #0E1524;
+            --surface-0: #0B0F19;
+            --surface-1: #111827;
+            --surface-2: #162032;
+            --surface-3: #1E2D44;
+            --surface-overlay: rgba(3, 7, 18, 0.88);
+            --surface-footer: #0B0F19;
+            --surface-bottomnav: rgba(11, 15, 25, 0.96);
 
             /* Accent Colors */
             --accent: #3B82F6;
             --accent-dim: #2563EB;
-            --accent-glow: rgba(59, 130, 246, 0.18);
-            --accent-glow-strong: rgba(59, 130, 246, 0.32);
+            --accent-glow: rgba(59, 130, 246, 0.2);
+            --accent-glow-strong: rgba(59, 130, 246, 0.38);
             --accent-fg: #FFFFFF;
+
+            /* Trunova Kiln Identity (Flame Amber Glow) */
+            --brand-amber: #F59E0B;
+            --brand-amber-light: #FBBF24;
+            --brand-amber-dark: #D97706;
+            --brand-amber-glow: rgba(245, 158, 11, 0.28);
+            --brand-amber-subtle: rgba(245, 158, 11, 0.14);
+            --brand-navy: #0F172A;
+            --brand-navy-light: #1E293B;
 
             /* Semantic Colors */
             --danger: #EF4444;
-            --danger-bg: rgba(239, 68, 68, 0.12);
+            --danger-bg: rgba(239, 68, 68, 0.14);
             --success: #10B981;
-            --success-bg: rgba(16, 185, 129, 0.12);
+            --success-bg: rgba(16, 185, 129, 0.14);
             --warning: #F59E0B;
-            --warning-bg: rgba(245, 158, 11, 0.12);
+            --warning-bg: rgba(245, 158, 11, 0.14);
             --info: #3B82F6;
-            --info-bg: rgba(59, 130, 246, 0.12);
+            --info-bg: rgba(59, 130, 246, 0.14);
 
             /* Text Colors */
             --text-primary: #F8FAFC;
@@ -160,16 +191,19 @@
             --text-tertiary: #94A3B8;
             --text-on-dark: #FFFFFF;
             --text-on-dark-dim: #94A3B8;
+            --text-accent: var(--accent);
 
-            /* Border Colors */
+            /* Border Colors — Double-Bezel Precision Lines */
             --border-subtle: rgba(255, 255, 255, 0.08);
-            --border-medium: rgba(255, 255, 255, 0.15);
+            --border-medium: rgba(255, 255, 255, 0.16);
             --border-dark: rgba(255, 255, 255, 0.08);
-            --border-dark-medium: rgba(255, 255, 255, 0.16);
+            --border-dark-medium: rgba(255, 255, 255, 0.18);
 
             /* Shadows — Double-Bezel Inner Highlight & Deep Ambient Depth */
-            --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-            --shadow-card-hover: 0 12px 28px -4px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(59, 130, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            --shadow-rest: 0 2px 6px rgba(0, 0, 0, 0.4);
+            --shadow-hover: 0 12px 32px -4px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(59, 130, 246, 0.4);
+            --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            --shadow-card-hover: 0 14px 36px -4px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(59, 130, 246, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.14);
         }
 
         /* ============================================================
@@ -190,6 +224,10 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             text-rendering: optimizeLegibility;
+            min-height: 100vh;
+            min-height: 100dvh;
+            background: var(--surface-0);
+            overscroll-behavior-y: none;
         }
 
         body {
@@ -198,7 +236,9 @@
             color: var(--text-primary);
             line-height: 1.5;
             min-height: 100vh;
+            min-height: 100dvh;
             overflow-x: hidden;
+            overscroll-behavior-y: none;
             letter-spacing: -0.01em;
         }
 
@@ -529,8 +569,8 @@
     to { transform: translateX(0) scale(1); opacity: 1; }
 }
 
-@media (max-width: 479px) {
-    .notif-panel { position: fixed; top: var(--topbar-h); left: 12px; right: 12px; width: auto; }
+@media (max-width: 600px) {
+    .notif-panel { position: fixed; top: 60px; left: 12px; right: 12px; width: auto; max-height: calc(100dvh - 80px); }
 }
 
 
@@ -641,52 +681,29 @@
        ============================================================ */
         #page-login {
             min-height: 100vh;
+            min-height: 100dvh;
+            width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-direction: column;
             padding: var(--sp-6);
-            background: var(--surface-sidebar);
-            /* Blueprint engineering dot grid */
-            background-image:
-                radial-gradient(circle, rgba(29, 78, 216, 0.15) 1px, transparent 1px),
-                radial-gradient(circle, rgba(220, 38, 38, 0.05) 1px, transparent 1px);
-            background-size: 24px 24px, 6px 6px;
-            background-position: 0 0, 12px 12px;
+            background-color: #0C101A;
+            background-image: 
+                linear-gradient(180deg, rgba(30, 35, 55, 0.6) 0%, rgba(20, 25, 40, 0.85) 100%),
+                url('/assets/branding/textures/diagonal-metal-panels.svg');
+            background-size: cover, cover;
+            background-position: center, center;
+            background-repeat: no-repeat, no-repeat;
             position: relative;
-            overflow: hidden;
-        }
-
-        /* Ambient glow blobs - Blue & Red mix */
-        #page-login::before {
-            content: '';
-            position: absolute;
-            top: -20%;
-            left: -10%;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(29, 78, 216, 0.15) 0%, transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
-        }
-
-        #page-login::after {
-            content: '';
-            position: absolute;
-            bottom: -15%;
-            right: -5%;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(220, 38, 38, 0.10) 0%, transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
+            box-sizing: border-box;
+            overflow-x: hidden;
         }
 
         .login-wrapper {
             width: 100%;
             max-width: 420px;
             position: relative;
-            z-index: 1;
+            z-index: 2;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -1050,162 +1067,244 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            min-height: 100dvh;
+            background: var(--surface-0);
         }
 
-        /* ---------- TOPBAR ---------- */
+        /* ---------- 2-TIER STICKY TOPBAR ---------- */
         .topbar {
             position: sticky;
             top: 0;
             z-index: 400;
-            height: var(--topbar-h);
             background: var(--surface-sidebar);
             backdrop-filter: blur(16px) saturate(180%);
             -webkit-backdrop-filter: blur(16px) saturate(180%);
             border-bottom: 1px solid var(--border-subtle);
             display: flex;
-            align-items: center;
-            padding: 0 var(--sp-5);
-            gap: var(--sp-4);
+            flex-direction: column;
+            padding: 0;
+            width: 100%;
             transition: background-color 0.25s ease, border-color 0.25s ease;
+        }
+
+        /* Baris 1: Brand & Top Actions (Tinggi 56px) */
+        .topbar-row-primary {
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--sp-4);
+            width: 100%;
+            gap: var(--sp-3);
         }
 
         .topbar-brand {
             display: flex;
             align-items: center;
-            gap: var(--sp-3);
+            gap: 10px;
             min-width: 0;
+            text-decoration: none;
+            cursor: pointer;
+            flex-shrink: 0;
         }
 
-        .topbar-logo {
-            width: 32px;
-            height: 32px;
-            background: var(--accent);
+        .topbar-brand-mark {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            min-height: 36px;
+            background: #0B111E;
             border-radius: var(--r-md);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            box-shadow: 0 0 14px var(--accent-glow-strong);
-            transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 200ms ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        .topbar-logo:hover {
+        .topbar-brand-mark::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--brand-amber);
+            box-shadow: 0 0 6px var(--brand-amber);
+        }
+
+        .topbar-brand-mark:hover {
             transform: scale(1.05);
+            box-shadow: 0 0 14px var(--brand-amber-glow), 0 2px 8px rgba(0, 0, 0, 0.4);
         }
 
-        .topbar-name {
-            font-size: 13.5px;
-            font-weight: 800;
-            color: var(--text-on-dark);
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-
-        .ksd-system-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(245, 158, 11, 0.12);
-            color: #f59e0b;
-            padding: 3px 10px;
-            border-radius: var(--r-full);
-            border: 1px solid rgba(245, 158, 11, 0.28);
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-
-        .ksd-badge-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #f59e0b;
-            box-shadow: 0 0 8px #f59e0b;
-            animation: pulseSlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-
-        @keyframes pulseSlow {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.45; transform: scale(0.85); }
-        }
-
-        .topbar-divider {
-            width: 1px;
+        .topbar-monogram-img {
             height: 20px;
-            background: var(--border-subtle);
+            width: auto;
+            filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.6));
+        }
+
+        .topbar-brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.15;
+            white-space: nowrap;
+        }
+
+        .topbar-brand-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .topbar-brand-sub {
+            font-family: var(--font-mono);
+            font-size: 8.5px;
+            font-weight: 700;
+            color: var(--brand-amber);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        /* Topbar Actions: Strictly 2 Elements (Notif Bell + Avatar) */
+        .topbar-actions-minimal {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             flex-shrink: 0;
         }
 
-        .project-selector-wrap {
-            display: flex;
-            align-items: center;
-            gap: var(--sp-2);
+        .notif-bell-wrap {
+            position: relative;
+        }
+
+        .icon-btn {
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            min-height: 44px;
             background: var(--surface-1);
             border: 1px solid var(--border-subtle);
             border-radius: var(--r-md);
-            padding: 8px 12px;
-            min-height: 38px;
-            min-width: 0;
-            flex: 1;
-            max-width: 340px;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: var(--shadow-rest);
-        }
-
-        .project-selector-wrap:hover,
-        .project-selector-wrap:focus-within {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-glow);
-        }
-
-        .project-selector-wrap svg {
-            color: var(--accent);
-            flex-shrink: 0;
-        }
-
-        #projectSelector {
-            background: transparent;
-            border: none;
-            color: var(--text-on-dark);
-            font-size: 12px;
-            font-weight: 700;
-            font-family: var(--font-ui);
-            outline: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: background 200ms, color 200ms, border-color 200ms, transform 150ms;
             cursor: pointer;
-            min-width: 0;
-            flex: 1;
-            height: 32px;
         }
 
-        #projectSelector option {
-            background: var(--surface-2);
+        .icon-btn:hover {
+            background: var(--surface-3);
             color: var(--text-primary);
+            border-color: var(--border-medium);
         }
 
-        .topbar-actions {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            gap: var(--sp-3);
+        /* Avatar Trigger Button (>= 44x44px touch target) */
+        .avatar-dropdown-wrap {
+            position: relative;
         }
 
-        .user-pill {
+        .avatar-trigger-btn {
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            min-height: 44px;
+            background: transparent;
+            border: 2px solid transparent;
+            border-radius: var(--r-md);
             display: flex;
             align-items: center;
-            gap: var(--sp-2);
+            justify-content: center;
+            cursor: pointer;
+            padding: 0;
+            transition: border-color 200ms, transform 150ms;
+        }
+
+        .avatar-trigger-btn:hover,
+        .avatar-trigger-btn:focus-visible {
+            border-color: var(--accent);
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--r-md);
+            background: var(--accent);
+            color: #fff;
+            font-size: 13.5px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+        }
+
+        .avatar.avatar-sm {
+            width: 32px;
+            height: 32px;
+            font-size: 12px;
+        }
+
+        /* Avatar Dropdown Floating Menu */
+        .avatar-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            min-width: 260px;
+            background: var(--surface-1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-medium);
+            border-radius: var(--r-xl);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28), 0 0 0 1px var(--border-subtle);
+            padding: 8px;
+            z-index: 960;
+            display: none;
+            flex-direction: column;
+            gap: 2px;
+            transform-origin: top right;
+        }
+
+        .avatar-dropdown-menu.show {
+            display: flex;
+            animation: menuFadeIn 180ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes menuFadeIn {
+            from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .avatar-menu-header {
+            padding: 8px 10px 10px 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .avatar-menu-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .user-text {
-            text-align: right;
+            text-align: left;
         }
 
         .user-text .name {
             font-size: 13px;
             font-weight: 700;
-            color: var(--text-on-dark);
+            color: var(--text-primary);
             line-height: 1.2;
         }
 
@@ -1217,55 +1316,412 @@
             color: var(--text-secondary);
             border: 1px solid var(--border-subtle);
             border-radius: var(--r-sm);
-            padding: 3px 7px;
+            padding: 2px 6px;
             text-transform: uppercase;
             letter-spacing: 0.1em;
+            margin-top: 2px;
         }
 
-        .avatar {
-            width: 34px;
-            height: 34px;
+        .avatar-menu-divider {
+            height: 1px;
+            background: var(--border-subtle);
+            margin: 4px 0;
+        }
+
+        .avatar-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            min-height: 44px;
             border-radius: var(--r-md);
-            background: var(--accent);
-            color: #fff;
             font-size: 13px;
-            font-weight: 800;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: left;
+            cursor: pointer;
+            transition: background 150ms, color 150ms;
+            background: transparent;
+            border: none;
+            width: 100%;
+        }
+
+        .avatar-menu-item:hover,
+        .avatar-menu-item:focus-visible {
+            background: var(--surface-2);
+            color: var(--text-primary);
+        }
+
+        .avatar-menu-item-icon {
             display: flex;
             align-items: center;
             justify-content: center;
+            width: 20px;
+            height: 20px;
+            color: var(--text-secondary);
             flex-shrink: 0;
         }
 
-        .icon-btn {
-            width: 36px;
-            height: 36px;
+        .avatar-menu-item.logout-item {
+            color: var(--danger);
+        }
+
+        .avatar-menu-item.logout-item:hover {
+            background: var(--danger-bg);
+            color: var(--danger);
+        }
+
+        .avatar-menu-item.logout-item .logout-icon {
+            color: var(--danger);
+        }
+
+        /* Baris 2: Project Switcher (Lebar Penuh) */
+        .topbar-row-switcher {
+            width: 100%;
+            padding: 0 var(--sp-4) 8px var(--sp-4);
+            display: flex;
+            align-items: center;
+        }
+
+        .project-switcher-card {
+            width: 100%;
+            min-height: 44px;
             background: var(--surface-1);
             border: 1px solid var(--border-subtle);
             border-radius: var(--r-md);
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: var(--shadow-rest);
+        }
+
+        .project-switcher-card:hover,
+        .project-switcher-card:focus-visible {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+            background: var(--surface-2);
+        }
+
+        .project-switcher-info {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .project-switcher-label {
+            font-family: var(--font-mono);
+            font-size: 9.5px;
+            font-weight: 700;
+            color: var(--brand-amber);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            line-height: 1;
+            margin-bottom: 2px;
+        }
+
+        .project-switcher-title {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.3;
+        }
+
+        .project-switcher-icon {
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--text-secondary);
-            transition: background 200ms, color 200ms, border-color 200ms;
-            cursor: pointer;
-            min-width: 36px;
-            min-height: 36px;
+            color: var(--text-tertiary);
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
         }
 
-        .icon-btn:hover {
-            background: var(--surface-3);
-            color: var(--text-primary);
-            border-color: var(--border-medium);
-        }
-
-        /* ---------- BODY LAYOUT ---------- */
-        .app-body {
+        /* ---------- CUSTOM PROJECT BOTTOM SHEET MODAL ---------- */
+        .bottom-sheet-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 1050;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 250ms ease;
             display: flex;
-            flex: 1;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .bottom-sheet-backdrop.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .bottom-sheet-container {
+            width: 100%;
+            max-width: 580px;
+            max-height: 85vh;
+            max-height: 85dvh;
+            background: var(--surface-sidebar);
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            border: 1px solid var(--border-medium);
+            border-bottom: none;
+            box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.35);
+            display: flex;
+            flex-direction: column;
+            transform: translateY(100%);
+            transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
             overflow: hidden;
         }
 
-        /* ---------- SIDEBAR ---------- */
+        .bottom-sheet-container.open {
+            transform: translateY(0);
+        }
+
+        .bottom-sheet-drag-handle {
+            width: 36px;
+            height: 4px;
+            border-radius: 2px;
+            background: var(--border-medium);
+            margin: 10px auto 4px auto;
+            flex-shrink: 0;
+        }
+
+        .bottom-sheet-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 18px 12px 18px;
+            border-bottom: 1px solid var(--border-subtle);
+            flex-shrink: 0;
+        }
+
+        .bottom-sheet-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+        }
+
+        .bottom-sheet-sub {
+            font-size: 11.5px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .sheet-close-btn {
+            border-radius: var(--r-full);
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            min-height: 44px;
+        }
+
+        .project-search-wrap {
+            padding: 12px 18px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-subtle);
+            flex-shrink: 0;
+        }
+
+        .project-search-icon {
+            position: absolute;
+            left: 30px;
+            width: 16px;
+            height: 16px;
+            color: var(--text-tertiary);
+            pointer-events: none;
+        }
+
+        .project-search-wrap input {
+            width: 100%;
+            height: 44px;
+            padding: 0 40px 0 38px;
+            background: var(--surface-2);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--r-lg);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color 150ms, box-shadow 150ms;
+        }
+
+        .project-search-wrap input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+            background: var(--surface-1);
+        }
+
+        .project-search-clear {
+            position: absolute;
+            right: 28px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            border: none;
+            background: transparent;
+        }
+
+        .project-sheet-list {
+            padding: 10px 14px;
+            overflow-y: auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 48vh;
+            max-height: 48dvh;
+        }
+
+        .project-sheet-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            min-height: 52px;
+            background: var(--surface-1);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--r-lg);
+            cursor: pointer;
+            transition: all 180ms ease;
+            gap: 12px;
+        }
+
+        .project-sheet-item:hover,
+        .project-sheet-item:focus-visible {
+            border-color: var(--accent);
+            background: var(--surface-2);
+            box-shadow: var(--shadow-rest);
+        }
+
+        .project-sheet-item.selected {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+            box-shadow: 0 0 0 1px var(--accent);
+        }
+
+        .project-sheet-item-left {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .project-sheet-item-top {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .project-sheet-id-badge {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--accent);
+            background: var(--surface-2);
+            border: 1px solid var(--border-subtle);
+            padding: 2px 6px;
+            border-radius: var(--r-sm);
+            flex-shrink: 0;
+        }
+
+        .project-sheet-item-name {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .project-sheet-item-meta {
+            font-size: 11px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .project-sheet-item-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .project-sheet-stat-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .project-sheet-pct {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .project-sheet-check-icon {
+            color: var(--accent);
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .project-sheet-empty {
+            padding: 36px 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .bottom-sheet-footer {
+            padding: 12px 18px calc(12px + env(safe-area-inset-bottom, 0px)) 18px;
+            border-top: 1px solid var(--border-subtle);
+            background: var(--surface-sidebar);
+            flex-shrink: 0;
+        }
+
+        .btn-block {
+            width: 100%;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* ---------- BODY LAYOUT & SCROLL RESTORATION ---------- */
+        .app-body {
+            display: flex;
+            flex: 1;
+            min-height: 0;
+        }
+
+        /* ---------- SIDEBAR (DESKTOP) ---------- */
         .sidebar {
             width: var(--sidebar-w);
             background: var(--surface-sidebar);
@@ -1275,9 +1731,9 @@
             flex-shrink: 0;
             overflow-y: auto;
             overflow-x: hidden;
-            height: calc(100vh - var(--topbar-h));
+            height: calc(100dvh - var(--topbar-h, 110px));
             position: sticky;
-            top: var(--topbar-h);
+            top: var(--topbar-h, 110px);
             background-image: radial-gradient(circle, var(--accent-glow) 1px, transparent 1px);
             background-size: 20px 20px;
             transition: width 250ms cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s ease;
@@ -1383,14 +1839,14 @@
             border-top: 1px solid var(--border-dark);
         }
 
-        /* ---------- MAIN CONTENT ---------- */
+        /* ---------- MAIN CONTENT (DOCUMENT-LEVEL SCROLLING) ---------- */
         .main-content {
             flex: 1;
             min-width: 0;
-            overflow-y: auto;
-            height: calc(100vh - var(--topbar-h));
             display: flex;
             flex-direction: column;
+            background: var(--surface-0);
+            min-height: calc(100dvh - var(--topbar-h, 110px));
             padding-bottom: 0;
         }
 
@@ -1411,18 +1867,29 @@
             transition: background-color 0.25s ease, border-color 0.25s ease;
         }
 
-        /* ---------- PROJECT BANNER ---------- */
+        /* ---------- PROJECT BANNER (HARMONIZED CANVAS) ---------- */
         .project-banner {
-            background: var(--surface-2);
+            background: var(--surface-0);
             border-bottom: 1px solid var(--border-subtle);
             width: 100%;
+            position: relative;
+        }
+
+        .project-banner::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, var(--brand-amber-glow) 30%, var(--accent-glow) 70%, transparent 100%);
         }
 
         .project-banner__inner {
-            padding: var(--sp-5) var(--sp-8);
+            padding: var(--sp-4) var(--sp-8);
             display: flex;
             flex-direction: column;
-            gap: var(--sp-4);
+            gap: var(--sp-3);
             max-width: 1600px;
             margin: 0 auto;
             width: 100%;
@@ -1433,39 +1900,49 @@
                 flex-direction: row;
                 align-items: center;
                 justify-content: space-between;
+                padding: var(--sp-5) var(--sp-8);
             }
         }
 
         .banner-status {
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            gap: 6px;
-            font-size: 11px;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 10.5px;
             font-weight: 700;
             color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 0.06em;
-            margin-bottom: 4px;
+            letter-spacing: 0.08em;
+            background: var(--surface-3);
+            border: 1px solid var(--border-subtle);
+            padding: 3px 10px;
+            border-radius: var(--r-full);
+            margin-bottom: 6px;
         }
 
         .status-dot {
-            width: 6px;
-            height: 6px;
+            width: 7px;
+            height: 7px;
             border-radius: var(--r-full);
             background: var(--success);
-            box-shadow: 0 0 6px var(--success);
+            box-shadow: 0 0 8px var(--success);
         }
 
         .banner-title {
-            font-size: clamp(15px, 2.5vw, 18px);
-            font-weight: 800;
+            font-size: clamp(16px, 2.5vw, 22px);
+            font-weight: 900;
+            letter-spacing: -0.02em;
             color: var(--text-primary);
+            line-height: 1.2;
         }
 
         .banner-meta {
-            font-size: 12px;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
             color: var(--text-tertiary);
-            margin-top: 2px;
+            letter-spacing: 0.02em;
+            margin-top: 4px;
         }
 
         .banner-actions {
@@ -1569,15 +2046,23 @@
         }
 
         .metric-card--primary {
-            border-color: color-mix(in srgb, var(--accent) 35%, var(--border-subtle));
+            border-color: color-mix(in srgb, var(--brand-amber) 35%, var(--border-subtle));
+            background: linear-gradient(145deg, var(--surface-2) 0%, var(--surface-1) 100%);
         }
 
+        .metric-card--primary::after {
+            background: linear-gradient(90deg, var(--brand-amber) 0%, var(--accent) 100%) !important;
+            height: 3.5px;
+        }
+
+
         .metric-label {
-            font-size: 10.5px;
-            font-weight: 800;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 700;
             color: var(--text-tertiary);
             text-transform: uppercase;
-            letter-spacing: 0.09em;
+            letter-spacing: 0.12em;
             margin-bottom: var(--sp-3);
         }
 
@@ -1680,42 +2165,56 @@
             text-align: right;
         }
 
-        /* Badge */
+        /* Badge — Crisp Precision Pill */
         .badge {
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            padding: 3px 10px;
+            padding: 3px 9px;
             border-radius: var(--r-full);
-            font-size: 10px;
+            font-family: var(--font-mono);
+            font-size: 9.5px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
+            letter-spacing: 0.08em;
+            border: 1px solid transparent;
+            line-height: 1.3;
         }
 
         .badge.success {
             background: var(--success-bg);
             color: var(--success);
+            border-color: rgba(16, 185, 129, 0.25);
         }
 
         .badge.warning {
             background: var(--warning-bg);
             color: var(--warning);
+            border-color: rgba(245, 158, 11, 0.25);
         }
 
         .badge.danger {
             background: var(--danger-bg);
             color: var(--danger);
+            border-color: rgba(239, 68, 68, 0.25);
         }
 
         .badge.accent {
             background: var(--accent-glow);
             color: var(--accent);
+            border-color: rgba(59, 130, 246, 0.25);
+        }
+
+        .badge.amber {
+            background: var(--brand-amber-subtle);
+            color: var(--brand-amber);
+            border-color: var(--brand-amber-glow);
         }
 
         .badge.neutral {
             background: var(--surface-3);
             color: var(--text-secondary);
+            border-color: var(--border-subtle);
         }
 
         /* Dashboard Layout (Redesign) */
@@ -1746,15 +2245,30 @@
 
         .empty-state {
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: var(--sp-6);
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px dashed var(--border-dark);
-            border-radius: var(--r-md);
+            padding: var(--sp-8) var(--sp-6);
+            background: var(--surface-1);
+            border: 1px dashed var(--border-medium);
+            border-radius: var(--r-xl);
             color: var(--text-tertiary);
             font-size: 12px;
             text-align: center;
+            gap: 10px;
+        }
+
+        .empty-state::before {
+            content: '';
+            width: 76px;
+            height: 76px;
+            background-image: url('/assets/branding/supergraphics/empty-state-graphic.svg');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.95;
+            filter: drop-shadow(0 0 16px rgba(245, 158, 11, 0.45));
+            margin-bottom: 6px;
         }
 
         .empty-state--success {
@@ -1900,71 +2414,100 @@
         }
 
         /* ============================================================
-       BUTTONS
-       ============================================================ */
+        BUTTONS — TACTILE MACHINED CONTROLS
+        ============================================================ */
         .btn {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: var(--sp-2);
-            padding: 9px 16px;
+            padding: 8px 16px;
             border-radius: var(--r-md);
-            font-size: 12px;
+            font-family: var(--font-ui);
+            font-size: 12.5px;
             font-weight: 700;
             border: 1px solid transparent;
             cursor: pointer;
-            transition: all 200ms;
-            min-height: 44px;
+            transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
+            min-height: 40px;
             white-space: nowrap;
+            user-select: none;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
         }
 
         .btn-sm {
-            padding: 6px 12px;
-            min-height: 36px;
-            font-size: 11px;
+            padding: 5px 11px;
+            min-height: 32px;
+            font-size: 11.5px;
         }
 
         .btn-ghost {
             background: var(--surface-1);
             color: var(--text-secondary);
             border-color: var(--border-subtle);
+            box-shadow: var(--shadow-rest);
         }
 
         .btn-ghost:hover {
             background: var(--surface-3);
             color: var(--text-primary);
             border-color: var(--border-medium);
+            transform: translateY(-1px);
         }
 
         .btn-accent {
-            background: var(--accent);
-            color: #fff;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dim) 100%);
+            color: #ffffff;
             box-shadow: var(--shadow-accent);
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
         .btn-accent:hover {
-            background: var(--accent-dim);
+            filter: brightness(1.08);
+            box-shadow: 0 6px 20px var(--accent-glow-strong);
+            transform: translateY(-1px);
+        }
+
+        .btn-amber {
+            background: linear-gradient(135deg, var(--brand-amber) 0%, var(--brand-amber-dark) 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 14px var(--brand-amber-glow);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-amber:hover {
+            filter: brightness(1.08);
+            box-shadow: 0 6px 20px var(--brand-amber-glow);
+            transform: translateY(-1px);
         }
 
         .btn-danger {
             background: var(--danger-bg);
             color: var(--danger);
-            border-color: rgba(220, 38, 38, 0.2);
+            border-color: rgba(220, 38, 38, 0.25);
         }
 
         .btn-danger:hover {
             background: var(--danger);
-            color: #fff;
+            color: #ffffff;
+            border-color: var(--danger);
+            transform: translateY(-1px);
         }
 
         .btn-success {
             background: var(--success-bg);
             color: var(--success);
-            border-color: rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.25);
         }
 
         .btn-success:hover {
             background: var(--success);
-            color: #fff;
+            color: #ffffff;
+            border-color: var(--success);
+            transform: translateY(-1px);
         }
 
         /* ============================================================
@@ -1981,13 +2524,13 @@
         }
 
         /* ============================================================
-       TABLE STYLES — HIGH-PRECISION ENGINEERING MATRIX
-       ============================================================ */
+        TABLE STYLES — HIGH-PRECISION ENGINEERING MATRIX
+        ============================================================ */
         .data-table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
-            font-size: 12px;
+            font-size: 12.5px;
         }
 
         .data-table thead th {
@@ -1995,14 +2538,16 @@
             top: 0;
             z-index: 5;
             background: var(--surface-1);
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             color: var(--text-tertiary);
+            font-family: var(--font-mono);
             font-size: 10px;
-            font-weight: 800;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
-            padding: 11px 14px;
-            border-bottom: 1px solid var(--border-subtle);
+            letter-spacing: 0.1em;
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border-medium);
             white-space: nowrap;
         }
 
@@ -2012,14 +2557,15 @@
         }
 
         .data-table tbody tr:hover {
-            background: rgba(59, 130, 246, 0.05);
+            background: var(--accent-glow);
         }
 
         .data-table tbody td {
-            padding: 11px 14px;
+            padding: 12px 14px;
             color: var(--text-secondary);
             vertical-align: middle;
             border-bottom: 1px solid var(--border-subtle);
+            font-variant-numeric: tabular-nums;
         }
 
         .data-table tbody td:first-child {
@@ -2478,14 +3024,17 @@
             right: 0;
             z-index: 500;
             height: var(--bottomnav-h);
-            background: var(--surface-sidebar);
-            border-top: 1px solid var(--border-dark);
+            background: var(--surface-bottomnav);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-top: 1px solid var(--border-medium);
             align-items: stretch;
             overflow-x: auto;
             flex-wrap: nowrap;
             justify-content: space-around;
             -ms-overflow-style: none;
             scrollbar-width: none;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25);
         }
 
         .bottom-nav::-webkit-scrollbar {
@@ -2502,11 +3051,12 @@
             align-items: center;
             justify-content: center;
             gap: 2px;
-            color: var(--text-on-dark-dim);
-            font-size: 10px;
+            color: var(--text-tertiary);
+            font-family: var(--font-mono);
+            font-size: 9.5px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.02em;
+            letter-spacing: 0.04em;
             cursor: pointer;
             transition: all 180ms ease;
             min-height: var(--bottomnav-h);
@@ -2522,26 +3072,26 @@
 
         .bnav-item:active,
         .bnav-item.active {
-            color: #60a5fa !important;
+            color: var(--accent) !important;
         }
 
         .bnav-item.active svg {
-            color: #60a5fa !important;
+            color: var(--accent) !important;
             transform: translateY(-2px);
-            filter: drop-shadow(0 0 6px rgba(96, 165, 250, 0.4));
+            filter: drop-shadow(0 0 8px var(--accent-glow-strong));
         }
 
         .bnav-item-highlight {
-            color: #38bdf8 !important;
+            color: var(--brand-amber) !important;
         }
 
         .bnav-item-highlight .bnav-icon-wrap {
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            border-radius: 10px;
-            padding: 4px 12px;
+            background: linear-gradient(135deg, var(--brand-amber), var(--brand-amber-dark));
+            border-radius: var(--r-md);
+            padding: 5px 14px;
             color: #fff !important;
-            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.35);
-            margin-top: -4px;
+            box-shadow: 0 4px 14px var(--brand-amber-glow);
+            margin-top: -6px;
             transition: transform 0.15s ease;
             display: flex;
             align-items: center;
@@ -2555,6 +3105,26 @@
         @keyframes slideUpDrawer {
             from { transform: translateY(100%); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
+        }
+
+        .mobile-menu-drawer {
+            position: relative;
+            background: var(--surface-sidebar);
+            border-top: 1px solid var(--border-dark);
+            border-radius: 20px 20px 0 0;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 18px 16px max(env(safe-area-inset-bottom, 16px), 24px) 16px;
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
+            animation: slideUpDrawer 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+        }
+
+
+        .mobile-menu-drawer > * {
+            position: relative;
+            z-index: 1;
         }
 
         .mobile-menu-btn {
@@ -2645,42 +3215,25 @@
                 transition: background-color 0.25s ease, border-color 0.25s ease;
             }
 
+            /* Natural document scrolling - zero nested container lockups */
             .main-content {
-                height: calc(100vh - var(--topbar-h) - var(--bottomnav-h) - env(safe-area-inset-bottom, 0px));
-                padding-bottom: calc(var(--bottomnav-h) + env(safe-area-inset-bottom, 0px) + 24px);
+                height: auto !important;
+                overflow: visible !important;
+                min-height: auto !important;
+                padding-bottom: calc(var(--bottomnav-h) + env(safe-area-inset-bottom, 0px) + 28px) !important;
             }
 
-            .topbar {
-                padding: 0 10px;
-                gap: 6px;
+            .topbar-row-primary {
+                padding: 0 12px;
+                height: 56px;
             }
 
-            .topbar-brand {
-                gap: 6px;
-                min-width: 0;
+            .topbar-row-switcher {
+                padding: 0 12px 8px 12px;
             }
 
-            .topbar-brand .topbar-logo {
-                width: 32px;
-                height: 32px;
-                flex-shrink: 0;
-            }
-
-            .topbar-brand .topbar-name,
-            .topbar-brand .topbar-divider {
-                display: none !important;
-            }
-
-            .project-selector-wrap {
-                flex: 1 1 auto;
-                max-width: 175px;
-                min-width: 105px;
-            }
-
-            .project-selector-wrap select {
-                font-size: 11px;
-                font-weight: 700;
-                padding: 6px 8px;
+            .project-switcher-card {
+                padding: 6px 10px;
             }
 
             .metric-card--primary {
@@ -2696,52 +3249,6 @@
             .metric-card--primary .metric-sub {
                 font-size: 10.5px !important;
                 white-space: nowrap !important;
-            }
-
-            #contractorBadgeWrap {
-                padding: 3px 6px !important;
-                font-size: 10px !important;
-                max-width: 100px !important;
-                overflow: hidden !important;
-                text-overflow: ellipsis !important;
-                white-space: nowrap !important;
-            }
-
-            #ptFilterWrap {
-                display: none !important;
-            }
-
-            .topbar-actions {
-                gap: 6px;
-                margin-left: auto;
-                flex-shrink: 0;
-            }
-
-            .topbar-actions .topbar-guide-btn,
-            .topbar-actions .topbar-sync-btn {
-                display: none !important;
-            }
-
-            .icon-btn {
-                width: 34px;
-                height: 34px;
-                padding: 6px;
-                flex-shrink: 0;
-            }
-
-            .user-pill {
-                padding: 2px;
-                gap: 0;
-            }
-
-            .user-text {
-                display: none !important;
-            }
-
-            .avatar {
-                width: 30px;
-                height: 30px;
-                font-size: 12px;
             }
 
             .page-content {
@@ -2921,9 +3428,9 @@
 
     <svg width="0" height="0" style="position:absolute">
         <defs>
-            <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#DC2626" />
-                <stop offset="100%" stop-color="#1D4ED8" />
+            <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#F59E0B" />
+                <stop offset="100%" stop-color="#2563EB" />
             </linearGradient>
         </defs>
     </svg>
@@ -2946,18 +3453,21 @@
 
     <div id="page-login" aria-label="Halaman Login">
         <div class="login-wrapper">
-            <div class="login-brand">
-                <div class="login-logo">
-                    <i data-lucide="flame" style="width:22px;height:22px;color:#fff;"></i>
+            <div class="login-brand" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;">
+                <div class="login-brand-halo" style="position:relative;display:inline-block;padding:4px;">
+                    <img src="/assets/branding/trunova-logo-white.svg" alt="TRUNOVA" style="height:44px;width:auto;filter:drop-shadow(0 4px 18px rgba(245,158,11,0.3)) drop-shadow(0 2px 10px rgba(0,0,0,0.6));">
                 </div>
                 <div>
-                    <h1>KSD Monitor</h1>
-                    <p class="brand-sub">Kiln Support Division · Secure Portal</p>
+                    <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);border-radius:9999px;padding:3px 12px;margin-bottom:8px;">
+                        <span style="width:6px;height:6px;border-radius:50%;background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></span>
+                        <span style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:0.12em;color:#f59e0b;text-transform:uppercase;">KSD Kiln Intelligence</span>
+                    </div>
+                    <p class="brand-sub" style="margin:0;font-size:11.5px;letter-spacing:0.15em;color:var(--text-on-dark-dim);">Kiln Shutdown &amp; Overhaul Operations</p>
                 </div>
             </div>
             <div class="login-card">
-                <h2>Masuk ke Sistem</h2>
-                <p>Masukkan kredensial akun KSD Anda untuk mengakses dashboard.</p>
+                <h2>Portal Akses</h2>
+                <p>Masukkan kredensial akun Trunova KSD Anda untuk membuka konsol operasi.</p>
                 <form onsubmit="handleLoginSubmit(event)" class="field-group">
                     <div class="field">
                         <label for="loginUsername">Nama Pengguna / Email</label>
@@ -3016,6 +3526,12 @@
                             </button>
                         </div>
                     </div>
+                    <div style="margin-top:16px; text-align:center;">
+                        <a href="landing.html" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:10px 16px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.35); border-radius:10px; color:#FBBF24; font-size:12px; font-weight:700; text-decoration:none; transition:all 0.15s ease;">
+                            <i data-lucide="compass" style="width:16px; height:16px;"></i>
+                            <span>Buka Landing Page Showcase &amp; Presentasi →</span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -3040,93 +3556,153 @@
     <div id="page-app" class="page-hidden" aria-label="Dashboard Utama">
 
         <header class="topbar" role="banner">
-            <div class="topbar-brand">
-                <div class="topbar-logo" aria-hidden="true"><i data-lucide="flame"
-                        style="width:16px;height:16px;color:#fff;"></i></div>
-                <div class="topbar-divider" aria-hidden="true"></div>
-                <span class="topbar-name">KSD Monitor</span>
-                <span class="hide-mobile ksd-system-badge"><span class="ksd-badge-dot"></span>KILN SHUTDOWN SYSTEM</span>
+            <!-- Baris 1: Brand (Kiri) & HANYA 2 Elemen Interaktif (Kanan) -->
+            <div class="topbar-row-primary">
+                <div class="topbar-brand" onclick="switchTab('dashboard')" title="TRUNOVA — Kiln Shutdown Intelligence">
+                    <div class="topbar-brand-mark">
+                        <img src="/assets/branding/tr-monogram-white.svg" alt="Trunova" class="topbar-monogram-img">
+                    </div>
+                    <div class="topbar-brand-text">
+                        <span class="topbar-brand-title">TRU KSD</span>
+                        <span class="topbar-brand-sub">OVERHAUL OS</span>
+                    </div>
+                </div>
+
+                <div class="topbar-actions-minimal">
+                    <!-- 1. Notification Bell Button & Flyout Panel -->
+                    <div class="notif-bell-wrap">
+                        <button class="icon-btn notif-bell-btn" id="notifBellBtn" onclick="toggleNotifPanel(event)"
+                            title="Notifikasi" aria-label="Buka notifikasi">
+                            <i data-lucide="bell" style="width:18px;height:18px;"></i>
+                            <span class="notif-badge hidden" id="notifBadge">0</span>
+                        </button>
+                        <div class="notif-panel" id="notifPanel">
+                            <div class="notif-panel-header">
+                                <div class="notif-header-top">
+                                    <h4>Pusat Notifikasi
+                                        <span class="notif-count-pill hidden" id="notifCountPill">0</span></h4>
+                                    <button class="notif-mark-all" id="notifMarkAllBtn" onclick="dismissAllAlerts()" aria-label="Tandai seluruh notifikasi telah dibaca">Tandai sudah dibaca</button>
+                                </div>
+                                <div class="notif-tab-nav">
+                                    <button class="notif-tab-btn active" id="notifTabActionBtn" onclick="switchNotifTab('action')">
+                                        Perlu Tindakan <span class="notif-tab-badge" id="notifActionTabBadge">0</span>
+                                    </button>
+                                    <button class="notif-tab-btn" id="notifTabUpdatesBtn" onclick="switchNotifTab('updates')">
+                                        Riwayat
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="notif-list custom-scroll" id="notifList"></div>
+                            <div class="notif-panel-footer">
+                                <button onclick="closeNotifPanel(); switchTab('dashboard');">Dashboard</button>
+                                <button onclick="closeNotifPanel(); switchTab('validations');" id="notifFooterValidBtn" style="color:var(--success);font-weight:700;">Buka antrean validasi &rarr;</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Avatar Button & Dropdown Menu (Mode Gelap, Profil, Keluar) -->
+                    <div class="avatar-dropdown-wrap" id="avatarDropdownWrap">
+                        <button class="avatar-trigger-btn" id="userAvatarBtn" onclick="toggleAvatarDropdown(event)"
+                            title="Menu Pengguna" aria-label="Menu Pengguna" aria-haspopup="true" aria-expanded="false">
+                            <div class="avatar" id="userAvatar" aria-hidden="true">T</div>
+                        </button>
+
+                        <div class="avatar-dropdown-menu" id="avatarDropdownMenu" role="menu" aria-label="Menu Pengguna">
+                            <!-- User Profile Info -->
+                            <div class="avatar-menu-header">
+                                <div class="avatar-menu-user">
+                                    <div class="avatar avatar-sm" id="userAvatarMenu">T</div>
+                                    <div class="user-text">
+                                        <div class="name" id="userNameTxt">Tamu</div>
+                                        <span class="role-badge" id="userRoleBadge">GUEST</span>
+                                    </div>
+                                </div>
+                                <!-- Tenant Contractor Badge inside dropdown -->
+                                <div id="contractorBadgeWrap" style="display:none;margin-top:8px;background:rgba(37,99,235,0.12);border:1px solid rgba(59,130,246,0.3);border-radius:var(--r-sm);padding:4px 8px;font-size:11px;font-weight:700;color:var(--accent);align-items:center;gap:6px;">
+                                    <span id="contractorBadgeTxt">PT. Kontraktor</span>
+                                </div>
+                                <!-- Admin PT Filter inside dropdown -->
+                                <div id="ptFilterWrap" style="display:none;margin-top:8px;align-items:center;gap:4px;">
+                                    <select id="ptFilterSelector" onchange="switchPtFilter(this.value)" aria-label="Filter Kontraktor PT" style="width:100%;background:var(--surface-2);color:var(--text-primary);border:1px solid var(--border-subtle);border-radius:var(--r-sm);padding:6px 8px;font-size:11px;font-weight:600;cursor:pointer;">
+                                        <option value="ALL">🏢 Semua Kontraktor (PT)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="avatar-menu-divider"></div>
+
+                            <!-- Mode Gelap / Terang Toggle -->
+                            <button class="avatar-menu-item" id="themeToggleBtn" onclick="toggleTheme(); closeAvatarDropdown();" role="menuitem">
+                                <div class="avatar-menu-item-icon">
+                                    <i data-lucide="sun" id="themeIconSun" style="width:18px;height:18px;color:#f59e0b;display:none;"></i>
+                                    <i data-lucide="moon" id="themeIconMoon" style="width:18px;height:18px;color:var(--text-secondary);"></i>
+                                </div>
+                                <span id="themeToggleLabel">Mode Gelap / Terang</span>
+                            </button>
+
+                            <!-- Profil Pengguna Link -->
+                            <button class="avatar-menu-item" onclick="openUserProfile(); closeAvatarDropdown();" role="menuitem">
+                                <div class="avatar-menu-item-icon">
+                                    <i data-lucide="user" style="width:18px;height:18px;"></i>
+                                </div>
+                                <span>Profil Pengguna</span>
+                            </button>
+
+                            <!-- Sinkronisasi Data -->
+                            <button class="avatar-menu-item" onclick="triggerSync(); closeAvatarDropdown();" role="menuitem">
+                                <div class="avatar-menu-item-icon">
+                                    <i data-lucide="refresh-cw" style="width:18px;height:18px;"></i>
+                                </div>
+                                <span>Sinkronisasi Data</span>
+                            </button>
+
+                            <!-- Offline Status Indicator / Action -->
+                            <button class="avatar-menu-item" id="offlineSyncBtn" onclick="syncOfflineQueue(); closeAvatarDropdown();" role="menuitem" style="display:none;">
+                                <div class="avatar-menu-item-icon" style="color:var(--warning);">
+                                    <i data-lucide="wifi-off" style="width:18px;height:18px;"></i>
+                                </div>
+                                <span id="offlineCountTxt">Offline (0)</span>
+                            </button>
+
+                            <!-- Install PWA Action -->
+                            <button class="avatar-menu-item" id="installPwaBtn" onclick="installPwa(); closeAvatarDropdown();" role="menuitem" style="display:none;">
+                                <div class="avatar-menu-item-icon" style="color:var(--accent);">
+                                    <i data-lucide="download" style="width:18px;height:18px;"></i>
+                                </div>
+                                <span>Install Aplikasi</span>
+                            </button>
+
+                            <div class="avatar-menu-divider"></div>
+
+                            <!-- Logout Action (Red with divider) -->
+                            <button class="avatar-menu-item logout-item" onclick="handleLogout()" role="menuitem">
+                                <div class="avatar-menu-item-icon logout-icon">
+                                    <i data-lucide="log-out" style="width:18px;height:18px;color:var(--danger);"></i>
+                                </div>
+                                <span style="color:var(--danger);font-weight:700;">Keluar</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="project-selector-wrap">
-                <select id="projectSelector" onchange="switchProject(this.value)" aria-label="Pilih proyek aktif">
+
+            <!-- Baris 2: Project Switcher (Lebar Penuh, Kartu Tactile) -->
+            <div class="topbar-row-switcher">
+                <button class="project-switcher-card" id="btnOpenProjectSheet" onclick="openProjectSheet()" aria-label="Ganti Proyek Aktif" aria-haspopup="dialog">
+                    <div class="project-switcher-info">
+                        <div class="project-switcher-label">PROYEK AKTIF</div>
+                        <div class="project-switcher-title" id="topbarProjectName">Memuat Proyek...</div>
+                    </div>
+                    <div class="project-switcher-icon">
+                        <i data-lucide="chevron-down" style="width:18px;height:18px;"></i>
+                    </div>
+                </button>
+
+                <!-- Hidden native select kept for 100% backward compatibility with existing JS calls -->
+                <select id="projectSelector" onchange="switchProject(this.value)" aria-label="Pilih proyek aktif" style="display:none;">
                     <option>-- Memuat Proyek --</option>
                 </select>
             </div>
-            <!-- Tenant Contractor Header Badge -->
-            <div id="contractorBadgeWrap" style="display:none;background:rgba(29,78,216,0.15);border:1px solid rgba(59,130,246,0.4);border-radius:var(--r-md);padding:4px 10px;font-size:12px;font-weight:700;color:#93c5fd;align-items:center;gap:6px;">
-                <span id="contractorBadgeTxt">PT. Kontraktor</span>
-            </div>
-            <!-- Internal Admin PT Filter Selector -->
-            <div id="ptFilterWrap" style="display:none;align-items:center;gap:4px;margin-left:4px;">
-                <select id="ptFilterSelector" onchange="switchPtFilter(this.value)" aria-label="Filter Kontraktor PT" style="background:var(--surface-sidebar-alt);color:var(--text-on-dark);border:1px solid var(--border-dark);border-radius:var(--r-md);padding:4px 8px;font-size:12px;font-weight:600;cursor:pointer;">
-                    <option value="ALL">🏢 Semua Kontraktor (PT)</option>
-                </select>
-            </div>
-            <div class="topbar-actions">
-                <!-- Theme Mode Toggle Button -->
-                <button class="icon-btn theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()"
-                    title="Ubah Tema (Terang / Gelap)" aria-label="Ubah mode tema terang atau gelap">
-                    <i data-lucide="sun" id="themeIconSun" aria-hidden="true" style="width:16px;height:16px;color:#f59e0b;display:none;"></i>
-                    <i data-lucide="moon" id="themeIconMoon" aria-hidden="true" style="width:16px;height:16px;color:var(--text-secondary);"></i>
-                </button>
-                <!-- Offline PWA Queue Status Badge -->
-                <button id="offlineSyncBtn" onclick="syncOfflineQueue()" class="btn btn-warning btn-sm" aria-label="Sinkronisasi antrean data offline" style="display:none;background:var(--warning);color:#0f172a;font-weight:800;padding:4px 9px;font-size:11px;border-radius:6px;align-items:center;gap:4px;border:none;cursor:pointer;">
-                    <i data-lucide="wifi-off" aria-hidden="true" style="width:13px;height:13px;"></i> <span id="offlineCountTxt">Offline (0)</span>
-                </button>
-                <a href="landing.html" class="btn btn-ghost btn-sm" title="Buka Landing Page Showcase" style="text-decoration:none;padding:4px 10px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;border-radius:var(--r-md);margin-right:4px;color:var(--text-secondary);">
-                    <i data-lucide="sparkles" style="width:13px;height:13px;color:#f59e0b;"></i>
-                    <span class="hide-mobile">Showcase</span>
-                </a>
-                <button class="btn btn-ghost btn-sm topbar-guide-btn" onclick="switchTab('guide')" title="Panduan & Documentation" style="padding:4px 10px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;border-radius:var(--r-md);margin-right:4px;">
-                    <span class="hide-mobile">Panduan User</span>
-                </button>
-                <div class="notif-bell-wrap">
-                    <button class="icon-btn notif-bell-btn" id="notifBellBtn" onclick="toggleNotifPanel(event)"
-                        title="Notifikasi" aria-label="Buka notifikasi">
-                        <i data-lucide="bell" style="width:15px;height:15px;"></i>
-                        <span class="notif-badge hidden" id="notifBadge">0</span>
-                    </button>
-                    <div class="notif-panel" id="notifPanel">
-                        <div class="notif-panel-header">
-                            <div class="notif-header-top">
-                                <h4>Pusat Notifikasi
-                                    <span class="notif-count-pill hidden" id="notifCountPill">0</span></h4>
-                                <button class="notif-mark-all" id="notifMarkAllBtn" onclick="dismissAllAlerts()" aria-label="Tandai seluruh notifikasi telah dibaca">Tandai sudah dibaca</button>
-                            </div>
-                            <div class="notif-tab-nav">
-                                <button class="notif-tab-btn active" id="notifTabActionBtn" onclick="switchNotifTab('action')">
-                                    Perlu Tindakan <span class="notif-tab-badge" id="notifActionTabBadge">0</span>
-                                </button>
-                                <button class="notif-tab-btn" id="notifTabUpdatesBtn" onclick="switchNotifTab('updates')">
-                                    Riwayat
-                                </button>
-                            </div>
-                        </div>
-                        <div class="notif-list custom-scroll" id="notifList"></div>
-                        <div class="notif-panel-footer">
-                            <button onclick="closeNotifPanel(); switchTab('dashboard');">Dashboard</button>
-                            <button onclick="closeNotifPanel(); switchTab('validations');" id="notifFooterValidBtn" style="color:var(--success);font-weight:700;">Buka antrean validasi &rarr;</button>
-                        </div>
-                    </div>
-                </div>
-                <button class="btn-primary" id="installPwaBtn"
-                    style="display: none; padding: 6px 12px; font-size: 12px; min-height: unset; margin-right: 8px;">
-                    Install App
-                </button>
-                <button class="icon-btn topbar-sync-btn" onclick="triggerSync()" title="Sinkronisasi Data"
-                    aria-label="Sinkronisasi data"><i data-lucide="refresh-cw"
-                        style="width:15px;height:15px;"></i></button>
-                <div class="user-pill">
-                    <div class="user-text">
-                        <div class="name" id="userNameTxt">Tamu</div>
-                        <span class="role-badge" id="userRoleBadge">GUEST</span>
-                    </div>
-                    <div class="avatar" id="userAvatar" aria-hidden="true">T</div>
-                </div>
-                <button class="icon-btn" onclick="handleLogout()" title="Keluar" aria-label="Keluar dari sesi"><i
-                        data-lucide="log-out" style="width:15px;height:15px;"></i></button>
-            </div>
-
         </header>
 
         <div class="app-body">
@@ -3206,7 +3782,7 @@
                                 <div class="metrics-grid section">
                                     <div class="metric-card metric-card--primary"
                                         style="display:flex;align-items:center;justify-content:space-between;gap:var(--sp-5);">
-                                        <div>
+                                        <div style="position:relative;z-index:1;">
                                             <div class="metric-label">Progres Total Proyek</div>
                                             <div class="metric-value" id="dashOverallPercent">0%</div>
                                             <div class="metric-sub" style="white-space:nowrap;font-size:11.5px;">Mulai: <span class="mono"
@@ -4122,8 +4698,14 @@
                                     <!-- Form Material -->
                                     <div class="card" style="box-shadow:none;border:1px solid var(--border-subtle);">
                                         <div class="card-header"
-                                            style="background:var(--surface-2);border-bottom:1px solid var(--border-subtle);padding:var(--sp-4);">
-                                            <h4 style="margin:0;font-size:14px;">Material Log</h4>
+                                            style="background:var(--surface-2);border-bottom:1px solid var(--border-subtle);padding:var(--sp-4);display:flex;justify-content:space-between;align-items:center;">
+                                            <div style="display:flex;align-items:center;gap:8px;">
+                                                <h4 style="margin:0;font-size:14px;">Material Log</h4>
+                                                <span id="gudangKilnHeaderBadge" style="font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:12px;background:rgba(59,130,246,0.12);color:#3b82f6;border:1px solid rgba(59,130,246,0.25);">🔗 Sync Gudang Kiln</span>
+                                            </div>
+                                            <button type="button" onclick="openGudangKilnModal()" class="btn btn-ghost btn-sm" style="font-size:11px;padding:3px 8px;display:flex;align-items:center;gap:4px;color:var(--text-secondary);" title="Konfigurasi URL Google Apps Script Gudang Kiln">
+                                                <i data-lucide="settings" style="width:12px;height:12px;"></i> Endpoint
+                                            </button>
                                         </div>
                                         <div class="card-body" style="padding:var(--sp-4);">
                                             <form id="formMaterialLog" onsubmit="handleMaterialLogSubmit(event)"
@@ -4132,10 +4714,50 @@
                                                     <label>Sub-Jobdesk</label>
                                                     <select id="logMatSubSelect" required></select>
                                                 </div>
+
+                                                <!-- Kategori Material (Trigger HTTP GET Gudang Kiln Live Stock) -->
+                                                <div class="field-light">
+                                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                                                        <label style="margin:0;">Kategori Material</label>
+                                                        <span id="logMatCategoryStatus" style="font-size:10.5px;color:var(--text-secondary);font-weight:600;">Pilih kategori</span>
+                                                    </div>
+                                                    <select id="logMatCategory" onchange="handleMaterialCategoryChange()" required style="font-weight:600;">
+                                                        <option value="Umum">Umum / Material Mandiri Lainnya</option>
+                                                        <option value="Angkur">Angkur (Terkoneksi Gudang Kiln)</option>
+                                                        <option value="Castable">Castable (Terkoneksi Gudang Kiln)</option>
+                                                    </select>
+                                                </div>
+
+                                                <!-- Selector Barang Khusus Gudang Kiln (Tampil saat Angkur/Castable dipilih) -->
+                                                <div id="gudangKilnItemWrapper" class="field-light" style="display:none;background:rgba(59,130,246,0.04);border:1px dashed rgba(59,130,246,0.3);border-radius:var(--r-md);padding:10px;">
+                                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                                        <label style="margin:0;font-size:11.5px;color:#3b82f6;font-weight:700;">Pilih Item dari Gudang Kiln (Live Stock):</label>
+                                                        <button type="button" onclick="refreshGudangStockData()" class="btn btn-ghost btn-sm" style="padding:2px 6px;font-size:10.5px;display:flex;align-items:center;gap:3px;" title="Muat ulang sisa stok fisik dari Google Apps Script">
+                                                            <i data-lucide="refresh-cw" style="width:11px;height:11px;"></i> Muat Ulang
+                                                        </button>
+                                                    </div>
+                                                    <select id="logMatGudangItemSelect" onchange="handleGudangItemSelected(this.value)" style="width:100%;font-size:12.5px;">
+                                                        <option value="">-- Pilih Barang dari Gudang Kiln --</option>
+                                                    </select>
+                                                </div>
+
                                                 <div class="field-light">
                                                     <label>Kode / Nama Material</label>
-                                                    <input type="text" id="logMatCode" required />
+                                                    <input type="text" id="logMatCode" required placeholder="Contoh: ANK-V-8 atau LCC-1600" />
                                                 </div>
+
+                                                <!-- Live Physical Stock Badge & Status -->
+                                                <div id="gudangStockBadgeContainer" style="display:none;margin-top:-4px;margin-bottom:6px;">
+                                                    <div id="gudangStockBadgeContent" style="display:flex;align-items:center;justify-content:space-between;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:8px;padding:8px 12px;">
+                                                        <div style="display:flex;align-items:center;gap:8px;">
+                                                            <span id="gudangStockIndicatorDot" style="width:8px;height:8px;border-radius:50%;background:#10b981;box-shadow:0 0 8px #10b981;display:inline-block;"></span>
+                                                            <span style="font-size:12px;color:var(--text-primary);">Sisa Stok Fisik: <strong id="gudangStockQtyVal" style="font-size:13.5px;color:#10b981;">-</strong> <span id="gudangStockUnitVal" style="font-size:11.5px;opacity:0.85;"></span></span>
+                                                        </div>
+                                                        <span id="gudangStockLocationVal" style="font-size:11px;font-weight:700;color:var(--accent);background:rgba(59,130,246,0.1);padding:2px 8px;border-radius:6px;border:1px solid rgba(59,130,246,0.2);">Gudang Utama</span>
+                                                    </div>
+                                                    <div id="gudangStockWarningContainer" style="display:none;margin-top:6px;padding:8px 12px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:8px;color:#ef4444;font-size:11.5px;font-weight:700;line-height:1.4;"></div>
+                                                </div>
+
                                                 <div
                                                     style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-3);">
                                                     <div class="field-light">
@@ -4149,7 +4771,7 @@
                                                     <div class="field-light">
                                                         <label>Qty Consumed</label>
                                                         <input type="number" step="0.01" min="0" id="logMatConsumed"
-                                                            value="0" />
+                                                            value="0" oninput="validateGudangStockConsumption()" />
                                                     </div>
                                                     <div class="field-light">
                                                         <label>Qty Return</label>
@@ -4157,7 +4779,7 @@
                                                     </div>
                                                 </div>
                                                 <button type="submit" class="btn btn-accent"
-                                                    id="btnSubmitMaterial">Simpan Material Log</button>
+                                                    id="btnSubmitMaterial" style="transition:all 0.2s ease;">Simpan Material Log</button>
                                             </form>
                                         </div>
                                     </div>
@@ -4670,6 +5292,9 @@
                                     </button>
                                     <button onclick="openAppsScriptModal()" class="btn btn-sm btn-success" style="background:var(--success);color:#fff;display:inline-flex;align-items:center;gap:6px;">
                                         Sync Google Spreadsheet (Apps Script)
+                                    </button>
+                                    <button onclick="openGudangKilnModal()" class="btn btn-sm btn-ghost" style="border:1px solid #3b82f6;color:#3b82f6;display:inline-flex;align-items:center;gap:6px;font-weight:700;">
+                                        🔗 Integrasi Gudang Kiln
                                     </button>
                                     <a href="/_/" target="_blank" class="btn btn-sm btn-ghost" style="border:1px solid var(--border-medium);display:inline-flex;align-items:center;gap:6px;color:var(--text-primary);font-weight:700;">
                                         PocketBase Admin UI (/_/)
@@ -5261,9 +5886,52 @@
             </nav>
         </div> <!-- End of #page-app -->
 
+    <!-- Custom Project Switcher Bottom Sheet Modal -->
+    <div class="bottom-sheet-backdrop" id="projectSheetBackdrop" onclick="closeProjectSheet(event)">
+        <div class="bottom-sheet-container" id="projectSheetContainer" role="dialog" aria-modal="true" aria-labelledby="projectSheetTitle">
+            <!-- Drag Handle Indicator -->
+            <div class="bottom-sheet-drag-handle" aria-hidden="true"></div>
+
+            <!-- Header: Title & Close Button -->
+            <div class="bottom-sheet-header">
+                <div>
+                    <h3 id="projectSheetTitle" class="bottom-sheet-title">Pilih Proyek Aktif</h3>
+                    <p class="bottom-sheet-sub">Ganti proyek overhaul kiln atau tinjau ringkasan</p>
+                </div>
+                <button class="icon-btn sheet-close-btn" onclick="closeProjectSheet()" aria-label="Tutup panel proyek">
+                    <i data-lucide="x" style="width:18px;height:18px;"></i>
+                </button>
+            </div>
+
+            <!-- Search Field -->
+            <div class="project-search-wrap">
+                <i data-lucide="search" class="project-search-icon"></i>
+                <input type="text" id="projectSearchInput" placeholder="Cari nama proyek, ID, atau area..."
+                    oninput="filterProjectSheetList(this.value)" autocomplete="off" aria-label="Cari proyek" />
+                <button class="project-search-clear hidden" id="projectSearchClearBtn" onclick="clearProjectSearch()" aria-label="Bersihkan pencarian">
+                    <i data-lucide="x-circle" style="width:16px;height:16px;"></i>
+                </button>
+            </div>
+
+            <!-- Scrollable Project List -->
+            <div class="project-sheet-list custom-scroll" id="projectSheetList" role="listbox"></div>
+
+            <!-- Empty State -->
+            <div class="project-sheet-empty hidden" id="projectSheetEmpty"></div>
+
+            <!-- Bottom Action: + Proyek Baru -->
+            <div class="bottom-sheet-footer">
+                <button class="btn btn-primary btn-block" id="btnNewProjectFromSheet" onclick="handleNewProjectFromSheet()">
+                    <i data-lucide="plus" style="width:18px;height:18px;"></i>
+                    <span>+ Proyek Baru</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Mobile More Menu Bottom Sheet / Drawer Modal -->
     <div id="mobileMenuModal" class="modal-overlay hidden" onclick="if(event.target === this) closeMobileMenuModal()" style="z-index:1100; align-items:flex-end;">
-        <div class="mobile-menu-drawer" style="background:var(--surface-sidebar); border-top:1px solid var(--border-dark); border-radius:20px 20px 0 0; width:100%; max-width:600px; margin:0 auto; padding:18px 16px max(env(safe-area-inset-bottom, 16px), 24px) 16px; box-shadow:0 -10px 30px rgba(0,0,0,0.6); animation:slideUpDrawer 0.25s cubic-bezier(0.16, 1, 0.3, 1);">
+        <div class="mobile-menu-drawer">
             <div style="width:36px; height:4px; background:rgba(255,255,255,0.25); border-radius:4px; margin:0 auto 14px auto;"></div>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; padding:0 4px;">
                 <div style="font-size:13px; font-weight:800; color:var(--text-on-dark); letter-spacing:0.04em; text-transform:uppercase;">Menu &amp; Fitur Sistem</div>
@@ -5365,6 +6033,48 @@
             <div class="modal-footer" style="border-top:1px solid var(--border-subtle);padding-top:14px;margin-top:16px;display:flex;justify-content:flex-end;gap:10px;">
                 <button onclick="closeAppsScriptModal()" class="btn btn-ghost">Tutup</button>
                 <button onclick="copyAppsScriptCode()" class="btn btn-success" style="background:var(--success);color:#fff;">Salin Kode Script</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Konfigurasi Integrasi Gudang Kiln (Apps Script & Sheets) -->
+    <div id="gudangKilnModal" class="modal-overlay hidden" style="z-index:1200;">
+        <div class="modal-box" style="max-width:620px;width:92vw;background:var(--surface-0);border:1px solid var(--border-medium);border-radius:var(--r-xl);padding:24px;box-shadow:0 24px 48px rgba(0,0,0,0.5);">
+            <div class="modal-header" style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border-subtle);padding-bottom:14px;margin-bottom:16px;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <div style="width:36px;height:36px;border-radius:10px;background:rgba(59,130,246,0.15);display:flex;align-items:center;justify-content:center;color:#3b82f6;">
+                        <i data-lucide="database" style="width:20px;height:20px;"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size:16px;font-weight:800;color:var(--text-primary);margin:0;">Integrasi Gudang Kiln Inventory</h3>
+                        <p style="font-size:12px;color:var(--text-secondary);margin:2px 0 0 0;">Pengambilan stok live &amp; mutasi otomatis pemakaian material</p>
+                    </div>
+                </div>
+                <button onclick="closeGudangKilnModal()" aria-label="Tutup modal" title="Tutup" style="border:none;background:none;cursor:pointer;color:var(--text-secondary);padding:6px;"><i data-lucide="x" style="width:18px;height:18px;"></i></button>
+            </div>
+            <div class="modal-body" style="display:flex;flex-direction:column;gap:14px;">
+                <div style="background:rgba(59,130,246,0.06);border-left:4px solid #3b82f6;border-radius:0 8px 8px 0;padding:10px 14px;font-size:12px;color:var(--text-secondary);line-height:1.5;">
+                    KSD Monitor terhubung langsung ke Google Apps Script Web App Gudang Kiln untuk memeriksa ketersediaan fisik material (Angkur &amp; Castable) dan memotong stok otomatis.
+                </div>
+                <div class="field-light">
+                    <label style="font-size:12px;font-weight:700;margin-bottom:6px;display:block;">Google Apps Script Web App URL (Exec)</label>
+                    <input type="text" id="inputGudangKilnUrl" placeholder="https://script.google.com/macros/s/.../exec" style="width:100%;font-family:var(--font-mono);font-size:12px;padding:10px 12px;background:var(--surface-1);border:1px solid var(--border-medium);border-radius:var(--r-md);color:var(--text-primary);" />
+                    <small style="font-size:11px;color:var(--text-secondary);margin-top:4px;display:block;">Tempel URL Web App dari menu Deploy &gt; Manage Deployments di Google Apps Script Gudang Kiln.</small>
+                </div>
+                <div class="field-light">
+                    <label style="font-size:12px;font-weight:700;margin-bottom:6px;display:block;">Spreadsheet ID Gudang Kiln</label>
+                    <input type="text" id="inputGudangKilnSsId" value="1laPXicp0nNYUHDCts0IOLec7Caa16k3YzNwlTziRNgI" readonly style="width:100%;font-family:var(--font-mono);font-size:12px;padding:10px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--border-subtle);border-radius:var(--r-md);color:var(--text-secondary);" />
+                </div>
+                <div id="gudangKilnTestResult" style="display:none;padding:12px 14px;border-radius:8px;font-size:12px;line-height:1.5;"></div>
+            </div>
+            <div class="modal-footer" style="border-top:1px solid var(--border-subtle);padding-top:14px;margin-top:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                <button type="button" onclick="testGudangKilnConnection()" id="btnTestGudangKiln" class="btn btn-ghost" style="border:1px solid var(--border-medium);font-size:12px;display:inline-flex;align-items:center;gap:6px;">
+                    <i data-lucide="wifi" style="width:14px;height:14px;"></i> Uji Koneksi Live
+                </button>
+                <div style="display:flex;gap:8px;">
+                    <button type="button" onclick="closeGudangKilnModal()" class="btn btn-ghost">Batal</button>
+                    <button type="button" onclick="saveGudangKilnConfig()" class="btn btn-accent" style="font-weight:700;">Simpan URL</button>
+                </div>
             </div>
         </div>
     </div>
@@ -5516,43 +6226,486 @@
         let selectedPhotoName = "";
 
         // ═══════════════════════════════════════════════════════
+        // INTEGRASI GUDANG KILN (Google Apps Script Web App)
+        // ═══════════════════════════════════════════════════════
+        const DEFAULT_GUDANG_KILN_URL = "[TEMPEL_LINK_APPSCRIPT_EXEC_ANDA_DI_SINI]";
+        const GUDANG_KILN_SPREADSHEET_ID = "1laPXicp0nNYUHDCts0IOLec7Caa16k3YzNwlTziRNgI";
+
+        function getGudangKilnUrl() {
+            try {
+                const saved = localStorage.getItem("ksd_gudang_kiln_url");
+                if (saved && saved.trim() !== "") return saved.trim();
+            } catch(e) {}
+            return DEFAULT_GUDANG_KILN_URL;
+        }
+
+        function setGudangKilnUrl(url) {
+            try {
+                localStorage.setItem("ksd_gudang_kiln_url", (url || "").trim());
+            } catch(e) {}
+        }
+
+        let gudangKilnState = {
+            isLoading: false,
+            items: [],
+            selectedItem: null,
+            currentStock: null,
+            lastFetchTime: null,
+            lastCategories: ""
+        };
+
+        function openGudangKilnModal() {
+            const m = document.getElementById("gudangKilnModal");
+            const inputUrl = document.getElementById("inputGudangKilnUrl");
+            const resultBox = document.getElementById("gudangKilnTestResult");
+            if (m) {
+                m.classList.remove("hidden");
+                m.style.display = "flex";
+                if (inputUrl) inputUrl.value = getGudangKilnUrl();
+                if (resultBox) {
+                    resultBox.style.display = "none";
+                    resultBox.innerHTML = "";
+                }
+                lucideRefresh();
+            }
+        }
+
+        function closeGudangKilnModal() {
+            const m = document.getElementById("gudangKilnModal");
+            if (m) {
+                m.classList.add("hidden");
+                m.style.display = "none";
+            }
+        }
+
+        function saveGudangKilnConfig() {
+            const inputUrl = document.getElementById("inputGudangKilnUrl");
+            const url = (inputUrl ? inputUrl.value : "").trim();
+            setGudangKilnUrl(url);
+            showToast("Konfigurasi URL Gudang Kiln berhasil disimpan.", "check", "Gudang Kiln");
+            closeGudangKilnModal();
+            const catSel = document.getElementById("logMatCategory");
+            if (catSel && (catSel.value === "Angkur" || catSel.value === "Castable")) {
+                fetchGudangKilnStock(['Angkur', 'Castable'], true);
+            }
+        }
+
+        async function testGudangKilnConnection() {
+            const inputUrl = document.getElementById("inputGudangKilnUrl");
+            const btn = document.getElementById("btnTestGudangKiln");
+            const resultBox = document.getElementById("gudangKilnTestResult");
+            const testUrl = (inputUrl ? inputUrl.value : "").trim();
+
+            if (!testUrl || testUrl.includes("[TEMPEL_LINK_APPSCRIPT_EXEC_ANDA_DI_SINI]")) {
+                if (resultBox) {
+                    resultBox.style.display = "block";
+                    resultBox.style.background = "rgba(239,68,68,0.1)";
+                    resultBox.style.border = "1px solid rgba(239,68,68,0.3)";
+                    resultBox.style.color = "#ef4444";
+                    resultBox.innerHTML = "⚠️ Masukkan URL Web App Google Apps Script yang valid terlebih dahulu.";
+                }
+                return;
+            }
+
+            const ogText = btn ? btn.innerHTML : "";
+            if (btn) { btn.disabled = true; btn.innerHTML = '<i data-lucide="loader-2" class="spin" style="width:14px;height:14px;"></i> Menghubungkan...'; lucideRefresh(); }
+
+            try {
+                const sep = testUrl.includes("?") ? "&" : "?";
+                const target = `${testUrl}${sep}action=get_stock&category=Angkur,Castable`;
+
+                let data = null;
+                try {
+                    const res = await fetch(target, { method: "GET", redirect: "follow" });
+                    const text = await res.text();
+                    if (text.trim().startsWith("<!DOCTYPE") || text.trim().startsWith("<html")) {
+                        throw new Error("HTML_RESPONSE");
+                    }
+                    data = JSON.parse(text);
+                } catch(dfErr) {
+                    const token = window.sessionToken || sessionStorage.getItem("ksd_session_token");
+                    const prx = await fetch("/api/custom/gudang-kiln-stock", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", ...(token ? { "Authorization": `Bearer ${token}` } : {}) },
+                        body: JSON.stringify({ url: testUrl, category: "Angkur,Castable" })
+                    });
+                    data = await prx.json();
+                }
+
+                if (data && (data.success || Array.isArray(data.data))) {
+                    const list = data.data || [];
+                    if (resultBox) {
+                        resultBox.style.display = "block";
+                        resultBox.style.background = "rgba(16,185,129,0.1)";
+                        resultBox.style.border = "1px solid rgba(16,185,129,0.3)";
+                        resultBox.style.color = "#10b981";
+                        resultBox.innerHTML = `✅ <strong>Koneksi Berhasil!</strong> Ditemukan <strong>${list.length} item</strong> kategori Angkur &amp; Castable pada Spreadsheet ID: <code>${GUDANG_KILN_SPREADSHEET_ID}</code>.`;
+                    }
+                    showToast(`Koneksi Gudang Kiln sukses (${list.length} item)`, "check");
+                } else {
+                    throw new Error((data && data.error) ? data.error : "Format respons tidak dikenali");
+                }
+            } catch (err) {
+                if (resultBox) {
+                    resultBox.style.display = "block";
+                    resultBox.style.background = "rgba(239,68,68,0.1)";
+                    resultBox.style.border = "1px solid rgba(239,68,68,0.3)";
+                    resultBox.style.color = "#ef4444";
+                    resultBox.innerHTML = `❌ <strong>Koneksi Gagal:</strong> ${escapeHTML(err.message)}<br/><small style="opacity:0.85;display:block;margin-top:6px;">Pastikan Web App di Google Apps Script di-deploy dengan pengaturan:<br/>&bull; <strong>Execute as: Me</strong><br/>&bull; <strong>Who has access: Anyone (Siapa saja)</strong></small>`;
+                }
+                showToast("Uji koneksi gagal: " + err.message, "alert-triangle");
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerHTML = ogText; lucideRefresh(); }
+            }
+        }
+
+        async function fetchGudangKilnStock(categories = ['Angkur', 'Castable'], forceRefresh = false) {
+            const catParam = Array.isArray(categories) ? categories.join(',') : categories;
+            const badgeContainer = document.getElementById("gudangStockBadgeContainer");
+            const badgeContent = document.getElementById("gudangStockBadgeContent");
+            const catStatus = document.getElementById("logMatCategoryStatus");
+
+            const url = getGudangKilnUrl();
+            if (!url || url.includes("[TEMPEL_LINK_APPSCRIPT_EXEC_ANDA_DI_SINI]")) {
+                if (catStatus) catStatus.innerHTML = '<span style="color:#ef4444;cursor:pointer;" onclick="openGudangKilnModal()">⚠️ URL belum diatur (Klik)</span>';
+                if (badgeContainer) badgeContainer.style.display = "block";
+                if (badgeContent) {
+                    badgeContent.style.background = "rgba(239,68,68,0.08)";
+                    badgeContent.style.borderColor = "rgba(239,68,68,0.25)";
+                    badgeContent.innerHTML = `<span style="font-size:11.5px;color:#ef4444;">URL Google Apps Script Gudang Kiln belum dikonfigurasi. <a href="javascript:void(0)" onclick="openGudangKilnModal()" style="color:#3b82f6;text-decoration:underline;font-weight:700;">Atur sekarang &rarr;</a></span>`;
+                }
+                return;
+            }
+
+            if (!forceRefresh && gudangKilnState.items.length > 0 && gudangKilnState.lastCategories === catParam && (Date.now() - (gudangKilnState.lastFetchTime || 0)) < 60000) {
+                renderGudangKilnItemsDropdown();
+                return;
+            }
+
+            gudangKilnState.isLoading = true;
+            if (catStatus) catStatus.innerHTML = '<span style="color:#3b82f6;"><i data-lucide="loader-2" class="spin" style="width:11px;height:11px;display:inline-block;vertical-align:middle;"></i> Memuat stok live...</span>';
+            if (badgeContainer) badgeContainer.style.display = "block";
+            if (badgeContent) {
+                badgeContent.style.background = "rgba(59,130,246,0.08)";
+                badgeContent.style.borderColor = "rgba(59,130,246,0.25)";
+                badgeContent.innerHTML = '<span style="font-size:11.5px;color:#3b82f6;"><i data-lucide="loader-2" class="spin" style="width:12px;height:12px;display:inline-block;vertical-align:middle;margin-right:6px;"></i> Mengambil sisa stok fisik live dari Gudang Kiln...</span>';
+            }
+            lucideRefresh();
+
+            try {
+                const sep = url.includes("?") ? "&" : "?";
+                const targetUrl = `${url}${sep}action=get_stock&category=${encodeURIComponent(catParam)}`;
+
+                let data = null;
+                try {
+                    const res = await fetch(targetUrl, { method: "GET", redirect: "follow" });
+                    const text = await res.text();
+                    if (text.trim().startsWith("<!DOCTYPE") || text.trim().startsWith("<html")) {
+                        throw new Error("HTML_RESPONSE");
+                    }
+                    data = JSON.parse(text);
+                } catch(fetchErr) {
+                    console.warn("Direct fetch Gudang Kiln gagal, menggunakan proxy PocketBase...", fetchErr);
+                    const token = window.sessionToken || sessionStorage.getItem("ksd_session_token");
+                    const prx = await fetch("/api/custom/gudang-kiln-stock", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", ...(token ? { "Authorization": `Bearer ${token}` } : {}) },
+                        body: JSON.stringify({ url, category: catParam })
+                    });
+                    data = await prx.json();
+                }
+
+                if (data && (data.success || Array.isArray(data.data))) {
+                    gudangKilnState.items = data.data || [];
+                    gudangKilnState.lastCategories = catParam;
+                    gudangKilnState.lastFetchTime = Date.now();
+                    if (catStatus) catStatus.innerHTML = `<span style="color:#10b981;font-weight:700;">🟢 Terhubung (${gudangKilnState.items.length} item)</span>`;
+                    renderGudangKilnItemsDropdown();
+                    showToast(`Sisa stok fisik Gudang Kiln dimuat (${gudangKilnState.items.length} item)`, "check", "Gudang Kiln Live");
+                } else {
+                    throw new Error((data && data.error) ? data.error : "Gagal mengambil data dari Google Apps Script");
+                }
+            } catch (err) {
+                console.error("Gagal sinkronisasi stok Gudang Kiln:", err);
+                if (catStatus) catStatus.innerHTML = '<span style="color:#ef4444;">⚠️ Gagal memuat stok live</span>';
+                if (badgeContent) {
+                    badgeContent.style.background = "rgba(239,68,68,0.08)";
+                    badgeContent.style.borderColor = "rgba(239,68,68,0.25)";
+                    badgeContent.innerHTML = `<span style="font-size:11.5px;color:#ef4444;">⚠️ Gagal mengambil stok: ${escapeHTML(err.message)} <button type="button" onclick="fetchGudangKilnStock(['Angkur','Castable'], true)" class="btn btn-xs" style="margin-left:8px;padding:2px 8px;font-size:10px;">Coba Lagi</button></span>`;
+                }
+            } finally {
+                gudangKilnState.isLoading = false;
+                lucideRefresh();
+            }
+        }
+
+        function renderGudangKilnItemsDropdown() {
+            const itemSelect = document.getElementById("logMatGudangItemSelect");
+            const itemWrapper = document.getElementById("gudangKilnItemWrapper");
+            const catSel = document.getElementById("logMatCategory");
+            if (!itemSelect || !catSel) return;
+
+            const selectedCat = catSel.value;
+            if (selectedCat !== "Angkur" && selectedCat !== "Castable") {
+                if (itemWrapper) itemWrapper.style.display = "none";
+                return;
+            }
+
+            if (itemWrapper) itemWrapper.style.display = "block";
+            itemSelect.innerHTML = `<option value="">-- Pilih Barang ${selectedCat} dari Gudang Kiln --</option>`;
+
+            const filtered = gudangKilnState.items.filter(it => {
+                const c = (it.category || "").toLowerCase();
+                return c.indexOf(selectedCat.toLowerCase()) !== -1;
+            });
+
+            if (filtered.length === 0) {
+                itemSelect.innerHTML = `<option value="">-- Tidak ada item ${selectedCat} di Gudang Kiln --</option>`;
+                return;
+            }
+
+            filtered.forEach(it => {
+                const isCritical = it.stock <= it.minStock;
+                const critMarker = isCritical ? ' 🚨' : '';
+                itemSelect.innerHTML += `<option value="${escapeHTML(it.code)}">[${escapeHTML(it.code)}] ${escapeHTML(it.name)} — Stok: ${it.stock} ${escapeHTML(it.unit || '')} (${escapeHTML(it.gudang || 'Gudang')})${critMarker}</option>`;
+            });
+
+            if (gudangKilnState.selectedItem) {
+                itemSelect.value = gudangKilnState.selectedItem.code;
+            }
+        }
+
+        function handleMaterialCategoryChange() {
+            const catSel = document.getElementById("logMatCategory");
+            const cat = catSel ? catSel.value : "Umum";
+            const itemWrapper = document.getElementById("gudangKilnItemWrapper");
+            const badgeContainer = document.getElementById("gudangStockBadgeContainer");
+            const warnBox = document.getElementById("gudangStockWarningContainer");
+            const submitBtn = document.getElementById("btnSubmitMaterial");
+
+            if (warnBox) warnBox.style.display = "none";
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                submitBtn.style.cursor = 'pointer';
+                submitBtn.removeAttribute('title');
+            }
+
+            if (cat === "Angkur" || cat === "Castable") {
+                if (itemWrapper) itemWrapper.style.display = "block";
+                if (badgeContainer) badgeContainer.style.display = "block";
+                fetchGudangKilnStock([cat], false);
+            } else {
+                if (itemWrapper) itemWrapper.style.display = "none";
+                if (badgeContainer) badgeContainer.style.display = "none";
+                gudangKilnState.selectedItem = null;
+                gudangKilnState.currentStock = null;
+            }
+        }
+
+        function handleGudangItemSelected(code) {
+            if (!code) {
+                gudangKilnState.selectedItem = null;
+                gudangKilnState.currentStock = null;
+                updateGudangStockBadge(null);
+                validateGudangStockConsumption();
+                return;
+            }
+
+            const item = gudangKilnState.items.find(i => String(i.code).trim() === String(code).trim());
+            if (item) {
+                gudangKilnState.selectedItem = item;
+                gudangKilnState.currentStock = Number(item.stock) || 0;
+                const matCodeInput = document.getElementById("logMatCode");
+                if (matCodeInput) matCodeInput.value = `[${item.code}] ${item.name}`;
+                updateGudangStockBadge(item);
+                validateGudangStockConsumption();
+            }
+        }
+
+        function updateGudangStockBadge(item) {
+            const badgeContent = document.getElementById("gudangStockBadgeContent");
+            const badgeContainer = document.getElementById("gudangStockBadgeContainer");
+            if (!badgeContainer || !badgeContent) return;
+
+            badgeContainer.style.display = "block";
+            if (!item) {
+                badgeContent.style.background = "rgba(255,255,255,0.04)";
+                badgeContent.style.borderColor = "var(--border-subtle)";
+                badgeContent.innerHTML = `<span style="font-size:12px;color:var(--text-secondary);">Silakan pilih item dari daftar Gudang Kiln di atas untuk melihat sisa stok fisik.</span>`;
+                return;
+            }
+
+            const isLow = item.stock <= (item.minStock || 0);
+            const dotColor = isLow ? "#f59e0b" : "#10b981";
+            const boxBg = isLow ? "rgba(245,158,11,0.08)" : "rgba(16,185,129,0.08)";
+            const boxBorder = isLow ? "rgba(245,158,11,0.3)" : "rgba(16,185,129,0.3)";
+
+            badgeContent.style.background = boxBg;
+            badgeContent.style.borderColor = boxBorder;
+            badgeContent.innerHTML = `
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="width:8px;height:8px;border-radius:50%;background:${dotColor};box-shadow:0 0 8px ${dotColor};display:inline-block;"></span>
+                    <span style="font-size:12px;color:var(--text-primary);">Sisa Stok Fisik: <strong style="font-size:14px;color:${dotColor};">${Number(item.stock).toLocaleString('id-ID')}</strong> <span style="font-size:11.5px;opacity:0.85;">${escapeHTML(item.unit || '')}</span></span>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;">
+                    <span style="font-size:11px;font-weight:700;color:var(--accent);background:rgba(59,130,246,0.1);padding:2px 8px;border-radius:6px;border:1px solid rgba(59,130,246,0.2);">${escapeHTML(item.gudang || 'Gudang Utama')}</span>
+                    <button type="button" onclick="refreshGudangStockData()" title="Segarkan data stok fisik" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;padding:2px;"><i data-lucide="refresh-cw" style="width:12px;height:12px;"></i></button>
+                </div>
+            `;
+            lucideRefresh();
+        }
+
+        function refreshGudangStockData() {
+            const catSel = document.getElementById("logMatCategory");
+            const cat = catSel ? catSel.value : "Angkur";
+            fetchGudangKilnStock([cat], true);
+        }
+
+        function validateGudangStockConsumption() {
+            const catSel = document.getElementById("logMatCategory");
+            const cat = catSel ? catSel.value : "Umum";
+            const consumedInput = document.getElementById("logMatConsumed");
+            const submitBtn = document.getElementById("btnSubmitMaterial");
+            const warnBox = document.getElementById("gudangStockWarningContainer");
+
+            if (cat !== "Angkur" && cat !== "Castable") {
+                if (warnBox) warnBox.style.display = "none";
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.style.opacity = '1';
+                    submitBtn.style.cursor = 'pointer';
+                    submitBtn.removeAttribute('title');
+                }
+                if (consumedInput) consumedInput.style.borderColor = "";
+                return true;
+            }
+
+            const stock = gudangKilnState.currentStock;
+            if (stock === null || stock === undefined) return true;
+
+            const consumed = parseFloat(consumedInput ? consumedInput.value : 0) || 0;
+
+            if (consumed > stock) {
+                if (consumedInput) {
+                    consumedInput.style.borderColor = "#ef4444";
+                    consumedInput.style.background = "rgba(239,68,68,0.06)";
+                }
+                if (warnBox) {
+                    warnBox.style.display = "block";
+                    warnBox.innerHTML = `⛔ <strong>PENGAMBILAN MELEBIHI STOK FISIK!</strong><br/>Qty Consumed (<strong>${consumed}</strong>) melebihi sisa stok fisik di Gudang Kiln (<strong>${stock}</strong> ${gudangKilnState.selectedItem ? gudangKilnState.selectedItem.unit : ''}). Tombol submit dikunci untuk mencegah anomali inventaris.`;
+                }
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.style.opacity = '0.45';
+                    submitBtn.style.cursor = 'not-allowed';
+                    submitBtn.setAttribute('title', 'Kuantitas Consumed melebihi sisa stok fisik di Gudang Kiln!');
+                }
+                return false;
+            } else {
+                if (consumedInput) {
+                    consumedInput.style.borderColor = "";
+                    consumedInput.style.background = "";
+                }
+                if (warnBox) warnBox.style.display = "none";
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.style.opacity = '1';
+                    submitBtn.style.cursor = 'pointer';
+                    submitBtn.removeAttribute('title');
+                }
+                return true;
+            }
+        }
+
+        async function sendGudangKilnMutation(payload) {
+            const url = getGudangKilnUrl();
+            if (!url || url.includes("[TEMPEL_LINK_APPSCRIPT_EXEC_ANDA_DI_SINI]")) {
+                console.warn("URL Google Apps Script Gudang Kiln belum dikonfigurasi, mutasi dilewati.");
+                return { skipped: true };
+            }
+
+            try {
+                const res = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify(payload),
+                    redirect: "follow"
+                });
+                const resJson = await res.json();
+                return resJson;
+            } catch (err) {
+                console.warn("Direct POST ke Apps Script gagal, mencoba proxy backend PocketBase...", err);
+                const token = window.sessionToken || sessionStorage.getItem("ksd_session_token");
+                const prxRes = await fetch("/api/custom/gudang-kiln-mutate", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...(token ? { "Authorization": `Bearer ${token}` } : {})
+                    },
+                    body: JSON.stringify({ url, payload })
+                });
+                return await prxRes.json();
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════
         // THEME ENGINE (Light Mode / Mode Terang & Dark Mode)
         // ═══════════════════════════════════════════════════════
         function getPreferredTheme() {
             try {
+                if (localStorage.getItem('ksd_theme_v3') !== 'true') {
+                    localStorage.setItem('ksd_theme_mode', 'light');
+                    localStorage.setItem('ksd_theme_v3', 'true');
+                    return 'light';
+                }
                 const saved = localStorage.getItem('ksd_theme_mode');
                 if (saved === 'light' || saved === 'dark') return saved;
             } catch(e) {}
-            return 'dark'; // Engineering default dark mode
+            return 'light'; // Default to light mode (warna terang)
         }
 
         function applyTheme(theme, save = true) {
+            // Suppress transitions on theme switch to prevent visual smearing (better-ui)
+            const css = document.createElement('style');
+            css.appendChild(document.createTextNode('*,*::before,*::after{transition:none!important}'));
+            document.head.appendChild(css);
+
             const root = document.documentElement;
             root.setAttribute('data-theme', theme);
             if (save) {
                 try { localStorage.setItem('ksd_theme_mode', theme); } catch(e) {}
             }
 
+            // Force reflow then remove transition suppressor
+            void window.getComputedStyle(document.body).opacity;
+            setTimeout(() => {
+                if (css.parentNode) css.parentNode.removeChild(css);
+            }, 60);
+
             // Update meta theme-color for browser address bar
             const metaTheme = document.querySelector('meta[name="theme-color"]');
             if (metaTheme) {
-                metaTheme.setAttribute('content', theme === 'light' ? '#1D4ED8' : '#0F172A');
+                metaTheme.setAttribute('content', theme === 'light' ? '#FFFFFF' : '#0B0F19');
             }
 
-            // Update Desktop Topbar Icons
+            // Update Desktop Topbar & Avatar Menu Icons
             const sunIcon = document.getElementById('themeIconSun');
             const moonIcon = document.getElementById('themeIconMoon');
             const toggleBtn = document.getElementById('themeToggleBtn');
+            const themeToggleLabel = document.getElementById('themeToggleLabel');
             if (sunIcon && moonIcon) {
                 if (theme === 'light') {
                     sunIcon.style.display = 'none';
                     moonIcon.style.display = 'inline-block';
-                    moonIcon.style.color = '#0F172A';
+                    moonIcon.style.color = '#334155';
                     if (toggleBtn) toggleBtn.setAttribute('title', 'Beralih ke Mode Gelap 🌙');
+                    if (themeToggleLabel) themeToggleLabel.textContent = 'Mode Gelap 🌙';
                 } else {
                     sunIcon.style.display = 'inline-block';
                     moonIcon.style.display = 'none';
                     if (toggleBtn) toggleBtn.setAttribute('title', 'Beralih ke Mode Terang ☀️');
+                    if (themeToggleLabel) themeToggleLabel.textContent = 'Mode Terang ☀️';
                 }
             }
 
@@ -5562,7 +6715,7 @@
             if (mIcon && mTxt) {
                 if (theme === 'light') {
                     mIcon.setAttribute('data-lucide', 'moon');
-                    mIcon.style.color = '#0F172A';
+                    mIcon.style.color = '#334155';
                     mTxt.textContent = 'Mode Gelap';
                 } else {
                     mIcon.setAttribute('data-lucide', 'sun');
@@ -5577,7 +6730,7 @@
         }
 
         function toggleTheme() {
-            const current = document.documentElement.getAttribute('data-theme') || 'dark';
+            const current = document.documentElement.getAttribute('data-theme') || 'light';
             const next = current === 'dark' ? 'light' : 'dark';
             applyTheme(next, true);
             if (typeof showToast === 'function') {
@@ -6328,10 +7481,261 @@
 
         function switchProject(pId) {
             state.activeProjectId = pId;
+            updateTopbarProjectDisplay(pId);
             if (pId === "ALL") {
                 switchTab('dashboard');
             } else {
                 triggerSync();
+            }
+        }
+
+        /* ══════════════════════════════════════════════════════════════
+           2-TIER HEADER & PROJECT BOTTOM SHEET CONTROLLERS
+           ══════════════════════════════════════════════════════════════ */
+        function toggleAvatarDropdown(e) {
+            if (e) {
+                e.stopPropagation();
+                e.preventDefault();
+            }
+            const menu = document.getElementById("avatarDropdownMenu");
+            const btn = document.getElementById("userAvatarBtn");
+            if (!menu) return;
+            const isOpen = menu.classList.contains("show");
+            if (isOpen) {
+                closeAvatarDropdown();
+            } else {
+                closeNotifPanel();
+                menu.classList.add("show");
+                if (btn) btn.setAttribute("aria-expanded", "true");
+            }
+        }
+
+        function closeAvatarDropdown() {
+            const menu = document.getElementById("avatarDropdownMenu");
+            const btn = document.getElementById("userAvatarBtn");
+            if (menu) menu.classList.remove("show");
+            if (btn) btn.setAttribute("aria-expanded", "false");
+        }
+
+        // Outside-click dismiss for avatar dropdown
+        document.addEventListener("click", function(e) {
+            const wrap = document.getElementById("avatarDropdownWrap");
+            if (wrap && !wrap.contains(e.target)) {
+                closeAvatarDropdown();
+            }
+        });
+
+        // ESC key listener to close dropdown and bottom sheet
+        document.addEventListener("keydown", function(e) {
+            if (e.key === "Escape") {
+                closeAvatarDropdown();
+                closeProjectSheet();
+                closeNotifPanel();
+            }
+        });
+
+        function openProjectSheet() {
+            const backdrop = document.getElementById("projectSheetBackdrop");
+            const sheet = document.getElementById("projectSheetContainer");
+            if (!backdrop || !sheet) return;
+
+            closeAvatarDropdown();
+            closeNotifPanel();
+
+            renderProjectSheet("");
+
+            const searchInput = document.getElementById("projectSearchInput");
+            if (searchInput) {
+                searchInput.value = "";
+                const clearBtn = document.getElementById("projectSearchClearBtn");
+                if (clearBtn) clearBtn.classList.add("hidden");
+            }
+
+            backdrop.classList.add("open");
+            sheet.classList.add("open");
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeProjectSheet(e) {
+            if (e && e.target && e.target !== e.currentTarget && !e.target.closest(".sheet-close-btn")) {
+                return;
+            }
+            const backdrop = document.getElementById("projectSheetBackdrop");
+            const sheet = document.getElementById("projectSheetContainer");
+            if (sheet) sheet.classList.remove("open");
+            if (backdrop) backdrop.classList.remove("open");
+            document.body.style.overflow = "";
+        }
+
+        function renderProjectSheet(filterQuery) {
+            const listEl = document.getElementById("projectSheetList");
+            const emptyEl = document.getElementById("projectSheetEmpty");
+            if (!listEl) return;
+
+            const projects = state.projects || [];
+            const query = (filterQuery || "").toLowerCase().trim();
+
+            let filtered = projects;
+            if (query) {
+                filtered = projects.filter(p => 
+                    (p.name && p.name.toLowerCase().includes(query)) ||
+                    (p.id && String(p.id).toLowerCase().includes(query)) ||
+                    (p.area && p.area.toLowerCase().includes(query))
+                );
+            }
+
+            if (projects.length === 0) {
+                listEl.innerHTML = "";
+                if (emptyEl) {
+                    emptyEl.classList.remove("hidden");
+                    emptyEl.innerHTML = `
+                        <div style="font-size:32px;margin-bottom:8px;">📁</div>
+                        <div style="font-weight:700;color:var(--text-primary);font-size:14px;">Belum Ada Proyek Terdaftar</div>
+                        <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">Silakan buat proyek baru melalui tombol di bawah.</div>
+                    `;
+                }
+                return;
+            }
+
+            if (filtered.length === 0) {
+                listEl.innerHTML = "";
+                if (emptyEl) {
+                    emptyEl.classList.remove("hidden");
+                    emptyEl.innerHTML = `
+                        <div style="font-size:32px;margin-bottom:8px;">🔍</div>
+                        <div style="font-weight:700;color:var(--text-primary);font-size:14px;">Proyek Tidak Ditemukan</div>
+                        <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">Coba gunakan kata kunci atau kode proyek yang lain.</div>
+                    `;
+                }
+                return;
+            }
+
+            if (emptyEl) emptyEl.classList.add("hidden");
+
+            let html = "";
+            // Special overview option
+            if (!query || "ringkasan semua proyek overview".includes(query)) {
+                const isAllActive = state.activeProjectId === "ALL";
+                html += `
+                    <div class="project-sheet-item ${isAllActive ? 'selected' : ''}" onclick="selectProjectFromSheet('ALL')" role="option" aria-selected="${isAllActive}">
+                        <div class="project-sheet-item-left">
+                            <div class="project-sheet-item-top">
+                                <span class="project-sheet-id-badge">ALL</span>
+                                <strong class="project-sheet-item-name">Ringkasan Semua Proyek</strong>
+                            </div>
+                            <div class="project-sheet-item-meta">Konsolidasi status &amp; kemajuan seluruh proyek overhaul</div>
+                        </div>
+                        <div class="project-sheet-item-right">
+                            <span class="badge accent" style="font-size:10px;">OVERVIEW</span>
+                            ${isAllActive ? '<i data-lucide="check" class="project-sheet-check-icon"></i>' : '<div style="width:18px;"></div>'}
+                        </div>
+                    </div>
+                `;
+            }
+
+            filtered.forEach(p => {
+                const isActive = p.id === state.activeProjectId;
+                const statusCls = (p.status === "Completed" || p.status === "Selesai") ? "success" : "warning";
+                const progressVal = p.actualProgress != null ? p.actualProgress : (isActive && state.overallProgress != null ? state.overallProgress : null);
+                const progressTxt = progressVal != null ? `${Number(progressVal).toFixed(1)}%` : '—';
+
+                html += `
+                    <div class="project-sheet-item ${isActive ? 'selected' : ''}" onclick="selectProjectFromSheet('${p.id}')" role="option" aria-selected="${isActive}">
+                        <div class="project-sheet-item-left">
+                            <div class="project-sheet-item-top">
+                                <span class="project-sheet-id-badge">${escapeHTML(p.id || '')}</span>
+                                <strong class="project-sheet-item-name">${escapeHTML(p.name || '')}</strong>
+                            </div>
+                            <div class="project-sheet-item-meta">
+                                Area: ${escapeHTML(p.area || '—')} • Mulai: ${escapeHTML(p.startDate || '—')}
+                            </div>
+                        </div>
+                        <div class="project-sheet-item-right">
+                            <div class="project-sheet-stat-pill">
+                                <span class="badge ${statusCls}">${escapeHTML(p.status || 'In Progress')}</span>
+                                <span class="project-sheet-pct mono">${progressTxt}</span>
+                            </div>
+                            ${isActive ? '<i data-lucide="check" class="project-sheet-check-icon"></i>' : '<div style="width:18px;"></div>'}
+                        </div>
+                    </div>
+                `;
+            });
+
+            listEl.innerHTML = html;
+            lucideRefresh();
+        }
+
+        function filterProjectSheetList(val) {
+            const clearBtn = document.getElementById("projectSearchClearBtn");
+            if (clearBtn) {
+                if (val && val.length > 0) clearBtn.classList.remove("hidden");
+                else clearBtn.classList.add("hidden");
+            }
+            renderProjectSheet(val);
+        }
+
+        function clearProjectSearch() {
+            const input = document.getElementById("projectSearchInput");
+            if (input) {
+                input.value = "";
+                input.focus();
+            }
+            const clearBtn = document.getElementById("projectSearchClearBtn");
+            if (clearBtn) clearBtn.classList.add("hidden");
+            renderProjectSheet("");
+        }
+
+        function selectProjectFromSheet(projectId) {
+            closeProjectSheet();
+            updateTopbarProjectDisplay(projectId);
+
+            const sel = document.getElementById("projectSelector");
+            if (sel) sel.value = projectId;
+
+            switchProject(projectId);
+        }
+
+        function updateTopbarProjectDisplay(projectId) {
+            const titleEl = document.getElementById("topbarProjectName");
+            if (!titleEl) return;
+
+            if (projectId === "ALL") {
+                titleEl.textContent = "Ringkasan Semua Proyek";
+                return;
+            }
+
+            const projects = state.projects || [];
+            const p = projects.find(proj => proj.id === projectId);
+            if (p) {
+                titleEl.textContent = `[${p.id}] ${p.name}`;
+            } else if (projects.length === 0 || state.noProjects) {
+                titleEl.textContent = "-- Belum Ada Proyek --";
+            } else {
+                titleEl.textContent = projectId ? `Proyek [${projectId}]` : "-- Pilih Proyek --";
+            }
+        }
+
+        function handleNewProjectFromSheet() {
+            closeProjectSheet();
+            const tabSetup = document.getElementById("tab-setup");
+            if (tabSetup && tabSetup.style.display !== "none") {
+                switchTab('setup');
+                setTimeout(() => {
+                    const formHeader = document.querySelector("#view-setup h3") || document.getElementById("newProjectForm");
+                    if (formHeader) formHeader.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 200);
+            } else {
+                showToast("Hanya Admin / Manager yang memiliki izin mendaftarkan proyek baru.", "shield-alert", "Akses Dibatasi");
+            }
+        }
+
+        function openUserProfile() {
+            const tabSetup = document.getElementById("tab-setup");
+            if (tabSetup && tabSetup.style.display !== "none") {
+                switchTab('setup');
+            } else {
+                const u = state.currentUser || {};
+                showToast(`Nama: ${u.name || 'User'} | Role: ${u.role || 'GUEST'} | PT: ${u.pt_name || u.pt || '—'}`, "user", "Profil Pengguna");
             }
         }
 
@@ -6346,6 +7750,7 @@
                 optNone.value = "";
                 optNone.textContent = "-- Belum Ada Proyek (Buat di Setup) --";
                 sel.appendChild(optNone);
+                updateTopbarProjectDisplay("");
                 return;
             }
 
@@ -6362,13 +7767,19 @@
                 if (p.id === state.activeProjectId) opt.selected = true;
                 sel.appendChild(opt);
             });
+
+            updateTopbarProjectDisplay(state.activeProjectId);
         }
 
         function hydrateUI() {
             lucideRefresh();
             document.getElementById("userNameTxt").textContent = (state.currentUser || {}).name || "User";
             document.getElementById("userRoleBadge").textContent = (state.currentUser || {}).role || "";
-            document.getElementById("userAvatar").textContent = ((state.currentUser || {}).name || "U").charAt(0).toUpperCase();
+            const initialLetter = ((state.currentUser || {}).name || "U").charAt(0).toUpperCase();
+            document.getElementById("userAvatar").textContent = initialLetter;
+            const menuAvatar = document.getElementById("userAvatarMenu");
+            if (menuAvatar) menuAvatar.textContent = initialLetter;
+            updateTopbarProjectDisplay(state.activeProjectId);
 
             const isNoProj = !state.projects || state.projects.length === 0 || state.noProjects;
             document.getElementById("bannerProjectTitle").textContent = isNoProj ? "Belum Ada Proyek Terdaftar" : ((state.config || {}).projectName || "—");
@@ -8162,6 +9573,9 @@ function renderAlertNotifications() {
                 return showToast("Pilih Sub-Jobdesk terlebih dahulu.", "alert-triangle", "Validasi Gagal");
             }
 
+            const catSel = document.getElementById("logMatCategory");
+            const category = catSel ? catSel.value : "Umum";
+
             const matCode = document.getElementById("logMatCode").value.trim();
             if (!matCode) {
                 highlightInvalidField("logMatCode");
@@ -8192,19 +9606,75 @@ function renderAlertNotifications() {
                 return showToast("Kuantitas sisa/kembali harus berupa angka positif (>= 0).", "alert-triangle", "Validasi Gagal");
             }
 
+            // ⛔ STRICT VALIDATION: Validasi sisa stok fisik Gudang Kiln untuk kategori Angkur & Castable
+            if ((category === "Angkur" || category === "Castable") && gudangKilnState.currentStock !== null && gudangKilnState.currentStock !== undefined) {
+                if (qtyConsumed > gudangKilnState.currentStock) {
+                    highlightInvalidField("logMatConsumed");
+                    validateGudangStockConsumption();
+                    return showToast(`Gagal Simpan: Qty Consumed (${qtyConsumed}) melampaui sisa stok fisik di Gudang Kiln (${gudangKilnState.currentStock})!`, "alert-triangle", "Stok Fisik Tidak Cukup");
+                }
+            }
+
             // shortage is implicitly calculated
             const shortage = qtyPlanned - qtyConsumed;
 
             const btn = document.getElementById("btnSubmitMaterial");
             const ogText = btn.textContent;
-            btn.disabled = true; btn.textContent = "Menyimpan...";
+            btn.disabled = true; btn.textContent = "Menyimpan & Menyelaraskan...";
 
             google.script.run
-                .withSuccessHandler(res => {
+                .withSuccessHandler(async res => {
                     btn.disabled = false; btn.textContent = ogText;
                     if (res.success) {
-                        showToast("Material Log berhasil disimpan", "check");
+                        showToast("Material Log berhasil disimpan ke KSD Monitor", "check");
+
+                        // 🚀 SINKRONISASI OTOMATIS: Kirim mutasi pemotongan stok fisik (tipe 'OUT') ke Google Apps Script
+                        if ((category === "Angkur" || category === "Castable") && qtyConsumed > 0) {
+                            const subObj = (state.subs || []).find(s => s.id === subId);
+                            const itemCodeToMutate = (gudangKilnState.selectedItem && gudangKilnState.selectedItem.code) 
+                                ? gudangKilnState.selectedItem.code 
+                                : (matCode.match(/\[(.*?)\]/) ? matCode.match(/\[(.*?)\]/)[1] : matCode);
+
+                            const mutationPayload = {
+                                action: "OUT",
+                                type: "OUT",
+                                nik: (state.currentUser && (state.currentUser.name || state.currentUser.email)) ? state.currentUser.name : "Admin Kontraktor",
+                                section: "KSD Overhaul - Material Logistik",
+                                gudang: (gudangKilnState.selectedItem && gudangKilnState.selectedItem.gudang) ? gudangKilnState.selectedItem.gudang : "Gudang Utama",
+                                tanggal_pengambilan_barang: new Date().toISOString().split("T")[0],
+                                note: `KSD Overhaul [${state.activeProjectId}] Sub: [${subId}] ${subObj ? subObj.title : ''}`,
+                                items: [
+                                    {
+                                        code: itemCodeToMutate,
+                                        qty: qtyConsumed
+                                    }
+                                ]
+                            };
+
+                            showToast("Mengirim mutasi pemotongan stok ke Gudang Kiln...", "info");
+                            try {
+                                const mutateRes = await sendGudangKilnMutation(mutationPayload);
+                                if (mutateRes && (mutateRes.success || (mutateRes.message && mutateRes.message.includes("berhasil")))) {
+                                    showToast(`✅ Sisa stok fisik Gudang Kiln berkurang ${qtyConsumed} otomatis & notifikasi Telegram terkirim!`, "check", "Gudang Kiln Synced");
+                                    // Refresh sisa stok live dari Apps Script
+                                    fetchGudangKilnStock(['Angkur', 'Castable'], true);
+                                } else if (mutateRes && mutateRes.skipped) {
+                                    console.log("Mutasi otomatis dilewati karena URL Apps Script belum diatur.");
+                                } else {
+                                    const errMsg = mutateRes ? (mutateRes.error || mutateRes.message || "Respons tidak sesuai") : "Koneksi terputus";
+                                    showToast("Perhatian: Mutasi Gudang Kiln gagal: " + errMsg, "alert-triangle", "Sinkronisasi Gudang");
+                                }
+                            } catch (mutErr) {
+                                showToast("Perhatian: Terjadi kendala mutasi Gudang Kiln: " + mutErr.message, "alert-triangle", "Sinkronisasi Gudang");
+                            }
+                        }
+
                         document.getElementById("formMaterialLog").reset();
+                        // Reset form category & picker
+                        if (document.getElementById("logMatCategory")) {
+                            document.getElementById("logMatCategory").value = "Umum";
+                            handleMaterialCategoryChange();
+                        }
                         triggerSync();
                     } else {
                         if (res.error === "SESSION_EXPIRED") {
@@ -11186,6 +12656,7 @@ function formatHeader(sheet) {
                 effectiveTabId = 'overview';
             } else if (tabId === 'overview') {
                 state.activeProjectId = "ALL";
+                updateTopbarProjectDisplay("ALL");
                 const pSel = document.getElementById('projectSelector');
                 if (pSel) pSel.value = "ALL";
             }

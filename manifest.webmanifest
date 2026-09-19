@@ -1,18 +1,43 @@
 {
-  "name": "KSD Monitor — Kiln Shutdown Dashboard",
-  "short_name": "KSD Monitor",
-  "description": "Sistem Informasi Manajemen Proyek Kiln Shutdown & Overhaul — Kiln Support Division",
-  "start_url": "./index.html",
+  "name": "TRUNOVA — Kiln Shutdown & Overhaul Intelligence",
+  "short_name": "TRUNOVA",
+  "description": "Sistem Komando Operasional Kiln Shutdown & Overhaul — KSD Monitor",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#090d16",
-  "theme_color": "#0f172a",
+  "background_color": "#0B0F19",
+  "theme_color": "#0B0F19",
   "orientation": "any",
+  "categories": ["business", "productivity"],
   "icons": [
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%231d4ed8'/%3E%3Cpath d='M30 70 L50 25 L70 70 Z' fill='none' stroke='%23ffffff' stroke-width='8' stroke-linejoin='round'/%3E%3Ccircle cx='50' cy='52' r='8' fill='%2360a5fa'/%3E%3C/svg%3E",
-      "sizes": "192x192 512x512",
+      "src": "/icons/favicon.svg",
+      "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

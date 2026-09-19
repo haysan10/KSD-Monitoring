@@ -3,9 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KSD Monitor — Track Your Kiln Overhaul with Absolute Precision</title>
-    <meta name="description" content="Sistem monitoring shutdown & overhaul rotary kiln presisi tinggi Pelacakan Kurva-S real-time, validasi foto lapangan, dan kalkulasi refraktori.">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f59e0b'><path d='M12 2c1.5 3 4 5.5 4 8.5 0 3.5-2.5 6.5-6 6.5s-6-3-6-6.5C4 7.5 6.5 5 8 2c0 2 2 4 4 4s2-2 2-4z'/></svg>">
+    <title>TRUNOVA — Kiln Shutdown &amp; Overhaul Intelligence</title>
+    <meta name="description" content="Sistem monitoring shutdown & overhaul rotary kiln presisi tinggi. Pelacakan Kurva-S real-time, validasi foto lapangan, dan kalkulasi refraktori.">
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <meta name="theme-color" content="#0F172A">
+    <meta name="apple-mobile-web-app-title" content="Trunova KSD">
+    <meta name="application-name" content="Trunova KSD">
     
     <!-- Google Fonts: Inter, Plus Jakarta Sans & JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,7 +39,7 @@
             --paper: #FFFFFF;
 
             --ocean-hero: #0D1B2A;
-            --ocean-deep: #070D14;
+            --ocean-deep: #0B0F19;
             --accent-blue: #2563EB;
             --accent-blue-hover: #1D4ED8;
             --flame-amber: #F59E0B;
@@ -54,7 +61,7 @@
         }
 
         html {
-            background-color: #070D14;
+            background-color: #0B0F19;
             color: #F8FAFC;
             font-family: var(--font-ui);
             font-size: 16px;
@@ -65,7 +72,7 @@
         }
 
         body {
-            background-color: #070D14;
+            background-color: #0B0F19;
             background-image: 
                 radial-gradient(circle at 50% 12%, rgba(37, 99, 235, 0.07) 0%, transparent 55%),
                 radial-gradient(circle at 80% 45%, rgba(245, 158, 11, 0.04) 0%, transparent 50%),
@@ -273,7 +280,7 @@
             width: 100%;
             min-height: 100vh;
             min-height: 100svh;
-            background: #060911;
+            background: #0B0F19;
             color: #FFFFFF;
             display: flex;
             flex-direction: column;
@@ -312,11 +319,12 @@
             position: absolute;
             inset: 0;
             background: 
-                radial-gradient(ellipse at 50% 50%, rgba(6, 9, 17, 0.16) 0%, rgba(6, 9, 17, 0.50) 65%, rgba(6, 9, 17, 0.92) 100%),
-                linear-gradient(to bottom, transparent 65%, #060911 100%);
+                radial-gradient(ellipse at 50% 50%, rgba(11, 15, 25, 0.16) 0%, rgba(11, 15, 25, 0.50) 65%, rgba(11, 15, 25, 0.94) 100%),
+                linear-gradient(to bottom, transparent 65%, #0B0F19 100%);
             pointer-events: none;
             z-index: 1;
         }
+
 
         /* ==========================================================================
            MASTER FLUID FLOATING GLASS ISLAND NAVBAR (MINIMALIST & AIRY)
@@ -1510,12 +1518,126 @@
             margin: 0 auto 40px;
         }
 
+        /* ==========================================================================
+           SHOWCASE DEVICE SWITCHER & RESPONSIVE CHASSIS STYLES
+           ========================================================================== */
+        .showcase-device-switch-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 28px;
+            width: 100%;
+        }
+
+        .device-switch-group {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .device-switch-title {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--ash);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .device-switch-pills {
+            display: inline-flex;
+            background: #0B111E;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 999px;
+            padding: 4px;
+            gap: 4px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        }
+
+        .device-pill-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--ash);
+            font-family: var(--font-ui);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            white-space: nowrap;
+        }
+
+        .device-pill-btn:hover {
+            color: #FFFFFF;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .device-pill-btn:active {
+            transform: scale(0.97);
+        }
+
+        .device-pill-btn.active {
+            background: #1D4ED8;
+            border-color: #3B82F6;
+            color: #FFFFFF;
+            font-weight: 700;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .device-rec-badge {
+            font-family: var(--font-mono);
+            font-size: 9.5px;
+            font-weight: 800;
+            background: var(--flame-amber);
+            color: #000;
+            padding: 2px 7px;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .device-switch-caption {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            color: var(--zinc);
+            text-align: center;
+            max-width: 600px;
+        }
+
+        /* Outer Frame Container */
         .terminal-doppelrand-frame {
             border-radius: 28px;
             padding: 8px;
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
             box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 32px 80px -10px rgba(0, 0, 0, 0.85);
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            width: 100%;
+        }
+
+        /* Smartphone Chassis Transformation */
+        .terminal-doppelrand-frame.is-mobile-chassis {
+            max-width: 440px;
+            margin: 0 auto;
+            border-radius: 46px;
+            padding: 10px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 100%);
+            box-shadow: 0 32px 90px -15px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .terminal-doppelrand-frame.is-mobile-chassis .showcase-terminal-frame {
+            border-radius: 36px;
+            border: 2px solid rgba(255, 255, 255, 0.12);
         }
 
         .terminal-doppelrand-frame .showcase-terminal-frame {
@@ -1532,11 +1654,530 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Mode Visibility Switches */
+        .phone-chrome-header-wrap,
+        .phone-bottom-nav-wrap,
+        .mobile-only-view {
+            display: none;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .phone-chrome-header-wrap {
+            display: block;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .phone-bottom-nav-wrap {
+            display: block;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .mobile-only-view {
+            display: block;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .showcase-chrome-bar {
+            display: none !important;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .showcase-hud-strip {
+            display: none !important;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .desktop-only-view {
+            display: none !important;
+        }
+
+        /* SMARTPHONE CHASSIS TOP BAR ELEMENTS */
+        .phone-chrome-header-wrap {
+            background: #060912;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .phone-dynamic-island {
+            width: 114px;
+            height: 24px;
+            background: #000000;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 20px;
+            margin: 10px auto 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+        }
+
+        .phone-cam-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #081B33;
+            border: 1px solid #1D4ED8;
+            box-shadow: inset 0 0 3px #60A5FA;
+        }
+
+        .phone-speaker-slit {
+            width: 38px;
+            height: 4px;
+            border-radius: 2px;
+            background: #1E293B;
+        }
+
+        .phone-status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 18px 8px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: #FFFFFF;
+        }
+
+        .phone-time {
+            font-weight: 700;
+            font-size: 12px;
+            letter-spacing: 0.02em;
+        }
+
+        .phone-status-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .phone-pwa-pill {
+            font-size: 9.5px;
+            font-weight: 800;
+            background: rgba(16, 185, 129, 0.16);
+            color: var(--signal-green);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            padding: 2px 7px;
+            border-radius: 999px;
+            letter-spacing: 0.04em;
+        }
+
+        .phone-app-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            background: #0B0F19;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .phone-app-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .phone-logo-badge {
+            width: 30px;
+            height: 30px;
+            background: #0F172A;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        .phone-brand-titles {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+
+        .phone-brand-name {
+            font-weight: 800;
+            font-size: 13.5px;
+            color: #FFFFFF;
+            letter-spacing: 0.02em;
+        }
+
+        .phone-brand-sub {
+            font-family: var(--font-mono);
+            font-size: 9.5px;
+            color: var(--flame-amber);
+            font-weight: 700;
+        }
+
+        .phone-app-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .phone-sync-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-family: var(--font-mono);
+            font-size: 9.5px;
+            font-weight: 700;
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--signal-green);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 3px 8px;
+            border-radius: 999px;
+        }
+
+        .phone-hud-strip {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            padding: 8px 14px;
+            background: #070B14;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .phone-hud-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .phone-hud-lbl {
+            font-family: var(--font-mono);
+            font-size: 8.5px;
+            color: var(--zinc);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
+        .phone-hud-val {
+            font-size: 11px;
+            font-weight: 700;
+            color: #FFFFFF;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* SMARTPHONE BOTTOM NAVIGATION BAR */
+        .phone-bottom-nav-wrap {
+            background: #060912;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 12px 6px;
+        }
+
+        .phone-bottom-nav {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
+        }
+
+        .phone-bnav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 4px;
+            background: transparent;
+            border: none;
+            color: var(--ash);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border-radius: 8px;
+        }
+
+        .phone-bnav-btn:hover {
+            color: #FFFFFF;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .phone-bnav-btn.active {
+            color: #38BDF8;
+            font-weight: 700;
+            background: rgba(56, 189, 248, 0.14);
+        }
+
+        .phone-bnav-btn span {
+            font-family: var(--font-ui);
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .phone-home-indicator {
+            width: 110px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.35);
+            border-radius: 999px;
+            margin: 8px auto 2px;
+        }
+
+        /* SMARTPHONE RESPONSIVE OVERRIDES IN MOBILE MODE */
+        .showcase-terminal-frame[data-device="mobile"] .showcase-tab-bar {
+            padding: 8px 12px;
+            gap: 6px;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .showcase-tab-btn {
+            padding: 8px 12px;
+            font-size: 10.5px;
+            gap: 5px;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .showcase-simulation-bar {
+            padding: 8px 12px;
+            gap: 10px;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .sim-tour-left {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .sim-play-toggle-btn {
+            padding: 6px 12px;
+            font-size: 10px;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .sim-stepper {
+            font-size: 9.5px;
+            gap: 4px;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .sim-step-dot {
+            padding: 3px 6px;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .sim-tour-right {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .showcase-canvas-body {
+            padding: 16px 12px 20px;
+            min-height: 440px;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .screen-kpi-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 10px !important;
+            margin-bottom: 16px;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .screen-kpi-card {
+            padding: 12px;
+            border-radius: 10px;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .kpi-num {
+            font-size: 19px !important;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .scurve-chart-container {
+            padding: 12px 10px 14px;
+            margin-bottom: 14px;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .scurve-chart-toolbar {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .scurve-legend-pills {
+            gap: 8px;
+            font-size: 10px;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .scurve-filter-btns {
+            width: 100%;
+            overflow-x: auto;
+            padding-bottom: 2px;
+            gap: 4px;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .chart-range-btn {
+            padding: 4px 8px;
+            font-size: 9.5px;
+            white-space: nowrap;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .scurve-canvas-wrapper {
+            height: 210px !important;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .forecast-intelligence-card {
+            padding: 12px;
+            margin-bottom: 14px;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .forecast-intel-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .intel-status-pill {
+            font-size: 9.5px;
+            padding: 2px 7px;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .forecast-intel-grid {
+            grid-template-columns: 1fr !important;
+            gap: 8px !important;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .intel-metric {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 6px 10px;
+            border-radius: 6px;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .metric-val {
+            font-size: 14.5px;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .sim-input-box {
+            padding: 14px;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .stage-qc-wo-bar {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+            padding: 10px 12px;
+            margin-bottom: 14px;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .stage-photo-grid-authentic {
+            grid-template-columns: 1fr !important;
+            gap: 14px !important;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .stage-qc-info {
+            padding: 12px;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .stage-qc-footer-hash {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+            padding: 10px 12px;
+            font-size: 9.5px;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .calc-workbench-grid {
+            grid-template-columns: 1fr !important;
+            gap: 14px !important;
+        }
+
+        .showcase-terminal-frame[data-device="mobile"] .calc-param-box,
+        .showcase-terminal-frame[data-device="mobile"] .calc-output-box {
+            padding: 16px;
+        }
+
+        /* SPK MOBILE CARDS */
+        .spk-mobile-card {
+            background: #0E1626;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: transform 0.15s ease, border-color 0.15s ease;
+        }
+
+        .spk-mobile-card:active {
+            transform: scale(0.98);
+        }
+
+        .spk-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .spk-chip-code {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 800;
+            color: #FFFFFF;
+        }
+
+        .spk-chip-status {
+            font-family: var(--font-mono);
+            font-size: 9.5px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .status-verified {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--signal-green);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-progress {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--flame-amber);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .status-curing {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60A5FA;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .spk-zone-name {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #FFFFFF;
+        }
+
+        .spk-details-row {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            font-size: 11.5px;
+            color: var(--ash);
+        }
+
+        .spk-action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #FFFFFF;
+            font-size: 11.5px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            margin-top: 4px;
+        }
+
+        .spk-action-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
         /* Terminal Window Chrome */
         .showcase-chrome-bar {
-            background: #060911;
+            background: #0B0F19;
             padding: 14px 24px;
             display: flex;
             align-items: center;
@@ -2176,7 +2817,7 @@
         }
 
         .stage-qc-footer-hash {
-            background: #060911;
+            background: #0B0F19;
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 8px;
             padding: 12px 16px;
@@ -2346,7 +2987,10 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            position: relative;
+            overflow: hidden;
         }
+
 
         .mosaic-bento-card:hover {
             transform: translateY(-3px);
@@ -2578,7 +3222,7 @@
            STORYTELLING ACT V: FINAL CTA & FOOTER
            ========================================================================== */
         .section-story-act5 {
-            background: radial-gradient(900px 480px at 50% 0%, rgba(37, 99, 235, 0.22) 0%, rgba(245, 158, 11, 0.08) 45%, #0B0E17 80%),
+            background: radial-gradient(900px 480px at 50% 0%, rgba(37, 99, 235, 0.22) 0%, rgba(245, 158, 11, 0.08) 45%, #0B0F19 80%),
                         linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
                         linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
             background-size: 100% 100%, 40px 40px, 40px 40px;
@@ -2607,6 +3251,7 @@
             pointer-events: none;
             z-index: 0;
         }
+
 
         .cta-content-inner {
             position: relative;
@@ -2781,6 +3426,128 @@
             .system-mosaic-grid { grid-template-columns: 1fr; }
             .mosaic-tall, .mosaic-wide { grid-row: auto; grid-column: auto; }
             .testimonials-masonry { grid-template-columns: 1fr; }
+
+            /* Babak II Showcase Responsive Overrides */
+            .terminal-doppelrand-frame {
+                border-radius: 20px;
+                padding: 4px;
+            }
+            .terminal-doppelrand-frame .showcase-terminal-frame {
+                border-radius: 16px;
+            }
+            .terminal-doppelrand-frame.is-mobile-chassis {
+                max-width: 100% !important;
+                border-radius: 26px !important;
+                padding: 4px !important;
+            }
+            .terminal-doppelrand-frame.is-mobile-chassis .showcase-terminal-frame {
+                border-radius: 22px !important;
+            }
+            .showcase-hud-strip {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+                padding: 12px 14px !important;
+            }
+            .screen-kpi-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+            }
+            .kpi-num {
+                font-size: 20px !important;
+            }
+            .scurve-chart-toolbar {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 10px !important;
+            }
+            .scurve-legend-pills {
+                gap: 8px !important;
+            }
+            .scurve-filter-btns {
+                width: 100% !important;
+                overflow-x: auto !important;
+                padding-bottom: 4px !important;
+                gap: 4px !important;
+            }
+            .chart-range-btn {
+                padding: 5px 8px !important;
+                font-size: 10px !important;
+                white-space: nowrap !important;
+            }
+            .scurve-canvas-wrapper {
+                height: 220px !important;
+            }
+            .forecast-intel-header {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 8px !important;
+            }
+            .forecast-intel-grid {
+                grid-template-columns: 1fr !important;
+                gap: 10px !important;
+            }
+            .stage-photo-grid-authentic {
+                grid-template-columns: 1fr !important;
+                gap: 16px !important;
+            }
+            .stage-qc-wo-bar {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 8px !important;
+            }
+            .stage-qc-footer-hash {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 8px !important;
+            }
+            .calc-workbench-grid {
+                grid-template-columns: 1fr !important;
+                gap: 16px !important;
+            }
+            .desktop-only-view {
+                display: none !important;
+            }
+            .mobile-only-view {
+                display: block !important;
+            }
+            .showcase-chrome-bar {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 10px !important;
+                padding: 12px 14px !important;
+            }
+            .chrome-left-group {
+                flex-wrap: wrap !important;
+                gap: 8px !important;
+            }
+            .chrome-status-pills {
+                flex-wrap: wrap !important;
+                gap: 6px !important;
+            }
+            .showcase-simulation-bar {
+                padding: 10px 14px !important;
+                gap: 10px !important;
+            }
+            .sim-tour-left {
+                width: 100% !important;
+                justify-content: space-between !important;
+            }
+            .sim-tour-right {
+                width: 100% !important;
+                justify-content: space-between !important;
+            }
+            .showcase-canvas-body {
+                padding: 16px 14px 20px !important;
+                min-height: 440px !important;
+            }
+            .device-switch-pills {
+                width: 100% !important;
+                justify-content: center !important;
+            }
+            .device-pill-btn {
+                padding: 8px 12px !important;
+                font-size: 11.5px !important;
+            }
         }
     </style>
 </head>
@@ -2800,13 +3567,12 @@
     <!-- MASTER PERSISTENT FLOATING GLASS ISLAND NAVBAR -->
     <header class="ksd-master-navbar" id="masterNavbar" aria-label="Navigasi Utama">
         <div class="nav-island-inner">
-            <!-- Left: Brand (Clean Minimalist Flame + Name) -->
-            <a href="landing.html" class="nav-brand" aria-label="KSD Monitor Beranda">
-                <div class="brand-flame-icon">
-                    <i data-lucide="flame" style="width: 18px; height: 18px; color: #FFFFFF;"></i>
-                </div>
-                <div class="brand-title-group">
-                    <span class="brand-logo-text">KSD Monitor</span>
+            <!-- Left: Brand (tr monogram + trunova name) -->
+            <a href="landing.html" class="nav-brand" aria-label="trunova KSD Monitor Beranda" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+                <img src="/assets/branding/tr-monogram-white.svg" alt="tr" style="height:28px;width:auto;">
+                <div class="brand-title-group" style="display:flex;align-items:baseline;gap:6px;">
+                    <span class="brand-logo-text" style="font-weight:800;font-size:18px;letter-spacing:-0.03em;color:#FFFFFF;">trunova</span>
+                    <span style="font-size:11px;font-weight:600;color:var(--flame-amber);letter-spacing:0.05em;">MONITOR</span>
                 </div>
             </a>
 
@@ -3158,10 +3924,79 @@
                 </p>
             </div>
 
-            <div class="doppelrand-shell terminal-doppelrand-frame">
-                <div class="showcase-terminal-frame">
+            <!-- Device Viewport Switcher (Smartphone vs PC Desktop) -->
+            <div class="showcase-device-switch-wrap">
+                <div class="device-switch-group">
+                    <span class="device-switch-title">PILIH MODE TAMPILAN SHOWCASE:</span>
+                    <div class="device-switch-pills" role="tablist" aria-label="Mode Tampilan Showcase">
+                        <button type="button" class="device-pill-btn active" id="btnDeviceMobile" onclick="setShowcaseDevice('mobile')" role="tab" aria-selected="true">
+                            <i data-lucide="smartphone" style="width: 14px; height: 14px;"></i>
+                            <span>Tampilan Smartphone (PWA)</span>
+                            <span class="device-rec-badge">Default</span>
+                        </button>
+                        <button type="button" class="device-pill-btn" id="btnDeviceDesktop" onclick="setShowcaseDevice('desktop')" role="tab" aria-selected="false">
+                            <i data-lucide="monitor" style="width: 14px; height: 14px;"></i>
+                            <span>Tampilan Desktop PC</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="device-switch-caption">
+                    <span class="pulse-beacon" style="background: var(--signal-green); width: 6px; height: 6px;"></span>
+                    <span id="deviceSwitchCaptionTxt">Simulasi antarmuka PWA smartphone yang digunakan teknisi langsung di dalam kiln &amp; area overhaul.</span>
+                </div>
+            </div>
+
+            <div class="doppelrand-shell terminal-doppelrand-frame is-mobile-chassis">
+                <div class="showcase-terminal-frame" id="showcaseFrame" data-device="mobile">
                     
-                    <!-- Terminal Window Chrome -->
+                    <!-- SMARTPHONE CHASSIS ELEMENTS (Visible in Mobile Device Mode) -->
+                    <div class="phone-chrome-header-wrap">
+                        <!-- Dynamic Island Notch -->
+                        <div class="phone-dynamic-island">
+                            <span class="phone-cam-dot"></span>
+                            <span class="phone-speaker-slit"></span>
+                        </div>
+                        <!-- Status Bar -->
+                        <div class="phone-status-bar">
+                            <span class="phone-time">19:00</span>
+                            <div class="phone-status-right">
+                                <span class="phone-pwa-pill">5G // LIVE SSE</span>
+                                <i data-lucide="wifi" style="width: 12px; height: 12px;"></i>
+                                <i data-lucide="battery-charging" style="width: 14px; height: 14px; color: var(--signal-green);"></i>
+                            </div>
+                        </div>
+                        <!-- Mobile PWA App Bar -->
+                        <div class="phone-app-topbar">
+                            <div class="phone-app-brand">
+                                <div class="phone-logo-badge">
+                                    <img src="/icons/favicon.svg" alt="TRUNOVA" style="width: 16px; height: 16px;">
+                                </div>
+                                <div class="phone-brand-titles">
+                                    <div class="phone-brand-name">TRUNOVA KSD</div>
+                                    <div class="phone-brand-sub">Kiln #3 Tuban · STA 18.4M</div>
+                                </div>
+                            </div>
+                            <div class="phone-app-actions">
+                                <span class="phone-sync-pill">
+                                    <span class="pulse-beacon" style="background: var(--signal-green); width: 5px; height: 5px;"></span>
+                                    <span>ONLINE</span>
+                                </span>
+                            </div>
+                        </div>
+                        <!-- Mobile HUD Strip -->
+                        <div class="phone-hud-strip">
+                            <div class="phone-hud-cell">
+                                <span class="phone-hud-lbl">SHIFT</span>
+                                <span class="phone-hud-val">Shift 2 Malam (19:00 - 07:00)</span>
+                            </div>
+                            <div class="phone-hud-cell">
+                                <span class="phone-hud-lbl">TRAJEKTORI</span>
+                                <span class="phone-hud-val" style="color: var(--flame-amber);">78.50% (Aman -1.7%)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Terminal Window Chrome (Visible in Desktop Device Mode) -->
                 <div class="showcase-chrome-bar">
                     <div class="chrome-left-group">
                         <div class="chrome-dots">
@@ -3482,7 +4317,8 @@
 
                     <!-- SCREEN 3: DISPATCH MATRIX & SPK EXPORT -->
                     <div class="screen-panel" id="scPanel3" role="tabpanel" aria-labelledby="stgBtn3">
-                        <div class="dispatch-table-wrap">
+                        <!-- Desktop View Table -->
+                        <div class="dispatch-table-wrap desktop-only-view">
                             <table class="dispatch-real-table">
                                 <thead>
                                     <tr>
@@ -3536,6 +4372,73 @@
                             </table>
                         </div>
 
+                        <!-- Mobile View Cards (Optimized for Smartphone) -->
+                        <div class="dispatch-mobile-cards-wrap mobile-only-view">
+                            <div class="spk-mobile-card">
+                                <div class="spk-card-header">
+                                    <span class="spk-chip-code">SPK-KL3-01</span>
+                                    <span class="spk-chip-status status-verified">VERIFIED 100%</span>
+                                </div>
+                                <div class="spk-zone-name">Transition Zone 1 (STA 12M)</div>
+                                <div class="spk-details-row">
+                                    <span>Kontraktor: <strong style="color:#FFF;">PT TALI Mandiri</strong></span>
+                                    <span>Target: <strong>8.0 Ring</strong> · Realisasi: <strong>8.0 Ring</strong></span>
+                                </div>
+                                <button type="button" class="spk-action-btn" onclick="alert('Laporan SPK resmi tersedia di dashboard operasional KSD Monitor.')">
+                                    <i data-lucide="file-text" style="width: 13px; height: 13px;"></i>
+                                    <span>Unduh Dokumen SPK (PDF)</span>
+                                </button>
+                            </div>
+
+                            <div class="spk-mobile-card">
+                                <div class="spk-card-header">
+                                    <span class="spk-chip-code">SPK-KL3-02</span>
+                                    <span class="spk-chip-status status-progress">IN PROGRESS 92%</span>
+                                </div>
+                                <div class="spk-zone-name">Burning Zone Ring 14-16</div>
+                                <div class="spk-details-row">
+                                    <span>Pelaksana: <strong style="color:#FFF;">Tim Internal Kiln</strong></span>
+                                    <span>Target: <strong>6.0 Ring</strong> · Realisasi: <strong>5.5 Ring</strong></span>
+                                </div>
+                                <button type="button" class="spk-action-btn" onclick="alert('Laporan SPK resmi tersedia di dashboard operasional KSD Monitor.')">
+                                    <i data-lucide="file-text" style="width: 13px; height: 13px;"></i>
+                                    <span>Unduh Dokumen SPK (PDF)</span>
+                                </button>
+                            </div>
+
+                            <div class="spk-mobile-card">
+                                <div class="spk-card-header">
+                                    <span class="spk-chip-code">SPK-KL3-03</span>
+                                    <span class="spk-chip-status status-curing">CURING 24H</span>
+                                </div>
+                                <div class="spk-zone-name">Nose Ring Castable Curing</div>
+                                <div class="spk-details-row">
+                                    <span>Pelaksana: <strong style="color:#FFF;">Mitra Refraktori</strong></span>
+                                    <span>Target: <strong>12.0 Ton</strong> · Realisasi: <strong>12.0 Ton</strong></span>
+                                </div>
+                                <button type="button" class="spk-action-btn" onclick="alert('Laporan SPK resmi tersedia di dashboard operasional KSD Monitor.')">
+                                    <i data-lucide="file-text" style="width: 13px; height: 13px;"></i>
+                                    <span>Unduh Dokumen SPK (PDF)</span>
+                                </button>
+                            </div>
+
+                            <div class="spk-mobile-card">
+                                <div class="spk-card-header">
+                                    <span class="spk-chip-code">SPK-KL3-04</span>
+                                    <span class="spk-chip-status status-verified">VERIFIED PASS</span>
+                                </div>
+                                <div class="spk-zone-name">Tyre #2 Mechanical Alignment</div>
+                                <div class="spk-details-row">
+                                    <span>Pelaksana: <strong style="color:#FFF;">Tim Mekanik Utama</strong></span>
+                                    <span>Toleransi: <strong>0.12mm (Sesuai Standar)</strong></span>
+                                </div>
+                                <button type="button" class="spk-action-btn" onclick="alert('Laporan SPK resmi tersedia di dashboard operasional KSD Monitor.')">
+                                    <i data-lucide="file-text" style="width: 13px; height: 13px;"></i>
+                                    <span>Unduh Dokumen SPK (PDF)</span>
+                                </button>
+                            </div>
+                        </div>
+
                         <div class="dispatch-handover-card">
                             <strong style="color: #FFF; font-family: var(--font-mono);">CATATAN SERAH TERIMA SHIFT (HANDOVER LOG):</strong>
                             <p style="margin-top: 4px;">
@@ -3554,6 +4457,29 @@
                     </div>
 
                 </div>
+
+                    <!-- SMARTPHONE BOTTOM NAVIGATION BAR (Visible in Mobile Device Mode) -->
+                    <div class="phone-bottom-nav-wrap">
+                        <div class="phone-bottom-nav" role="tablist" aria-label="Navigasi Bawah Smartphone">
+                            <button type="button" class="phone-bnav-btn active" data-bnav="0" onclick="switchToStage(0, true)" aria-label="Kurva S">
+                                <i data-lucide="line-chart" style="width: 16px; height: 16px;"></i>
+                                <span>Kurva-S</span>
+                            </button>
+                            <button type="button" class="phone-bnav-btn" data-bnav="1" onclick="switchToStage(1, true)" aria-label="QC Foto">
+                                <i data-lucide="camera" style="width: 16px; height: 16px;"></i>
+                                <span>QC Foto</span>
+                            </button>
+                            <button type="button" class="phone-bnav-btn" data-bnav="2" onclick="switchToStage(2, true)" aria-label="Tonase">
+                                <i data-lucide="calculator" style="width: 16px; height: 16px;"></i>
+                                <span>Tonase</span>
+                            </button>
+                            <button type="button" class="phone-bnav-btn" data-bnav="3" onclick="switchToStage(3, true)" aria-label="SPK">
+                                <i data-lucide="clipboard-check" style="width: 16px; height: 16px;"></i>
+                                <span>SPK</span>
+                            </button>
+                        </div>
+                        <div class="phone-home-indicator" aria-hidden="true"></div>
+                    </div>
 
                 </div>
             </div>
@@ -4230,6 +5156,61 @@
 
 
         // ==========================================================================
+        // 4B. SHOWCASE DEVICE VIEW CONTROLLER (Smartphone vs PC Desktop)
+        // ==========================================================================
+        let currentShowcaseDevice = 'mobile'; // Default to Smartphone per user request!
+
+        function setShowcaseDevice(mode) {
+            currentShowcaseDevice = mode;
+            const frame = document.getElementById('showcaseFrame');
+            const shell = document.querySelector('.terminal-doppelrand-frame');
+            const btnMobile = document.getElementById('btnDeviceMobile');
+            const btnDesktop = document.getElementById('btnDeviceDesktop');
+            const hintTxt = document.getElementById('deviceSwitchCaptionTxt');
+
+            if (!frame) return;
+
+            if (mode === 'mobile') {
+                frame.setAttribute('data-device', 'mobile');
+                if (shell) shell.classList.add('is-mobile-chassis');
+                if (btnMobile) {
+                    btnMobile.classList.add('active');
+                    btnMobile.setAttribute('aria-selected', 'true');
+                }
+                if (btnDesktop) {
+                    btnDesktop.classList.remove('active');
+                    btnDesktop.setAttribute('aria-selected', 'false');
+                }
+                if (hintTxt) {
+                    hintTxt.textContent = 'Simulasi antarmuka PWA smartphone yang digunakan teknisi langsung di dalam kiln & area overhaul.';
+                }
+            } else {
+                frame.setAttribute('data-device', 'desktop');
+                if (shell) shell.classList.remove('is-mobile-chassis');
+                if (btnDesktop) {
+                    btnDesktop.classList.add('active');
+                    btnDesktop.setAttribute('aria-selected', 'true');
+                }
+                if (btnMobile) {
+                    btnMobile.classList.remove('active');
+                    btnMobile.setAttribute('aria-selected', 'false');
+                }
+                if (hintTxt) {
+                    hintTxt.textContent = 'Simulasi layar monitor desktop PC untuk tim perencanaan & lead superintendent.';
+                }
+            }
+
+            // Trigger chart resize & icon re-render
+            setTimeout(() => {
+                if (showcaseChart) showcaseChart.resize();
+                if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+            }, 160);
+        }
+
+        // Initialize to Smartphone mode (default)
+        setShowcaseDevice('mobile');
+
+        // ==========================================================================
         // 5. IN-STAGE TAB SWITCHER & WORKFLOW SIMULATION TOUR ENGINE
         // ==========================================================================
         const stageNavBtns = document.querySelectorAll('.showcase-tab-btn');
@@ -4247,6 +5228,17 @@
                 } else {
                     b.classList.remove('active-stage-nav');
                     b.setAttribute('aria-selected', 'false');
+                }
+            });
+
+            // Update bottom nav buttons
+            const bnavBtns = document.querySelectorAll('.phone-bnav-btn');
+            bnavBtns.forEach(b => {
+                const bIdx = parseInt(b.getAttribute('data-bnav'), 10);
+                if (bIdx === currentStageIdx) {
+                    b.classList.add('active');
+                } else {
+                    b.classList.remove('active');
                 }
             });
 

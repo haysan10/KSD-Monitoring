@@ -1673,6 +1673,133 @@ routerAdd("POST", "/api/custom/save-material-log", (e) => {
     }
 });
 
+// 📌 POST /api/custom/gudang-kiln-stock (Backend Proxy GET Stock Gudang Kiln)
+routerAdd("POST", "/api/custom/gudang-kiln-stock", (e) => {
+    const utils = require(`${__hooks}/utils.js`);
+    try {
+        // Soft auth check - tidak memblokir uji koneksi atau sinkronisasi stok
+        try { utils.validateSession(e); } catch (eAuth) {}
+        const body = utils.getRequestBody(e);
+        let webAppUrl = body.url || "";
+        const category = body.category || "Angkur,Castable";
+
+        if (!webAppUrl || webAppUrl.includes("[TEMPEL_LINK_APPSCRIPT_EXEC_ANDA_DI_SINI]")) {
+            return utils.sendJSON(e, 400, {
+                success: false,
+                error: "URL Google Apps Script Gudang Kiln belum dikonfigurasi."
+            });
+        }
+
+        const separator = webAppUrl.includes("?") ? "&" : "?";
+        const fetchUrl = `${webAppUrl}${separator}action=get_stock&category=${encodeURIComponent(category)}`;
+
+        if (typeof $http !== "undefined" && $http.send) {
+            const res = $http.send({
+                url: fetchUrl,
+                method: "GET",
+                timeout: 30
+            });
+
+            const rawContent = res.raw || "";
+            // Deteksi jika Google merespons dengan halaman HTML error / login
+            if (rawContent.indexOf("<!DOCTYPE") !== -1 || rawContent.indexOf("<html") !== -1) {
+                if (rawContent.indexOf("Halaman Tidak Ditemukan") !== -1 || rawContent.indexOf("tidak ada") !== -1) {
+                    return utils.sendJSON(e, 404, {
+                        success: false,
+                        error: "URL Web App tidak ditemukan di server Google (404 Not Found). Pastikan URL deployment Apps Script (/exec) sudah benar dan milik Anda sendiri."
+                    });
+                }
+                if (rawContent.indexOf("ServiceLogin") !== -1 || rawContent.indexOf("accounts.google.com") !== -1) {
+                    return utils.sendJSON(e, 401, {
+                        success: false,
+                        error: "Akses Google dibatasi (Google Login). Pastikan deployment Web App di Google Apps Script Anda diatur ke: Who has access = 'Anyone' (Siapa saja)."
+                    });
+                }
+                return utils.sendJSON(e, 502, {
+                    success: false,
+                    error: "Google merespons dengan halaman HTML alih-alih data JSON. Pastikan Web App di-deploy dengan doGet(e) yang benar dan akses 'Anyone'."
+                });
+            }
+
+            if (res.statusCode >= 200 && res.statusCode < 400) {
+                return utils.sendJSON(e, 200, res.json || JSON.parse(res.raw));
+            } else {
+                return utils.sendJSON(e, res.statusCode || 500, {
+                    success: false,
+                    error: `Gagal dari Google Apps Script (HTTP ${res.statusCode}): ${res.raw}`
+                });
+            }
+        } else {
+            return utils.sendJSON(e, 501, {
+                success: false,
+                error: "$http engine tidak tersedia pada environment PocketBase ini, gunakan direct client fetch."
+            });
+        }
+    } catch (err) {
+        return utils.sendJSON(e, 500, { success: false, error: err.toString() });
+    }
+});
+
+// 📌 POST /api/custom/gudang-kiln-mutate (Backend Proxy POST Mutasi 'OUT' Gudang Kiln)
+routerAdd("POST", "/api/custom/gudang-kiln-mutate", (e) => {
+    const utils = require(`${__hooks}/utils.js`);
+    try {
+        let user = null;
+        try { user = utils.validateSession(e); } catch (eAuth) {}
+        const body = utils.getRequestBody(e);
+        let webAppUrl = body.url || "";
+        const mutationPayload = body.payload || {};
+
+        if (!webAppUrl || webAppUrl.includes("[TEMPEL_LINK_APPSCRIPT_EXEC_ANDA_DI_SINI]")) {
+            return utils.sendJSON(e, 400, {
+                success: false,
+                error: "URL Google Apps Script Gudang Kiln belum dikonfigurasi."
+            });
+        }
+
+        // Pastikan atribut user tercatat
+        if (!mutationPayload.nik) {
+            mutationPayload.nik = (user && (user.name || user.email)) ? user.name : "Admin Kontraktor";
+        }
+
+        if (typeof $http !== "undefined" && $http.send) {
+            const res = $http.send({
+                url: webAppUrl,
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(mutationPayload),
+                timeout: 35
+            });
+
+            const rawContent = res.raw || "";
+            if (rawContent.indexOf("<!DOCTYPE") !== -1 || rawContent.indexOf("<html") !== -1) {
+                if (rawContent.indexOf("ServiceLogin") !== -1 || rawContent.indexOf("accounts.google.com") !== -1) {
+                    return utils.sendJSON(e, 401, {
+                        success: false,
+                        error: "Akses mutasi dibatasi oleh Google. Pastikan deployment Web App Apps Script diatur ke: Who has access = 'Anyone'."
+                    });
+                }
+            }
+
+            if (res.statusCode >= 200 && res.statusCode < 400) {
+                return utils.sendJSON(e, 200, res.json || JSON.parse(res.raw));
+            } else {
+                return utils.sendJSON(e, res.statusCode || 500, {
+                    success: false,
+                    error: `Gagal mutasi Gudang Kiln (HTTP ${res.statusCode}): ${res.raw}`
+                });
+            }
+        } else {
+            return utils.sendJSON(e, 501, {
+                success: false,
+                error: "$http engine tidak tersedia pada environment PocketBase ini, gunakan direct client fetch."
+            });
+        }
+    } catch (err) {
+        return utils.sendJSON(e, 500, { success: false, error: err.toString() });
+    }
+});
+
 // 📌 POST /api/custom/save-manpower-log
 routerAdd("POST", "/api/custom/save-manpower-log", (e) => {
     const utils = require(`${__hooks}/utils.js`);

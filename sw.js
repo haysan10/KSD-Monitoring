@@ -3,11 +3,18 @@
  * Caches static shell, scripts, styles, and font icons for offline operation in plant areas.
  */
 
-const CACHE_NAME = 'ksd-monitor-v2.8';
+const CACHE_NAME = 'ksd-monitor-v3.0';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.webmanifest',
+  './icons/favicon.svg',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/icon-maskable-192.png',
+  './icons/icon-maskable-512.png',
+  './icons/apple-touch-icon.png',
+  './assets/branding/textures/diagonal-metal-panels.svg',
   'https://cdn.jsdelivr.net/npm/lucide@0.454.0/dist/umd/lucide.min.js',
   'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
