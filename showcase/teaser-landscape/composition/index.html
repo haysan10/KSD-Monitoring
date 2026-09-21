@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0" />
+    <title>TRUNOVA — Kiln Shutdown Launch Video</title>
+
+    <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- GSAP for seek-safe animation -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+    <style>
+      /* =========================================================
+         BASE LAYOUT (1920 x 1080 Widescreen)
+         ========================================================= */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #05080E;
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: #F8FAFC;
+        position: relative;
+      }
+
+      /* Ambient Industrial Lighting & Studio Grid */
+      .ambient-glow-left {
+        position: absolute;
+        top: -100px;
+        left: -100px;
+        width: 800px;
+        height: 800px;
+        background: radial-gradient(circle, rgba(37, 99, 235, 0.12) 0%, transparent 70%);
+        pointer-events: none;
+      }
+      .ambient-glow-right {
+        position: absolute;
+        bottom: -150px;
+        right: -100px;
+        width: 900px;
+        height: 900px;
+        background: radial-gradient(circle, rgba(245, 158, 11, 0.1) 0%, transparent 70%);
+        pointer-events: none;
+      }
+      .ambient-glow-center {
+        position: absolute;
+        top: 30%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 1200px;
+        height: 700px;
+        background: radial-gradient(ellipse, rgba(37, 99, 235, 0.06) 0%, transparent 75%);
+        pointer-events: none;
+      }
+
+      .studio-grid {
+        position: absolute;
+        inset: 0;
+        background-size: 48px 48px;
+        background-image: 
+          linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        pointer-events: none;
+      }
+
+      /* Studio Crosshairs & Corner HUD */
+      .hud-header {
+        position: absolute;
+        top: 36px;
+        left: 60px;
+        right: 60px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #94A3B8;
+        z-index: 100;
+      }
+      .hud-tag-live {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #10B981;
+      }
+      .pulse-beacon {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #10B981;
+        box-shadow: 0 0 10px #10B981;
+      }
+
+      /* Doppelrand / Double-Bezel Hardware Architecture */
+      .doppelrand-shell {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 28px;
+        padding: 8px;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+      }
+
+      /* =========================================================
+         SCENE 1: THE EXTREME KILN HOOK (0.0s - 3.0s)
+         ========================================================= */
+      #scene-hook {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 0 120px;
+        z-index: 20;
+      }
+      .hook-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 18px;
+        background: rgba(245, 158, 11, 0.12);
+        border: 1px solid rgba(245, 158, 11, 0.35);
+        border-radius: 100px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+        font-weight: 800;
+        color: #F59E0B;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        margin-bottom: 28px;
+      }
+      .hook-headline {
+        font-size: 68px;
+        font-weight: 900;
+        line-height: 1.05;
+        letter-spacing: -0.04em;
+        color: #FFFFFF;
+        margin-bottom: 24px;
+      }
+      .hook-headline span {
+        background: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .hook-subtitle {
+        font-size: 22px;
+        line-height: 1.55;
+        color: #94A3B8;
+        max-width: 900px;
+      }
+
+      /* =========================================================
+         SCENE 2, 3, 4: TWIN-ENGINE DUAL STAGE (3.0s - 15.4s)
+         ========================================================= */
+      #scene-twin-engine {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 100px 80px 60px 80px;
+        z-index: 10;
+        opacity: 0;
+      }
+
+      .twin-grid {
+        display: grid;
+        grid-template-columns: 1060px 580px;
+        gap: 40px;
+        width: 100%;
+        max-width: 1720px;
+        align-items: center;
+        position: relative;
+      }
+
+      /* DESKTOP COMMAND CENTER */
+      .desktop-window {
+        background: #0B111E;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+        position: relative;
+      }
+      .window-chrome-bar {
+        background: #070B14;
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .window-dots {
+        display: flex;
+        gap: 8px;
+      }
+      .w-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+      .window-title {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+        font-weight: 700;
+        color: #94A3B8;
+      }
+
+      .desktop-body {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .kpi-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      .kpi-box {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 14px;
+        padding: 16px;
+      }
+      .kpi-lbl {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        color: #94A3B8;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .kpi-val {
+        font-size: 32px;
+        font-weight: 900;
+        color: #FFFFFF;
+        letter-spacing: -0.02em;
+        margin: 4px 0 2px 0;
+      }
+      .kpi-status {
+        font-size: 12px;
+        font-weight: 700;
+        color: #10B981;
+      }
+
+      /* S-Curve Graphic Visualization */
+      .scurve-box {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 20px;
+        position: relative;
+        height: 250px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .scurve-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        color: #94A3B8;
+      }
+      .scurve-canvas-mock {
+        position: relative;
+        flex: 1;
+        margin: 14px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        border-left: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .scurve-svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+      }
+
+      /* Critical Sectors Table */
+      .sector-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.025);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 12px 18px;
+        font-size: 14px;
+      }
+      .sector-badge {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        font-weight: 800;
+        padding: 4px 10px;
+        border-radius: 6px;
+      }
+
+      /* RUGGED SMARTPHONE CHASSIS */
+      .phone-chassis {
+        width: 380px;
+        height: 720px;
+        margin: 0 auto;
+        background: #090E17;
+        border: 12px solid #1E293B;
+        border-radius: 52px;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9), inset 0 0 2px rgba(255, 255, 255, 0.3);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .dynamic-island {
+        width: 110px;
+        height: 26px;
+        background: #000000;
+        border-radius: 20px;
+        margin: 10px auto 0 auto;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        padding: 0 12px;
+      }
+      .phone-lens {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #111827;
+        border: 1px solid #1F2937;
+      }
+
+      .phone-screen {
+        flex: 1;
+        background: #F8FAFC;
+        color: #0F172A;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .phone-status-bar {
+        padding: 8px 20px 4px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        font-weight: 700;
+        color: #334155;
+      }
+      .phone-offline-tag {
+        background: #DCFCE7;
+        color: #15803D;
+        font-size: 10px;
+        font-weight: 800;
+        padding: 2px 8px;
+        border-radius: 100px;
+      }
+
+      /* Phone Form Layer */
+      .phone-body {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        flex: 1;
+      }
+      .phone-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 16px;
+        padding: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      }
+      .phone-card-title {
+        font-size: 11px;
+        font-weight: 800;
+        color: #2563EB;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .phone-card-sub {
+        font-size: 15px;
+        font-weight: 800;
+        color: #0F172A;
+        margin: 2px 0;
+      }
+
+      /* Slider Styling */
+      .slider-wrap {
+        margin: 8px 0;
+      }
+      .slider-bar {
+        width: 100%;
+        height: 12px;
+        background: #E2E8F0;
+        border-radius: 100px;
+        position: relative;
+        overflow: hidden;
+      }
+      .slider-fill {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 88%;
+        background: #10B981;
+        border-radius: 100px;
+      }
+      .slider-thumb {
+        position: absolute;
+        left: 88%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 22px;
+        height: 22px;
+        background: #FFFFFF;
+        border: 3px solid #10B981;
+        border-radius: 50%;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .btn-phone-submit {
+        background: #2563EB;
+        color: #FFFFFF;
+        border: none;
+        border-radius: 14px;
+        padding: 14px;
+        font-size: 14px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+      }
+
+      /* Telemetry Energy Beam */
+      #telemetry-beam {
+        position: absolute;
+        top: 48%;
+        left: 55%;
+        width: 240px;
+        height: 6px;
+        background: linear-gradient(90deg, #10B981 0%, #3B82F6 100%);
+        border-radius: 10px;
+        box-shadow: 0 0 24px #60A5FA;
+        opacity: 0;
+        z-index: 50;
+      }
+
+      /* =========================================================
+         SCENE 5: GRAND FINALE & BRAND CARD (15.4s - 18.0s)
+         ========================================================= */
+      #scene-finale {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 0 120px;
+        text-align: center;
+        z-index: 40;
+        opacity: 0;
+      }
+      .finale-card {
+        width: 100%;
+        max-width: 960px;
+        background: rgba(255, 255, 255, 0.96);
+        border-radius: 36px;
+        padding: 56px 64px;
+        box-shadow: 0 35px 100px rgba(0, 0, 0, 0.9);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: #0F172A;
+      }
+      .finale-logo {
+        width: 80px;
+        height: 80px;
+        background: #0F172A;
+        border-radius: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 24px;
+        position: relative;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+      .finale-logo .glow-bar {
+        position: absolute;
+        bottom: 0;
+        left: 15%;
+        right: 15%;
+        height: 4px;
+        background: #F59E0B;
+        border-radius: 2px;
+        box-shadow: 0 0 12px #F59E0B;
+      }
+      .finale-title {
+        font-size: 44px;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        color: #0F172A;
+        margin-bottom: 10px;
+      }
+      .finale-tagline {
+        font-size: 19px;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 36px;
+      }
+      .finale-badges-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+        width: 100%;
+        margin-bottom: 36px;
+      }
+      .finale-badge-item {
+        background: #F1F5F9;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 12px 18px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #1E293B;
+        text-align: left;
+      }
+      .finale-cta-btn {
+        background: linear-gradient(135deg, #2563EB, #1D4ED8);
+        color: #FFFFFF;
+        font-size: 17px;
+        font-weight: 800;
+        padding: 16px 40px;
+        border-radius: 100px;
+        box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        letter-spacing: 0.02em;
+      }
+      .finale-url {
+        margin-top: 20px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+        color: #475569;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body data-composition-id="main" data-width="1920" data-height="1080" data-duration="18.0">
+    <div class="ambient-glow-left"></div>
+    <div class="ambient-glow-right"></div>
+    <div class="ambient-glow-center"></div>
+    <div class="studio-grid"></div>
+
+    <!-- HUD Header -->
+    <div class="hud-header">
+      <div>+ TRUNOVA · KILN SHUTDOWN &amp; OVERHAUL INTELLIGENCE</div>
+      <div class="hud-tag-live">
+        <span class="pulse-beacon"></span>
+        <span>LIVE TELEMETRY · 1,450°C BURNING ZONE</span>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         AUDIO TRACKS & CUES
+         ========================================================= -->
+    <audio
+      id="bgm"
+      data-start="0"
+      data-duration="18.0"
+      data-track-index="0"
+      data-volume="0.85"
+      src="assets/music/happy-beats-business-moves-vol-10-by-ende-dot-app.mp3"
+    ></audio>
+    <audio id="sfx-whoosh1" data-start="0.1" data-duration="0.8" data-track-index="1" data-volume="0.6" src="assets/sfx/sfx-whoosh.wav"></audio>
+    <audio id="sfx-click1" data-start="3.0" data-duration="0.4" data-track-index="2" data-volume="0.7" src="assets/sfx/sfx-click.wav"></audio>
+    <audio id="sfx-shutter" data-start="10.8" data-duration="0.6" data-track-index="3" data-volume="0.8" src="assets/sfx/sfx-shutter.wav"></audio>
+    <audio id="sfx-click2" data-start="12.2" data-duration="0.4" data-track-index="4" data-volume="0.7" src="assets/sfx/sfx-click.wav"></audio>
+    <audio id="sfx-whoosh2" data-start="12.8" data-duration="0.8" data-track-index="5" data-volume="0.6" src="assets/sfx/sfx-whoosh.wav"></audio>
+    <audio id="sfx-chime" data-start="13.2" data-duration="1.2" data-track-index="6" data-volume="0.8" src="assets/sfx/sfx-chime.wav"></audio>
+    <audio id="sfx-pop" data-start="15.5" data-duration="0.5" data-track-index="7" data-volume="0.7" src="assets/sfx/sfx-pop.wav"></audio>
+
+    <!-- =========================================================
+         SCENE 1: THE EXTREME HOOK (0.0s - 3.0s)
+         ========================================================= -->
+    <div id="scene-hook" class="clip" data-start="0" data-duration="3.0" data-track-index="2">
+      <div class="hook-badge">
+        <span>⚡ TUBAN LINE 4 OVERHAUL · 1,450°C BURNING ZONE</span>
+      </div>
+      <h1 class="hook-headline">
+        DI KEDALAMAN KILN.<br />
+        <span>NOL SINYAL 4G. RP 1.8 MILYAR/HARI.</span>
+      </h1>
+      <p class="hook-subtitle">
+        Saat teknisi merayap di dalam shell baja 60 meter tanpa jangkauan sinyal, bagaimana progres Anda tercatat?
+      </p>
+    </div>
+
+    <!-- =========================================================
+         SCENE 2, 3, 4: TWIN-ENGINE DUAL STAGE (3.0s - 15.4s)
+         ========================================================= -->
+    <div id="scene-twin-engine" class="clip" data-start="3.0" data-duration="12.4" data-track-index="2">
+      <div id="telemetry-beam"></div>
+
+      <div class="twin-grid">
+        <!-- LEFT: DESKTOP COMMAND CENTER -->
+        <div class="desktop-window doppelrand-shell" id="desktop-engine">
+          <div class="window-chrome-bar">
+            <div class="window-dots">
+              <span class="w-dot" style="background: #EF4444;"></span>
+              <span class="w-dot" style="background: #F59E0B;"></span>
+              <span class="w-dot" style="background: #10B981;"></span>
+            </div>
+            <div class="window-title">TRUNOVA COMMAND CENTER — KILN TUBAN #4</div>
+            <div style="display: flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono'; font-size: 11px; color: #10B981;">
+              <span class="pulse-beacon" style="width: 6px; height: 6px;"></span> SSE CONNECTED
+            </div>
+          </div>
+
+          <div class="desktop-body">
+            <!-- KPI Strip -->
+            <div class="kpi-row">
+              <div class="kpi-box">
+                <div class="kpi-lbl">Progres Total EVM</div>
+                <div class="kpi-val" id="desk-evm-val">84.2%</div>
+                <div class="kpi-status" id="desk-evm-status">▲ +2.4% On Schedule</div>
+              </div>
+              <div class="kpi-box">
+                <div class="kpi-lbl">Ring 32 Burning Zone</div>
+                <div class="kpi-val" id="desk-ring32-val" style="color: #60A5FA;">88.0%</div>
+                <div style="font-size: 12px; color: #94A3B8;" id="desk-ring32-status">Dalam Pengerjaan</div>
+              </div>
+              <div class="kpi-box">
+                <div class="kpi-lbl">Tonase Terpasang</div>
+                <div class="kpi-val" id="desk-tonase-val">142.8 T</div>
+                <div style="font-size: 12px; color: #94A3B8;">Target: 165.0 Ton</div>
+              </div>
+            </div>
+
+            <!-- S-Curve Graph Box -->
+            <div class="scurve-box">
+              <div class="scurve-header">
+                <span>EVM S-CURVE TELEMETRY ENGINE</span>
+                <span style="color: #38BDF8;">STA 0.0M — 60.0M</span>
+              </div>
+              <div class="scurve-canvas-mock">
+                <svg class="scurve-svg" viewBox="0 0 980 140" preserveAspectRatio="none">
+                  <!-- Grid Lines -->
+                  <line x1="0" y1="35" x2="980" y2="35" stroke="rgba(255,255,255,0.05)" stroke-dasharray="4" />
+                  <line x1="0" y1="70" x2="980" y2="70" stroke="rgba(255,255,255,0.05)" stroke-dasharray="4" />
+                  <line x1="0" y1="105" x2="980" y2="105" stroke="rgba(255,255,255,0.05)" stroke-dasharray="4" />
+                  <!-- Planned Curve (Dashed White/Ash) -->
+                  <path d="M 0 130 Q 300 120 490 60 T 980 10" fill="none" stroke="#64748B" stroke-width="2" stroke-dasharray="6,4" />
+                  <!-- Actual Curve (Blue to Emerald) -->
+                  <path id="actual-curve-path" d="M 0 130 Q 300 120 490 55 T 620 42" fill="none" stroke="#3B82F6" stroke-width="4" stroke-linecap="round" />
+                  <!-- Progress Dot -->
+                  <circle id="actual-curve-dot" cx="620" cy="42" r="6" fill="#60A5FA" stroke="#FFFFFF" stroke-width="2" />
+                </svg>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-family: 'JetBrains Mono'; font-size: 11px; color: #94A3B8;">
+                <span>H-1 (0%)</span>
+                <span>H-5 (35%)</span>
+                <span>H-9 (EVM Active)</span>
+                <span>H-14 (Target Firing)</span>
+              </div>
+            </div>
+
+            <!-- Critical Row -->
+            <div class="sector-row">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-weight: 800; color: #FFFFFF;">IAC-04: Burning Zone Ring 32 (Magnesite)</span>
+                <span style="font-size: 12px; color: #94A3B8;">35 Bata/Ring · Key Brick Pending</span>
+              </div>
+              <span class="sector-badge" id="desk-table-badge" style="background: rgba(37, 99, 235, 0.2); color: #60A5FA;">
+                88.0% AKTIF
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: RUGGED SMARTPHONE PWA -->
+        <div class="phone-chassis" id="mobile-engine">
+          <div class="dynamic-island">
+            <div class="phone-lens"></div>
+            <div style="width: 28px; height: 3px; background: #1F2937; border-radius: 2px;"></div>
+          </div>
+
+          <div class="phone-screen">
+            <div class="phone-status-bar">
+              <span>09:41</span>
+              <span class="phone-offline-tag">● OFFLINE READY</span>
+            </div>
+
+            <!-- Phone App Header -->
+            <div style="padding: 10px 16px; background: #FFFFFF; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: space-between;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 26px; height: 26px; background: #0F172A; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                  <svg viewBox="0 0 532.6 438.3" width="16" height="13" xmlns="http://www.w3.org/2000/svg">
+                    <g transform="translate(-181.558 -199.397)">
+                      <path d="M211.421 290.571C206.833 285.981 206.591 282.599 206.591 188.134 206.591 98.9849 206.108 89.321 202.003 75.7914 193.068 47.2833 176.647 34.4784 148.877 34.4784 126.902 34.4784 114.828 42.4511 105.893 62.2623 102.271 70.4763 101.547 82.073 100.822 142.714L99.8565 213.743 94.5439 212.294C80.2964 208.428 41.1764 200.697 21.8579 198.04L0.124756 194.899-0.599623 155.036C-0.841202 133.292-0.116824 106.716 1.09071 95.8442 6.64453 49.6991 27.6537 19.2577 63.6343 5.24516 80.7792-1.51944 121.107-3.69398 141.15 0.654743 163.849 5.72855 191.378 21.4323 210.213 40.5183 242.089 72.6508 252.231 96.8107 279.277 206.012 289.902 247.809 298.354 283.324 298.354 285.015 298.354 286.464 296.664 289.605 294.49 291.538 291.351 294.679 284.106 295.403 253.438 295.403 219.389 295.403 215.768 294.92 211.421 290.571Z" fill="#FFFFFF" fill-rule="evenodd" fill-opacity="1" transform="matrix(1 0 0 -1 280 614)"/>
+                      <path d="M121.726 166.915C98.9743 158.708 79.1266 151.226 77.4323 150.019 75.4959 148.812 74.5277 138.916 74.5277 115.745L74.5277 83.402 41.1256 83.402C-2.44239 83.402-0.505971 85.333-0.505971 42.1284-0.505971 20.6467 0.704383 7.8541 2.64081 3.751 5.78722-2.04164 6.51329-2.28311 28.5393-1.55907 122.452 1.09596 213.219 23.0603 243.475 50.5761 250.494 56.8517 258.482 71.8164 258.482 78.5745 258.482 83.1605 257.029 83.402 217.334 83.402L176.187 83.402 176.187 129.986C176.187 177.535 175.218 182.603 166.747 182.121 164.568 182.121 144.237 175.121 121.726 166.915Z" fill="#FFFFFF" fill-rule="evenodd" fill-opacity="1" transform="matrix(1 0 0 -1 204 402)"/>
+                      <path d="M145.048 293.22C114.588 284.038 99.1162 255.28 78.8097 170.217 61.1621 96.5117 46.1739 65.5796 5.07762 17.4898-1.20777 9.99858-1.93294 7.8235 0.242565 3.4737 2.90175-1.35924 4.83577-1.601 42.7896-1.601 80.9852-1.601 82.4356-1.35924 86.0618 3.71546 89.4461 8.30701 89.9298 19.4231 89.9298 76.2125 89.9298 146.535 91.622 162.243 100.325 175.05 112.895 193.658 131.51 197.524 160.761 188.341 172.606 184.475 176.232 184.233 184.21 186.65 200.165 191.483 201.132 194.624 201.132 241.506 201.132 277.754 200.649 283.313 197.023 286.454 188.078 294.429 160.761 298.054 145.048 293.22Z" fill="#FFFFFF" fill-rule="evenodd" fill-opacity="1" transform="matrix(1 0 0 -1 493 612)"/>
+                    </g>
+                  </svg>
+                </div>
+                <span style="font-size: 13px; font-weight: 800; color: #0F172A;">TRUNOVA LAPANGAN</span>
+              </div>
+              <span style="font-size: 10px; font-weight: 700; color: #475569;">SHIFT 1</span>
+            </div>
+
+            <div class="phone-body">
+              <div class="phone-card">
+                <div class="phone-card-title">IAC-04 Burning Zone</div>
+                <div class="phone-card-sub">Bricking Magnesite Ring 32</div>
+                <div style="font-size: 11px; color: #475569;">STA 18.2m - 20.4m · 35 Bata/Ring</div>
+              </div>
+
+              <div class="phone-card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-size: 12px; font-weight: 700; color: #334155;">Progres Fisik Kumulatif</span>
+                  <span id="phone-val-text" style="font-size: 18px; font-weight: 900; color: #15803D;">88.0%</span>
+                </div>
+
+                <div class="slider-wrap">
+                  <div class="slider-bar">
+                    <div id="phone-slider-fill" class="slider-fill"></div>
+                  </div>
+                </div>
+
+                <div style="font-size: 10px; color: #1D4ED8; font-weight: 800; display: flex; align-items: center; gap: 4px;">
+                  <span>🔒 Anti-Miskeying Guard: >= 88.0% (Terkunci)</span>
+                </div>
+              </div>
+
+              <!-- Attached Inspection Photo -->
+              <div class="phone-card" style="display: flex; align-items: center; gap: 12px;">
+                <img src="assets/photos/audit-during.jpg" alt="Audit Ring 32" style="width: 48px; height: 48px; border-radius: 8px; object-fit: cover;" />
+                <div style="flex: 1;">
+                  <div style="font-size: 12px; font-weight: 800; color: #0F172A;">IMG_RING32_BRICK.JPG</div>
+                  <div style="font-size: 10px; color: #475569;">Foto Tahap 2 · GPS &amp; Timestamp Valid</div>
+                </div>
+                <span style="color: #15803D; font-weight: 900; font-size: 16px;">✓</span>
+              </div>
+
+              <button type="button" id="btn-phone-lapor" class="btn-phone-submit">
+                <span id="btn-phone-text">KIRIM LAPORAN LAPANGAN 🚀</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         SCENE 5: GRAND FINALE & BRAND CARD (15.4s - 18.0s)
+         ========================================================= -->
+    <div id="scene-finale" class="clip" data-start="15.4" data-duration="2.6" data-track-index="2">
+      <div class="finale-card">
+        <div class="finale-logo">
+          <svg viewBox="0 0 532.6 438.3" width="50" height="42" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(-181.558 -199.397)">
+              <path d="M211.421 290.571C206.833 285.981 206.591 282.599 206.591 188.134 206.591 98.9849 206.108 89.321 202.003 75.7914 193.068 47.2833 176.647 34.4784 148.877 34.4784 126.902 34.4784 114.828 42.4511 105.893 62.2623 102.271 70.4763 101.547 82.073 100.822 142.714L99.8565 213.743 94.5439 212.294C80.2964 208.428 41.1764 200.697 21.8579 198.04L0.124756 194.899-0.599623 155.036C-0.841202 133.292-0.116824 106.716 1.09071 95.8442 6.64453 49.6991 27.6537 19.2577 63.6343 5.24516 80.7792-1.51944 121.107-3.69398 141.15 0.654743 163.849 5.72855 191.378 21.4323 210.213 40.5183 242.089 72.6508 252.231 96.8107 279.277 206.012 289.902 247.809 298.354 283.324 298.354 285.015 298.354 286.464 296.664 289.605 294.49 291.538 291.351 294.679 284.106 295.403 253.438 295.403 219.389 295.403 215.768 294.92 211.421 290.571Z" fill="#FFFFFF" fill-rule="evenodd" fill-opacity="1" transform="matrix(1 0 0 -1 280 614)"/>
+              <path d="M121.726 166.915C98.9743 158.708 79.1266 151.226 77.4323 150.019 75.4959 148.812 74.5277 138.916 74.5277 115.745L74.5277 83.402 41.1256 83.402C-2.44239 83.402-0.505971 85.333-0.505971 42.1284-0.505971 20.6467 0.704383 7.8541 2.64081 3.751 5.78722-2.04164 6.51329-2.28311 28.5393-1.55907 122.452 1.09596 213.219 23.0603 243.475 50.5761 250.494 56.8517 258.482 71.8164 258.482 78.5745 258.482 83.1605 257.029 83.402 217.334 83.402L176.187 83.402 176.187 129.986C176.187 177.535 175.218 182.603 166.747 182.121 164.568 182.121 144.237 175.121 121.726 166.915Z" fill="#FFFFFF" fill-rule="evenodd" fill-opacity="1" transform="matrix(1 0 0 -1 204 402)"/>
+              <path d="M145.048 293.22C114.588 284.038 99.1162 255.28 78.8097 170.217 61.1621 96.5117 46.1739 65.5796 5.07762 17.4898-1.20777 9.99858-1.93294 7.8235 0.242565 3.4737 2.90175-1.35924 4.83577-1.601 42.7896-1.601 80.9852-1.601 82.4356-1.35924 86.0618 3.71546 89.4461 8.30701 89.9298 19.4231 89.9298 76.2125 89.9298 146.535 91.622 162.243 100.325 175.05 112.895 193.658 131.51 197.524 160.761 188.341 172.606 184.475 176.232 184.233 184.21 186.65 200.165 191.483 201.132 194.624 201.132 241.506 201.132 277.754 200.649 283.313 197.023 286.454 188.078 294.429 160.761 298.054 145.048 293.22Z" fill="#FFFFFF" fill-rule="evenodd" fill-opacity="1" transform="matrix(1 0 0 -1 493 612)"/>
+            </g>
+          </svg>
+          <div class="glow-bar"></div>
+        </div>
+        <div class="finale-title">TRUNOVA KILN SHUTDOWN</div>
+        <p class="finale-tagline">Kendali Overhaul Total. Dari Lapangan Hingga Ruang Direksi.</p>
+
+        <div class="finale-badges-grid">
+          <div class="finale-badge-item">🔒 Anti-Miskeying Monotonic Guard</div>
+          <div class="finale-badge-item">📡 Blind-Spot Offline PWA</div>
+          <div class="finale-badge-item">🛡️ 3-Stage QC Audit Pipeline</div>
+          <div class="finale-badge-item">📈 Real-Time EVM S-Curve Engine</div>
+        </div>
+
+        <div class="finale-cta-btn">
+          <span>JADWALKAN DEMO SEKARANG</span>
+          <span>→</span>
+        </div>
+        <div class="finale-url">trunova.id · Solusi Overhaul Kiln Semen No. 1</div>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         GSAP TIMELINE CHOREOGRAPHY (SEEK-SAFE)
+         ========================================================= -->
+    <script>
+      const tl = gsap.timeline({ paused: true });
+
+      // Initial state
+      gsap.set("#scene-hook", { opacity: 1, scale: 1 });
+      gsap.set("#scene-twin-engine", { opacity: 0 });
+      gsap.set("#desktop-engine", { x: -60, opacity: 0 });
+      gsap.set("#mobile-engine", { x: 60, opacity: 0 });
+      gsap.set("#telemetry-beam", { opacity: 0, scaleX: 0 });
+      gsap.set("#scene-finale", { opacity: 0 });
+
+      // ---------------------------------------------------------
+      // SCENE 1: Hook (0.0s - 3.0s)
+      // ---------------------------------------------------------
+      tl.fromTo("#scene-hook .hook-badge", { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.2);
+      tl.fromTo("#scene-hook .hook-headline", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.4);
+      tl.fromTo("#scene-hook .hook-subtitle", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 0.7);
+      
+      // Hook exit
+      tl.to("#scene-hook", { opacity: 0, scale: 0.95, duration: 0.4, ease: "power2.in" }, 2.6);
+
+      // ---------------------------------------------------------
+      // SCENE 2: Twin-Engine Reveal (3.0s - 8.0s)
+      // ---------------------------------------------------------
+      tl.to("#scene-twin-engine", { opacity: 1, duration: 0.3 }, 3.0);
+      tl.to("#desktop-engine", { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" }, 3.1);
+      tl.to("#mobile-engine", { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" }, 3.3);
+
+      // ---------------------------------------------------------
+      // SCENE 3: Field Input & Anti-Miskeying Slider (8.0s - 12.8s)
+      // ---------------------------------------------------------
+      // Slider fill animates from 88% to 100%
+      tl.to("#phone-slider-fill", { width: "100%", duration: 1.8, ease: "power2.inOut" }, 8.2);
+      
+      // Update phone text to 100%
+      tl.call(() => {
+        const textEl = document.getElementById("phone-val-text");
+        if (textEl) {
+          textEl.textContent = "100.0% ✓";
+          textEl.style.color = "#15803D";
+        }
+      }, null, 10.0);
+
+      // Button tap
+      tl.to("#btn-phone-lapor", { scale: 0.96, duration: 0.15, yoyo: true, repeat: 1 }, 12.2);
+      tl.call(() => {
+        const btnText = document.getElementById("btn-phone-text");
+        const btn = document.getElementById("btn-phone-lapor");
+        if (btnText && btn) {
+          btnText.textContent = "✓ LAPORAN TERSIMPAN • SYNCED";
+          btn.style.background = "#15803D";
+        }
+      }, null, 12.35);
+
+      // ---------------------------------------------------------
+      // SCENE 4: Telemetry Sync & Desktop Recalculation (12.8s - 15.4s)
+      // ---------------------------------------------------------
+      // Telemetry beam pulses from right to left
+      tl.to("#telemetry-beam", { opacity: 1, scaleX: 1, duration: 0.4, ease: "power2.out" }, 12.8);
+      tl.to("#telemetry-beam", { opacity: 0, duration: 0.3 }, 13.4);
+
+      // Desktop updates to 100% and 86.8%
+      tl.call(() => {
+        const ring32Val = document.getElementById("desk-ring32-val");
+        const ring32Status = document.getElementById("desk-ring32-status");
+        const evmVal = document.getElementById("desk-evm-val");
+        const evmStatus = document.getElementById("desk-evm-status");
+        const tonaseVal = document.getElementById("desk-tonase-val");
+        const tableBadge = document.getElementById("desk-table-badge");
+        const dot = document.getElementById("actual-curve-dot");
+        const path = document.getElementById("actual-curve-path");
+
+        if (ring32Val) {
+          ring32Val.textContent = "100.0% ✓";
+          ring32Val.style.color = "#34D399";
+        }
+        if (ring32Status) ring32Status.textContent = "Selesai & Terverifikasi";
+        if (evmVal) evmVal.textContent = "86.8%";
+        if (evmStatus) {
+          evmStatus.textContent = "▲ +2.6% Accelerated";
+          evmStatus.style.color = "#34D399";
+        }
+        if (tonaseVal) tonaseVal.textContent = "165.0 T";
+        if (tableBadge) {
+          tableBadge.textContent = "100.0% TUNTAS ✓";
+          tableBadge.style.background = "rgba(16, 185, 129, 0.2)";
+          tableBadge.style.color = "#34D399";
+        }
+        if (dot) {
+          dot.setAttribute("cx", "680");
+          dot.setAttribute("cy", "28");
+        }
+        if (path) {
+          path.setAttribute("d", "M 0 130 Q 300 120 490 55 T 680 28");
+          path.setAttribute("stroke", "#10B981");
+        }
+      }, null, 13.2);
+
+      // Twin-Engine exit
+      tl.to("#scene-twin-engine", { opacity: 0, scale: 0.94, duration: 0.5, ease: "power2.in" }, 15.0);
+
+      // ---------------------------------------------------------
+      // SCENE 5: Grand Finale (15.4s - 18.0s)
+      // ---------------------------------------------------------
+      tl.to("#scene-finale", { opacity: 1, duration: 0.6, ease: "power3.out" }, 15.4);
+      tl.fromTo("#scene-finale .finale-card", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 15.5);
+
+      // Register timeline for Hyperframes
+      window.__timelines = { main: tl };
+      tl.seek(0);
+    </script>
+  </body>
+</html>

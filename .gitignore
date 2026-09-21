@@ -1,11 +1,30 @@
-# macOS
+# Operating System artifacts
 .DS_Store
 Thumbs.db
+ehthumbs.db
+*.sublime-workspace
+*.sublime-project
+.idea/
+.vscode/
 
-# PocketBase runtime artifacts (buffers/journals)
+# PocketBase runtime artifacts (buffers/journals/logs)
 *.db-shm
 *.db-wal
 *.log
-# Large video files (keep MP4 only for web and git)
-*.mov
+pocketbase.log
+cloudflared.log
 pb_data/storage/cache
+
+# Large media files (raw footage / uncompressed exports)
+*.mov
+*.raw
+
+# Remotion Video Project heavy artifacts
+video/node_modules/
+video/out/
+video/.cache/
+
+# Local testing and temporary scratchpads
+scratch/temp*
+.env.local
+.env.*.local

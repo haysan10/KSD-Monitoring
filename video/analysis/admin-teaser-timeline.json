@@ -1,0 +1,471 @@
+{
+  "metadata": {
+    "projectName": "TRUNOVA Admin Screen Simulation Teaser",
+    "projectType": "Teaser Video",
+    "version": "1.0.0",
+    "fps": 30,
+    "totalFrames": 600,
+    "durationSeconds": 20,
+    "bpm": 120,
+    "framesPerBeat": 15,
+    "masterAspectRatio": "16:9",
+    "resolution": {
+      "width": 1920,
+      "height": 1080
+    },
+    "safeArea": {
+      "titleSafeMarginX": 100,
+      "titleSafeMarginY": 60,
+      "vertical9x16SafeWidth": 608
+    },
+    "visualTheme": "Clean Modern & Light",
+    "colors": {
+      "canvas": "#FAF7F2",
+      "surfaceWhite": "#FFFFFF",
+      "surfaceSlate": "#F8FAFC",
+      "primaryDark": "#0F172A",
+      "accentCobalt": "#2563EB",
+      "accentAmber": "#F59E0B",
+      "signalGreen": "#10B981",
+      "signalRed": "#DC2626",
+      "muted": "#64748B",
+      "border": "#E2E8F0"
+    },
+    "language": "id",
+    "cta": {
+      "headline": "Satu Dashboard. Tanpa Meleset.",
+      "buttonText": "Coba Trunova Sekarang",
+      "targetUrl": "trunova.id"
+    }
+  },
+  "scenes": [
+    {
+      "sceneNumber": 1,
+      "id": "scene_01_prepare",
+      "name": "PREPARE: Workspace Initialization & Telemetry Arming",
+      "frameStart": 0,
+      "frameEnd": 75,
+      "durationFrames": 75,
+      "narrative": "Aplikasi dibuka cepat, sistem memuat proyek aktif, layar telemetri admin bersiap.",
+      "textOverlay": {
+        "text": "KENDALI OVERHAUL TOTAL.",
+        "frameStart": 15,
+        "frameEnd": 68,
+        "style": "pill_dark_badge"
+      },
+      "camera": {
+        "scaleStart": 1.0,
+        "scaleEnd": 1.05,
+        "focusX": 960,
+        "focusY": 540,
+        "easing": "cubic-bezier(0.65, 0.0, 0.35, 1.0)"
+      },
+      "cursor": {
+        "path": [
+          { "frame": 10, "x": 960, "y": 900 },
+          { "frame": 25, "x": 780, "y": 420 },
+          { "frame": 42, "x": 680, "y": 240 }
+        ],
+        "clickEvents": [
+          { "frame": 44, "element": "nav_dashboard_button", "duration": 4 }
+        ]
+      },
+      "uiElements": [
+        {
+          "element": "browser_window",
+          "property": "transform_scale_y",
+          "frameStart": 0,
+          "frameEnd": 25,
+          "valueStart": { "scale": 0.94, "y": 40, "opacity": 0 },
+          "valueEnd": { "scale": 1.0, "y": 0, "opacity": 1 },
+          "easing": "spring",
+          "springConfig": { "damping": 24, "stiffness": 220, "mass": 1.0 }
+        },
+        {
+          "element": "topbar_project_status",
+          "property": "opacity_translate_x",
+          "frameStart": 12,
+          "frameEnd": 28,
+          "valueStart": { "opacity": 0, "x": -20 },
+          "valueEnd": { "opacity": 1, "x": 0 },
+          "easing": "cubic-bezier(0.16, 1.0, 0.30, 1.0)"
+        },
+        {
+          "element": "telemetry_cards_grid",
+          "property": "stagger_pop_y",
+          "frameStart": 46,
+          "frameEnd": 65,
+          "valueStart": { "opacity": 0, "y": 30 },
+          "valueEnd": { "opacity": 1, "y": 0 },
+          "easing": "spring",
+          "springConfig": { "damping": 13, "stiffness": 190, "mass": 0.8 },
+          "notes": "4 card metrik overhaul muncul stagger tiap 3 frame"
+        }
+      ],
+      "audioCues": [
+        { "frame": 0, "type": "bgm_start", "file": "audio/bgm-teaser-120bpm.wav", "volume": 0.5 },
+        { "frame": 44, "type": "sfx_click", "file": "audio/sfx-mouse-click.wav", "volume": 0.7 },
+        { "frame": 48, "type": "sfx_pop", "file": "audio/sfx-card-pop.wav", "volume": 0.6 }
+      ]
+    },
+    {
+      "sceneNumber": 2,
+      "id": "scene_02_miskeying",
+      "name": "CUPLIKAN 1: Anti-Miskeying Safeguard & Progress Injection",
+      "frameStart": 75,
+      "frameEnd": 210,
+      "durationFrames": 135,
+      "narrative": "Admin memasukkan progres bata di Form Input, slider digeser, formula terkunci aman tanpa error.",
+      "textOverlay": {
+        "text": "ANTI SALAH KETIK.",
+        "frameStart": 90,
+        "frameEnd": 195,
+        "style": "pill_dark_badge"
+      },
+      "camera": {
+        "scaleStart": 1.05,
+        "scaleEnd": 1.35,
+        "focusX": 940,
+        "focusY": 620,
+        "easing": "cubic-bezier(0.65, 0.0, 0.35, 1.0)"
+      },
+      "cursor": {
+        "path": [
+          { "frame": 85, "x": 680, "y": 240 },
+          { "frame": 105, "x": 760, "y": 480 },
+          { "frame": 120, "x": 840, "y": 560 },
+          { "frame": 162, "x": 840, "y": 560 },
+          { "frame": 180, "x": 1050, "y": 720 }
+        ],
+        "clickEvents": [
+          { "frame": 182, "element": "btn_save_progress", "duration": 4 }
+        ]
+      },
+      "uiElements": [
+        {
+          "element": "background_panels",
+          "property": "filter_blur_opacity",
+          "frameStart": 85,
+          "frameEnd": 110,
+          "valueStart": { "blur": 0, "opacity": 1.0 },
+          "valueEnd": { "blur": 6, "opacity": 0.4 },
+          "easing": "cubic-bezier(0.16, 1.0, 0.30, 1.0)"
+        },
+        {
+          "element": "slider_handle",
+          "property": "position_x_value",
+          "frameStart": 126,
+          "frameEnd": 155,
+          "valueStart": 0.0,
+          "valueEnd": 12.5,
+          "easing": "cubic-bezier(0.16, 1.0, 0.30, 1.0)",
+          "notes": "Satuan meter progres bata bertambah ke +12.5 m"
+        },
+        {
+          "element": "tonnage_counter",
+          "property": "numeric_ticker",
+          "frameStart": 126,
+          "frameEnd": 160,
+          "valueStart": 0,
+          "valueEnd": 3125,
+          "easing": "linear",
+          "notes": "Menghitung otomatis jumlah pcs bata dan tonase"
+        },
+        {
+          "element": "save_button",
+          "property": "scale_depress",
+          "frameStart": 182,
+          "frameEnd": 186,
+          "valueStart": 1.0,
+          "valueEnd": 0.96,
+          "easing": "spring",
+          "springConfig": { "damping": 13, "stiffness": 190, "mass": 0.8 }
+        },
+        {
+          "element": "formula_secured_badge",
+          "property": "scale_glow",
+          "frameStart": 188,
+          "frameEnd": 205,
+          "valueStart": { "scale": 0.0, "glow": 0 },
+          "valueEnd": { "scale": 1.0, "glow": 12 },
+          "easing": "spring",
+          "springConfig": { "damping": 13, "stiffness": 190, "mass": 0.8 }
+        }
+      ],
+      "audioCues": [
+        { "frame": 126, "type": "sfx_slider_ticks", "file": "audio/sfx-slider-drag.wav", "volume": 0.6 },
+        { "frame": 182, "type": "sfx_click", "file": "audio/sfx-mouse-click.wav", "volume": 0.7 },
+        { "frame": 188, "type": "sfx_success_chime", "file": "audio/sfx-ding-crystal.wav", "volume": 0.8 }
+      ]
+    },
+    {
+      "sceneNumber": 3,
+      "id": "scene_03_scurve_sync",
+      "name": "CUPLIKAN 2: Offline Blind-Spot Reconnect & Live S-Curve Surge",
+      "frameStart": 210,
+      "frameEnd": 345,
+      "durationFrames": 135,
+      "narrative": "Sinyal kiln pulih, mutasi offline masuk, S-Curve seketika melesat naik di desktop admin.",
+      "textOverlay": {
+        "text": "S-CURVE OTOMATIS REAL-TIME.",
+        "frameStart": 225,
+        "frameEnd": 335,
+        "style": "pill_dark_badge"
+      },
+      "camera": {
+        "scaleStart": 1.35,
+        "scaleEnd": 1.20,
+        "focusX": 960,
+        "focusY": 500,
+        "easing": "cubic-bezier(0.65, 0.0, 0.35, 1.0)"
+      },
+      "cursor": {
+        "path": [
+          { "frame": 285, "x": 1050, "y": 720 },
+          { "frame": 305, "x": 990, "y": 520 },
+          { "frame": 320, "x": 980, "y": 480 }
+        ],
+        "clickEvents": []
+      },
+      "uiElements": [
+        {
+          "element": "offline_sync_badge",
+          "property": "color_and_text_swap",
+          "frameStart": 218,
+          "frameEnd": 235,
+          "valueStart": { "color": "#F59E0B", "text": "3 Mutasi Offline" },
+          "valueEnd": { "color": "#10B981", "text": "Tersinkronisasi 100%" },
+          "easing": "spring",
+          "springConfig": { "damping": 13, "stiffness": 190, "mass": 0.8 }
+        },
+        {
+          "element": "scurve_actual_path",
+          "property": "stroke_dashoffset",
+          "frameStart": 235,
+          "frameEnd": 275,
+          "valueStart": 100,
+          "valueEnd": 0,
+          "easing": "cubic-bezier(0.2, 0.9, 0.3, 1.0)",
+          "notes": "Animasi kurva SVG Actual EVM melesat melewati kurva Planned"
+        },
+        {
+          "element": "evm_percentage_counter",
+          "property": "numeric_counter",
+          "frameStart": 240,
+          "frameEnd": 280,
+          "valueStart": 84.2,
+          "valueEnd": 88.0,
+          "easing": "cubic-bezier(0.16, 1.0, 0.30, 1.0)"
+        },
+        {
+          "element": "schedule_variance_pill",
+          "property": "scale_text_swap",
+          "frameStart": 270,
+          "frameEnd": 290,
+          "valueStart": { "scale": 0.8, "text": "-1.2% Slip" },
+          "valueEnd": { "scale": 1.1, "text": "+2.4% Ahead" },
+          "easing": "spring",
+          "springConfig": { "damping": 13, "stiffness": 190, "mass": 0.8 }
+        },
+        {
+          "element": "chart_coordinate_tooltip",
+          "property": "opacity_scale",
+          "frameStart": 300,
+          "frameEnd": 315,
+          "valueStart": { "opacity": 0, "scale": 0.8 },
+          "valueEnd": { "opacity": 1, "scale": 1.0 },
+          "easing": "spring",
+          "springConfig": { "damping": 13, "stiffness": 190, "mass": 0.8 }
+        }
+      ],
+      "audioCues": [
+        { "frame": 218, "type": "sfx_sync_ping", "file": "audio/sfx-synced-chime.wav", "volume": 0.7 },
+        { "frame": 235, "type": "sfx_riser_whoosh", "file": "audio/sfx-riser-curve.wav", "volume": 0.6 },
+        { "frame": 270, "type": "music_beat_impact", "file": "audio/sfx-beat-impact.wav", "volume": 0.7 }
+      ]
+    },
+    {
+      "sceneNumber": 4,
+      "id": "scene_04_qc_audit",
+      "name": "CUPLIKAN 3: 3-Stage QC Photo Audit Approval Stamp",
+      "frameStart": 345,
+      "frameEnd": 465,
+      "durationFrames": 120,
+      "narrative": "Admin memeriksa 3 kartu foto inspeksi refraktori, menekan persetujuan, stempel haptik mengunci data.",
+      "textOverlay": {
+        "text": "VALIDASI FISIK 3-TAHAP.",
+        "frameStart": 360,
+        "frameEnd": 455,
+        "style": "pill_dark_badge"
+      },
+      "camera": {
+        "scaleStart": 1.20,
+        "scaleEnd": 1.30,
+        "focusX": 1100,
+        "focusY": 540,
+        "easing": "cubic-bezier(0.65, 0.0, 0.35, 1.0)"
+      },
+      "cursor": {
+        "path": [
+          { "frame": 380, "x": 980, "y": 480 },
+          { "frame": 395, "x": 1120, "y": 510 },
+          { "frame": 412, "x": 1240, "y": 540 }
+        ],
+        "clickEvents": [
+          { "frame": 414, "element": "btn_approve_stage3", "duration": 4 }
+        ]
+      },
+      "uiElements": [
+        {
+          "element": "stage_photo_card_3",
+          "property": "border_glow_pulse",
+          "frameStart": 375,
+          "frameEnd": 410,
+          "valueStart": { "border": "#E2E8F0", "glow": 0 },
+          "valueEnd": { "border": "#F59E0B", "glow": 16 },
+          "easing": "pingpong"
+        },
+        {
+          "element": "btn_approve_stage3",
+          "property": "scale_depress",
+          "frameStart": 414,
+          "frameEnd": 418,
+          "valueStart": 1.0,
+          "valueEnd": 0.92,
+          "easing": "spring",
+          "springConfig": { "damping": 13, "stiffness": 190, "mass": 0.8 }
+        },
+        {
+          "element": "qc_stamp_seal",
+          "property": "scale_rotation_stamp",
+          "frameStart": 420,
+          "frameEnd": 438,
+          "valueStart": { "scale": 2.5, "rotation": -25, "opacity": 0 },
+          "valueEnd": { "scale": 1.0, "rotation": -8, "opacity": 1 },
+          "easing": "spring",
+          "springConfig": { "damping": 10, "stiffness": 200, "mass": 0.9 },
+          "notes": "Stempel hijau AUTHENTICATED & SEALED menghantam kartu"
+        },
+        {
+          "element": "stamp_impact_ripple",
+          "property": "scale_opacity_fade",
+          "frameStart": 422,
+          "frameEnd": 440,
+          "valueStart": { "scale": 0.8, "opacity": 0.6 },
+          "valueEnd": { "scale": 1.6, "opacity": 0.0 },
+          "easing": "cubic-bezier(0.16, 1.0, 0.30, 1.0)"
+        }
+      ],
+      "audioCues": [
+        { "frame": 414, "type": "sfx_click", "file": "audio/sfx-mouse-click.wav", "volume": 0.7 },
+        { "frame": 420, "type": "sfx_stamp_thud", "file": "audio/sfx-stamp-impact.wav", "volume": 0.85 }
+      ]
+    },
+    {
+      "sceneNumber": 5,
+      "id": "scene_05_cliffhanger",
+      "name": "CLIFFHANGER + CTA: Executive Overhaul Audit & Brand Reveal",
+      "frameStart": 465,
+      "frameEnd": 600,
+      "durationFrames": 135,
+      "narrative": "Admin memicu ekspor laporan prediksi firing, bar melesat ke 99%, cut mendadak ke logo Trunova dan ajakan mencoba.",
+      "textOverlay": {
+        "text": "SATU DASHBOARD. TANPA MELESET.",
+        "frameStart": 545,
+        "frameEnd": 600,
+        "style": "kinetic_brand_title"
+      },
+      "camera": {
+        "scaleStart": 1.0,
+        "scaleEnd": 1.0,
+        "focusX": 960,
+        "focusY": 540,
+        "easing": "linear"
+      },
+      "cursor": {
+        "path": [
+          { "frame": 468, "x": 1240, "y": 540 },
+          { "frame": 490, "x": 960, "y": 320 }
+        ],
+        "clickEvents": [
+          { "frame": 492, "element": "btn_generate_audit", "duration": 4 }
+        ]
+      },
+      "uiElements": [
+        {
+          "element": "audit_export_modal",
+          "property": "scale_expand",
+          "frameStart": 496,
+          "frameEnd": 509,
+          "valueStart": { "scale": 0.8, "opacity": 0 },
+          "valueEnd": { "scale": 1.05, "opacity": 1 },
+          "easing": "cubic-bezier(0.70, 0.0, 0.84, 0.0)"
+        },
+        {
+          "element": "audit_progress_bar",
+          "property": "progress_percent",
+          "frameStart": 496,
+          "frameEnd": 509,
+          "valueStart": 0,
+          "valueEnd": 99,
+          "easing": "cubic-bezier(0.70, 0.0, 0.84, 0.0)",
+          "notes": "Melesat ke 99% lalu langsung dipotong"
+        },
+        {
+          "element": "cliffhanger_flash_cut",
+          "property": "white_flash",
+          "frameStart": 510,
+          "frameEnd": 512,
+          "valueStart": 0.0,
+          "valueEnd": 1.0,
+          "easing": "instant"
+        },
+        {
+          "element": "brand_sunburst_logo",
+          "property": "scale_rotation_reveal",
+          "frameStart": 515,
+          "frameEnd": 545,
+          "valueStart": { "scale": 0.3, "rotation": -45 },
+          "valueEnd": { "scale": 1.0, "rotation": 0 },
+          "easing": "spring",
+          "springConfig": { "damping": 13, "stiffness": 190, "mass": 0.8 }
+        },
+        {
+          "element": "brand_wordmark",
+          "property": "opacity_translate_y",
+          "frameStart": 530,
+          "frameEnd": 555,
+          "valueStart": { "opacity": 0, "y": 20 },
+          "valueEnd": { "opacity": 1, "y": 0 },
+          "easing": "cubic-bezier(0.16, 1.0, 0.30, 1.0)"
+        },
+        {
+          "element": "cta_pill_button",
+          "property": "scale_opacity_pulse",
+          "frameStart": 555,
+          "frameEnd": 580,
+          "valueStart": { "scale": 0.8, "opacity": 0 },
+          "valueEnd": { "scale": 1.0, "opacity": 1 },
+          "easing": "spring",
+          "springConfig": { "damping": 13, "stiffness": 190, "mass": 0.8 }
+        },
+        {
+          "element": "final_hold_freeze",
+          "property": "static_screen_hold",
+          "frameStart": 570,
+          "frameEnd": 600,
+          "valueStart": 1.0,
+          "valueEnd": 1.0,
+          "easing": "static",
+          "notes": "Tepat 30 frame freeze hold di akhir video tanpa gerak"
+        }
+      ],
+      "audioCues": [
+        { "frame": 492, "type": "sfx_click", "file": "audio/sfx-mouse-click.wav", "volume": 0.7 },
+        { "frame": 510, "type": "sfx_whip_impact", "file": "audio/sfx-cinematic-impact.wav", "volume": 0.8 },
+        { "frame": 515, "type": "sfx_brand_chime", "file": "audio/sfx-trunova-sonic-logo.wav", "volume": 0.75 },
+        { "frame": 570, "type": "bgm_fade_out", "file": "audio/bgm-teaser-120bpm.wav", "volume": 0.0 }
+      ]
+    }
+  ]
+}

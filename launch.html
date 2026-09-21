@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRUNOVA — Motion Launch Site | Kiln Shutdown &amp; Overhaul Intelligence</title>
+  <meta name="description" content="Situs peluncuran sinematik interaktif Trunova: Platform pemantauan overhaul rotary kiln semen presisi tinggi dengan sinkronisasi blind-spot offline dan audit integritas 3-tahap.">
+  
+  <link rel="icon" type="image/svg+xml" href="icons/favicon.svg">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  
+  <!-- Typography: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- External Libraries for Cinematic Physics -->
+  <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <style>
+    /* ==========================================================================
+       INDUSTRIAL CYBER-PRECISION DESIGN SYSTEM TOKENS
+       ========================================================================== */
+    :root {
+      --bg-void: #05080E;
+      --bg-surface: #090E17;
+      --bg-card: rgba(14, 21, 35, 0.85);
+      --bg-card-hover: rgba(20, 30, 50, 0.95);
+      
+      --bezel-outer: rgba(255, 255, 255, 0.08);
+      --bezel-inner: rgba(255, 255, 255, 0.04);
+      --bezel-highlight: rgba(255, 255, 255, 0.15);
+
+      --text-white: #FFFFFF;
+      --text-mist: #E2E8F0;
+      --text-ash: #94A3B8;
+      --text-muted: #64748B;
+
+      --flame-amber: #F59E0B;
+      --flame-amber-glow: rgba(245, 158, 11, 0.25);
+      --cyber-cobalt: #2563EB;
+      --cyber-cobalt-light: #3B82F6;
+      --cyber-cobalt-glow: rgba(37, 99, 235, 0.3);
+      --signal-green: #10B981;
+      --signal-green-glow: rgba(16, 185, 129, 0.25);
+      --signal-red: #EF4444;
+
+      --font-display: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      --ease-snappy: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-fluid: cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      background-color: var(--bg-void);
+      color: var(--text-mist);
+      font-family: var(--font-display);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-void);
+      color: var(--text-mist);
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Ambient Industrial Film Grain & Mesh Lighting */
+    .ambient-mesh {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      background: 
+        radial-gradient(circle at 15% 20%, rgba(37, 99, 235, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 60%, rgba(245, 158, 11, 0.06) 0%, transparent 45%),
+        radial-gradient(circle at 50% 90%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+    }
+
+    .ambient-grid {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      background-size: 40px 40px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    }
+
+    /* ==========================================================================
+       HAPTIC DOUBLE-BEZEL HARDWARE CONTAINER (DOPPELRAND)
+       ========================================================================== */
+    .doppelrand-shell {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--bezel-outer);
+      border-radius: 28px;
+      padding: 6px;
+      position: relative;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      transition: border-color 0.4s var(--ease-fluid), box-shadow 0.4s var(--ease-fluid);
+    }
+
+    .doppelrand-shell:hover {
+      border-color: rgba(255, 255, 255, 0.16);
+      box-shadow: 0 30px 70px -15px rgba(0, 0, 0, 0.85);
+    }
+
+    .doppelrand-core {
+      background: var(--bg-surface);
+      border: 1px solid var(--bezel-inner);
+      border-radius: 22px;
+      box-shadow: inset 0 1px 1px var(--bezel-highlight);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ==========================================================================
+       FLOATING GLASS NAVIGATION BAR
+       ========================================================================== */
+    .nav-float-wrap {
+      position: fixed;
+      top: 24px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      z-index: 1000;
+      padding: 0 24px;
+      pointer-events: none;
+    }
+
+    .nav-pill-bar {
+      pointer-events: auto;
+      background: rgba(9, 14, 23, 0.8);
+      border: 1px solid var(--bezel-outer);
+      border-radius: 100px;
+      padding: 8px 14px 8px 20px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text-white);
+    }
+
+    .nav-brand-logo {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #1E293B, #0F172A);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .nav-brand-title {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      list-style: none;
+    }
+
+    .nav-link {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-ash);
+      text-decoration: none;
+      transition: color 0.2s ease;
+      letter-spacing: 0.02em;
+    }
+
+    .nav-link:hover {
+      color: var(--text-white);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sound-toggle-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-ash);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .sound-toggle-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--text-white);
+      transform: scale(1.05);
+    }
+
+    .sound-toggle-btn.active {
+      color: var(--flame-amber);
+      border-color: rgba(245, 158, 11, 0.4);
+      box-shadow: 0 0 12px var(--flame-amber-glow);
+    }
+
+    .nav-cta-btn {
+      background: linear-gradient(135deg, var(--cyber-cobalt), #1D4ED8);
+      color: var(--text-white);
+      border: none;
+      border-radius: 100px;
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 4px 14px var(--cyber-cobalt-glow);
+      transition: transform 0.2s var(--ease-snappy), box-shadow 0.2s ease;
+    }
+
+    .nav-cta-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px var(--cyber-cobalt-glow);
+    }
+
+    /* ==========================================================================
+       SECTION CONTAINERS & SPATIAL RHYTHM
+       ========================================================================== */
+    section {
+      position: relative;
+      z-index: 10;
+      padding: 140px 24px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .badge-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--bezel-outer);
+      border-radius: 100px;
+      padding: 6px 14px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-ash);
+      margin-bottom: 24px;
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--signal-green);
+      box-shadow: 0 0 10px var(--signal-green);
+      animation: pulseAnim 2s infinite;
+    }
+
+    .pulse-dot.amber {
+      background: var(--flame-amber);
+      box-shadow: 0 0 10px var(--flame-amber);
+    }
+
+    .pulse-dot.blue {
+      background: var(--cyber-cobalt);
+      box-shadow: 0 0 10px var(--cyber-cobalt);
+    }
+
+    @keyframes pulseAnim {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.6; }
+    }
+
+    .headline-monumental {
+      font-size: clamp(2.5rem, 5.5vw, 4.75rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      color: var(--text-white);
+      margin-bottom: 24px;
+    }
+
+    .headline-gradient-fire {
+      background: linear-gradient(135deg, #FFFFFF 30%, #F59E0B 75%, #D97706 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .headline-gradient-cyber {
+      background: linear-gradient(135deg, #FFFFFF 40%, #60A5FA 75%, #2563EB 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .lead-p {
+      font-size: clamp(1.05rem, 1.35vw, 1.25rem);
+      color: var(--text-ash);
+      max-width: 720px;
+      line-height: 1.65;
+      margin-bottom: 40px;
+      font-weight: 450;
+    }
+
+    /* ==========================================================================
+       ACT 0: PROLOGUE FULLSCREEN HERO
+       ========================================================================== */
+    .hero-fullscreen {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding-top: 160px;
+      padding-bottom: 100px;
+      position: relative;
+    }
+
+    .hero-video-scrim {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      z-index: -1;
+      border-radius: 40px;
+      margin: 20px;
+    }
+
+    .hero-video-scrim video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.35;
+      filter: contrast(1.2) saturate(1.1);
+      transform: scale(1.02);
+      transition: opacity 1.2s ease;
+    }
+
+    .hero-scrim-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(5, 8, 14, 0.4) 0%, rgba(5, 8, 14, 0.95) 85%);
+    }
+
+    .hero-stats-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      width: 100%;
+      max-width: 1040px;
+      margin-top: 48px;
+    }
+
+    .hero-stat-card {
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid var(--bezel-outer);
+      border-radius: 18px;
+      padding: 18px 20px;
+      text-align: left;
+      backdrop-filter: blur(12px);
+    }
+
+    .stat-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stat-val {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text-white);
+      letter-spacing: -0.02em;
+    }
+
+    .stat-sub {
+      font-size: 12px;
+      color: var(--text-ash);
+      margin-top: 2px;
+    }
+
+    /* ==========================================================================
+       ACT 1: THE ANALOG CHAOS VS DIGITAL SENTINEL
+       ========================================================================== */
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-top: 48px;
+    }
+
+    .compare-card-chaos {
+      background: rgba(239, 68, 68, 0.03);
+      border: 1px solid rgba(239, 68, 68, 0.15);
+      border-radius: 24px;
+      padding: 36px;
+      position: relative;
+    }
+
+    .compare-card-sentinel {
+      background: rgba(37, 99, 235, 0.03);
+      border: 1px solid rgba(37, 99, 235, 0.2);
+      border-radius: 24px;
+      padding: 36px;
+      position: relative;
+      box-shadow: 0 0 50px rgba(37, 99, 235, 0.08);
+    }
+
+    .compare-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .compare-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+
+    .tag-danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: #F87171;
+    }
+
+    .tag-secure {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34D399;
+    }
+
+    .point-item {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .point-icon-box {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .icon-box-red {
+      background: rgba(239, 68, 68, 0.1);
+      color: #EF4444;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .icon-box-green {
+      background: rgba(16, 185, 129, 0.1);
+      color: #10B981;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .point-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-white);
+      margin-bottom: 4px;
+    }
+
+    .point-desc {
+      font-size: 13px;
+      color: var(--text-ash);
+      line-height: 1.5;
+    }
+
+    /* ==========================================================================
+       ACT 2: THE TWIN-ENGINE MOTION SIMULATOR (CENTERPIECE)
+       ========================================================================== */
+    .simulator-stage-wrap {
+      margin-top: 48px;
+      position: relative;
+    }
+
+    .sim-controls-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--bezel-outer);
+      border-radius: 18px;
+      padding: 16px 24px;
+      margin-bottom: 32px;
+      backdrop-filter: blur(16px);
+    }
+
+    .sim-trigger-btn {
+      background: linear-gradient(135deg, var(--cyber-cobalt), #1D4ED8);
+      color: var(--text-white);
+      border: none;
+      border-radius: 12px;
+      padding: 12px 24px;
+      font-weight: 700;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px var(--cyber-cobalt-glow);
+      transition: all 0.3s var(--ease-snappy);
+    }
+
+    .sim-trigger-btn:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 12px 32px var(--cyber-cobalt-glow);
+    }
+
+    .sim-dual-container {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 32px;
+      align-items: center;
+      position: relative;
+    }
+
+    /* Beam of telemetry connecting both engines */
+    .telemetry-beam {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 140px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--cyber-cobalt), var(--signal-green));
+      border-radius: 2px;
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      box-shadow: 0 0 20px var(--cyber-cobalt-light);
+    }
+
+    /* Desktop Window Viewport */
+    .desktop-terminal {
+      width: 100%;
+      background: #0B111E;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+    }
+
+    .window-header {
+      background: #070B14;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .window-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .w-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .desktop-body {
+      padding: 24px;
+    }
+
+    .desktop-kpi-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .kpi-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .kpi-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .kpi-num {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text-white);
+      margin: 4px 0 2px 0;
+    }
+
+    .chart-container-box {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 14px;
+      padding: 16px;
+      height: 220px;
+      position: relative;
+    }
+
+    /* Mobile Smartphone Viewport */
+    .mobile-device-wrap {
+      display: flex;
+      justify-content: center;
+    }
+
+    .smartphone-chassis {
+      width: 320px;
+      height: 640px;
+      background: #0A0F1D;
+      border: 10px solid #1E293B;
+      border-radius: 46px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), inset 0 0 2px rgba(255, 255, 255, 0.3);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .phone-island {
+      width: 90px;
+      height: 22px;
+      background: #000000;
+      border-radius: 20px;
+      margin: 10px auto 0 auto;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 10px;
+    }
+
+    .phone-camera {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #111827;
+      border: 1px solid #1F2937;
+    }
+
+    .phone-screen-content {
+      flex: 1;
+      background: #F8FAFC;
+      color: #0F172A;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .phone-top-bar {
+      padding: 6px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .phone-offline-badge {
+      background: #DCFCE7;
+      color: #15803D;
+      padding: 2px 8px;
+      border-radius: 100px;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .phone-form-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .phone-card-white {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    }
+
+    .slider-interactive-track {
+      width: 100%;
+      accent-color: var(--signal-green);
+      cursor: pointer;
+      margin: 10px 0;
+    }
+
+    .phone-submit-action {
+      background: var(--cyber-cobalt);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    /* ==========================================================================
+       ACT 3: 4 INVARIANT PILLARS LAB
+       ========================================================================== */
+    .tab-pills-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+
+    .tab-pill {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--bezel-outer);
+      color: var(--text-ash);
+      padding: 12px 20px;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s var(--ease-snappy);
+    }
+
+    .tab-pill:hover {
+      color: var(--text-white);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .tab-pill.active {
+      background: rgba(37, 99, 235, 0.15);
+      border-color: var(--cyber-cobalt);
+      color: var(--text-white);
+      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.2);
+    }
+
+    .tab-content-panel {
+      display: none;
+      animation: fadeIn 0.4s var(--ease-fluid);
+    }
+
+    .tab-content-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Image Loupe Before/After */
+    .loupe-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .loupe-photo-card {
+      background: #0D1424;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    .loupe-photo-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--cyber-cobalt);
+    }
+
+    .loupe-photo-card img {
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .loupe-badge {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-white);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 8px;
+    }
+
+    .loupe-meta {
+      padding: 16px;
+    }
+
+    /* ==========================================================================
+       ACT 5: EXECUTIVE COMMAND DECK (CTA)
+       ========================================================================== */
+    .cta-deck-card {
+      background: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.18) 0%, rgba(14, 21, 35, 0.95) 75%);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 36px;
+      padding: 80px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.9);
+    }
+
+    .cta-button-group {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 40px;
+      flex-wrap: wrap;
+    }
+
+    .btn-massive-cta {
+      background: linear-gradient(135deg, var(--cyber-cobalt), #1D4ED8);
+      color: var(--text-white);
+      border: none;
+      border-radius: 100px;
+      padding: 18px 42px;
+      font-size: 16px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 10px 30px var(--cyber-cobalt-glow);
+      transition: all 0.3s var(--ease-snappy);
+    }
+
+    .btn-massive-cta:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 15px 40px var(--cyber-cobalt-glow);
+    }
+
+    .btn-ghost-cta {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-white);
+      border-radius: 100px;
+      padding: 18px 36px;
+      font-size: 16px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-ghost-cta:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Modal Styling */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(16px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .modal-box {
+      background: #0B111E;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 28px;
+      width: 100%;
+      max-width: 540px;
+      padding: 36px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
+      position: relative;
+    }
+
+    @media (max-width: 992px) {
+      .comparison-grid, .sim-dual-container, .hero-stats-strip, .loupe-container {
+        grid-template-columns: 1fr;
+      }
+      .nav-links {
+        display: none;
+      }
+      .headline-monumental {
+        font-size: 2.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ambient-mesh"></div>
+  <div class="ambient-grid"></div>
+
+  <!-- FLOATING NAVIGATION BAR -->
+  <header class="nav-float-wrap">
+    <nav class="nav-pill-bar">
+      <a href="#hero" class="nav-brand">
+        <div class="nav-brand-logo">
+          <img src="assets/branding/tr-monogram-white.svg" alt="Trunova" style="width: 18px; height: 18px;">
+        </div>
+        <span class="nav-brand-title">TRUNOVA</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#prologue" class="nav-link">Situasi Lapangan</a></li>
+        <li><a href="#chaos" class="nav-link">Audit Risiko</a></li>
+        <li><a href="#simulator" class="nav-link">Simulator Telemetri</a></li>
+        <li><a href="#pillars" class="nav-link">4 Pilar Integritas</a></li>
+        <li><a href="landing.html" class="nav-link" style="color: var(--flame-amber);">← Ke Portal Web</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button type="button" class="sound-toggle-btn" id="soundToggleBtn" aria-label="Toggle Audio Atmosfer">
+          <i data-lucide="volume-2" style="width: 16px; height: 16px;"></i>
+        </button>
+        <a href="#deck" class="nav-cta-btn">
+          <span>Jadwalkan Demo</span>
+          <i data-lucide="arrow-up-right" style="width: 14px; height: 14px;"></i>
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- PROLOGUE: 1,450°C BLIND-SPOT REALITY -->
+  <section class="hero-fullscreen" id="hero">
+    <div class="hero-video-scrim">
+      <video id="heroBgVideo" autoplay muted loop playsinline poster="assets/audit-during.jpg">
+        <source src="assets/hero-kiln.mp4" type="video/mp4">
+        <source src="assets/hero-kiln.mov" type="video/quicktime">
+      </video>
+      <div class="hero-scrim-overlay"></div>
+    </div>
+
+    <div class="badge-eyebrow">
+      <span class="pulse-dot amber"></span>
+      <span>TUBAN LINE 4 OVERHAUL · 1,450°C BURNING ZONE · BLIND SPOT</span>
+    </div>
+
+    <h1 class="headline-monumental">
+      DI KEDALAMAN KILN.<br>
+      <span class="headline-gradient-fire">NOL SINYAL. PRESISI MUTLAK.</span>
+    </h1>
+
+    <p class="lead-p">
+      Satu hari keterlambatan shutdown rotary kiln membakar miliaran rupiah. Di dalam shell baja 60 meter tanpa jangkauan 4G, Trunova menjamin setiap bata tahan api, inspeksi foto, dan Kurva-S terverifikasi tanpa risiko rumus tertimpa.
+    </p>
+
+    <div class="cta-button-group" style="margin-top: 0; margin-bottom: 24px;">
+      <a href="#simulator" class="btn-massive-cta">
+        <i data-lucide="play" style="width: 18px; height: 18px; fill: white;"></i>
+        <span>Jalankan Simulator Twin-Engine</span>
+      </a>
+      <a href="index.html" target="_blank" class="btn-ghost-cta">
+        <i data-lucide="external-link" style="width: 18px; height: 18px;"></i>
+        <span>Buka Webapp Operasional</span>
+      </a>
+    </div>
+
+    <!-- Key Metrics Strip -->
+    <div class="hero-stats-strip">
+      <div class="hero-stat-card">
+        <div class="stat-label"><i data-lucide="alert-triangle" style="width: 13px; height: 13px; color: var(--flame-amber);"></i> Risiko Downtime</div>
+        <div class="stat-val">Rp 1.8 Milyar</div>
+        <div class="stat-sub">Biaya peluang per hari kiln tertunda</div>
+      </div>
+      <div class="hero-stat-card">
+        <div class="stat-label"><i data-lucide="cylinder" style="width: 13px; height: 13px; color: var(--cyber-cobalt-light);"></i> Shell Kiln</div>
+        <div class="stat-val">60.0 Meter</div>
+        <div class="stat-sub">Diameter Ø 4.2m · Farady cage alami</div>
+      </div>
+      <div class="hero-stat-card">
+        <div class="stat-label"><i data-lucide="shield-check" style="width: 13px; height: 13px; color: var(--signal-green);"></i> Data Integrity</div>
+        <div class="stat-val">100.0%</div>
+        <div class="stat-sub">Anti-Miskeying Monotonic Guard</div>
+      </div>
+      <div class="hero-stat-card">
+        <div class="stat-label"><i data-lucide="trending-up" style="width: 13px; height: 13px; color: #A855F7;"></i> S-Curve Engine</div>
+        <div class="stat-val">&plusmn;0.0% Variance</div>
+        <div class="stat-sub">Kalkulasi otomatis EVM terpadu</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ACT 1: THE ANALOG CHAOS VS DIGITAL SENTINEL -->
+  <section id="chaos">
+    <div style="text-align: center; max-width: 800px; margin: 0 auto;">
+      <div class="badge-eyebrow">
+        <span class="pulse-dot"></span>
+        <span>BABAK I // ANATOMI KEGAGALAN SISTEM MANUAL</span>
+      </div>
+      <h2 class="headline-monumental" style="font-size: clamp(2rem, 4vw, 3.25rem);">
+        Spreadsheet Hancur Saat Ditekan Waktu.<br>
+        <span class="headline-gradient-cyber">Trunova Menjaga Integritas Data Lapangan.</span>
+      </h2>
+      <p class="lead-p" style="margin: 0 auto 36px auto;">
+        Ketika ratusan teknisi kontraktor memasang batu bata di tengah debu dan gelap, mengandalkan grup WhatsApp dan formula spreadsheet menciptakan kekacauan yang menyamarkan deviasi kritis.
+      </p>
+    </div>
+
+    <div class="comparison-grid">
+      <!-- Chaos Card -->
+      <div class="compare-card-chaos">
+        <div class="compare-header">
+          <span class="compare-tag tag-danger">❌ Metode Spreadsheet Manual</span>
+          <i data-lucide="file-x" style="width: 20px; height: 20px; color: #EF4444;"></i>
+        </div>
+
+        <div class="point-item">
+          <div class="point-icon-box icon-box-red"><i data-lucide="hash" style="width: 16px; height: 16px;"></i></div>
+          <div>
+            <div class="point-title">Rumus Tertimpa Tanpa Jejak Audit</div>
+            <div class="point-desc">Teknisi tidak sengaja meng-overwrite sel formula persentase komposit, menyebabkan laporan manajemen terdistorsi hingga hari berikutnya.</div>
+          </div>
+        </div>
+
+        <div class="point-item">
+          <div class="point-icon-box icon-box-red"><i data-lucide="arrow-down-left" style="width: 16px; height: 16px;"></i></div>
+          <div>
+            <div class="point-title">Human Error: Progres Berkurang (Non-Monotonik)</div>
+            <div class="point-desc">Laporan kemarin 85%, hari ini salah ketik jadi 58%. Spreadsheet tidak memiliki pengaman untuk menolak nilai yang mundur secara tidak logis.</div>
+          </div>
+        </div>
+
+        <div class="point-item">
+          <div class="point-icon-box icon-box-red"><i data-lucide="image-off" style="width: 16px; height: 16px;"></i></div>
+          <div>
+            <div class="point-title">Foto WhatsApp Tercecer &amp; Tanpa Koordinat</div>
+            <div class="point-desc">Ribuan foto terkompresi di chat grup tanpa penanda ring meteran, tanggal, atau validasi supervisor — menyulitkan audit klaim garansi.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sentinel Card -->
+      <div class="compare-card-sentinel">
+        <div class="compare-header">
+          <span class="compare-tag tag-secure">✓ Arsitektur Trunova Sentinel</span>
+          <i data-lucide="shield-check" style="width: 20px; height: 20px; color: #10B981;"></i>
+        </div>
+
+        <div class="point-item">
+          <div class="point-icon-box icon-box-green"><i data-lucide="lock" style="width: 16px; height: 16px;"></i></div>
+          <div>
+            <div class="point-title">Anti-Miskeying Monotonic Guard Terkunci</div>
+            <div class="point-desc">Sistem secara matematis menolak input progres yang lebih rendah dari pencapaian sebelumnya. Hanya kenaikan valid yang diizinkan masuk.</div>
+          </div>
+        </div>
+
+        <div class="point-item">
+          <div class="point-icon-box icon-box-green"><i data-lucide="wifi-off" style="width: 16px; height: 16px;"></i></div>
+          <div>
+            <div class="point-title">Blind-Spot Offline PWA &amp; Background Sync</div>
+            <div class="point-desc">Teknisi tetap menginput data di dalam kiln shell tanpa 4G. Antrean mutasi tersimpan di IndexedDB dan otomatis tersinkron saat keluar kiln.</div>
+          </div>
+        </div>
+
+        <div class="point-item">
+          <div class="point-icon-box icon-box-green"><i data-lucide="camera" style="width: 16px; height: 16px;"></i></div>
+          <div>
+            <div class="point-title">Audit Visual 3-Tahap Ber-Metadata Aman</div>
+            <div class="point-desc">Setiap segmen wajib dilengkapi bukti Before (bongkar), During (pasang), dan After (kunci bata) dengan cap waktu dan geotag tahan tamper.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ACT 2: THE TWIN-ENGINE MOTION SIMULATOR (CENTERPIECE) -->
+  <section id="simulator">
+    <div style="text-align: center; max-width: 860px; margin: 0 auto;">
+      <div class="badge-eyebrow">
+        <span class="pulse-dot blue"></span>
+        <span>BABAK II // TWIN-ENGINE REAL-TIME TELEMETRY SIMULATOR</span>
+      </div>
+      <h2 class="headline-monumental" style="font-size: clamp(2rem, 4vw, 3.25rem);">
+        Dari Tangan Teknisi di Dalam Shell,<br>
+        <span class="headline-gradient-fire">Langsung ke Dashboard Ruang Direksi.</span>
+      </h2>
+      <p class="lead-p" style="margin: 0 auto;">
+        Uji coba interaktif di bawah ini: Simulasikan bagaimana laporan progres pemasangan bata tahan api di smartphone lapangan seketika memperbarui S-Curve dan tabel deviasi di Command Center PC.
+      </p>
+    </div>
+
+    <div class="simulator-stage-wrap">
+      <!-- Control Bar -->
+      <div class="sim-controls-bar">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <span class="pulse-dot amber"></span>
+          <div>
+            <div style="font-size: 14px; font-weight: 700; color: var(--text-white);">Sektor Terpilih: IAC-04 (Burning Zone Ring 32)</div>
+            <div style="font-size: 12px; color: var(--text-ash);">Bata Magnesite Spinel · Target 100% · Baseline 88.0%</div>
+          </div>
+        </div>
+
+        <button type="button" class="sim-trigger-btn" id="btnRunSimulation">
+          <i data-lucide="zap" style="width: 16px; height: 16px; fill: white;"></i>
+          <span>Jalankan Simulasi Sinkronisasi</span>
+        </button>
+      </div>
+
+      <div class="sim-dual-container doppelrand-shell">
+        <div class="telemetry-beam" id="telemetryBeam"></div>
+
+        <!-- LEFT: DESKTOP COMMAND CENTER -->
+        <div class="desktop-terminal">
+          <div class="window-header">
+            <div class="window-dots">
+              <span class="w-dot" style="background: #EF4444;"></span>
+              <span class="w-dot" style="background: #F59E0B;"></span>
+              <span class="w-dot" style="background: #10B981;"></span>
+            </div>
+            <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-ash);">
+              TRUNOVA COMMAND CENTER — KILN TUBAN #4 (LINE 4)
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: #34D399; font-family: var(--font-mono);">
+              <span class="pulse-dot" style="width: 5px; height: 5px;"></span> SSE CONNECTED
+            </div>
+          </div>
+
+          <div class="desktop-body">
+            <!-- KPI Strip -->
+            <div class="desktop-kpi-row">
+              <div class="kpi-card">
+                <div class="kpi-label">Progres Total EVM</div>
+                <div class="kpi-num" id="deskEvmTotal">84.2%</div>
+                <div style="font-size: 11px; color: #10B981;" id="deskEvmStatus">▲ +2.4% On Schedule</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-label">Ring 32 Burning Zone</div>
+                <div class="kpi-num" id="deskRing32Val" style="color: #60A5FA;">88.0%</div>
+                <div style="font-size: 11px; color: var(--text-ash);" id="deskRing32Status">Dalam Pengerjaan</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-label">Tonase Terpasang</div>
+                <div class="kpi-num" id="deskTonaseVal">142.8 T</div>
+                <div style="font-size: 11px; color: var(--text-ash);">Target: 165.0 Ton</div>
+              </div>
+            </div>
+
+            <!-- S-Curve Canvas Chart -->
+            <div class="chart-container-box">
+              <canvas id="simCurveCanvas"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: RUGGED FIELD SMARTPHONE PWA -->
+        <div class="mobile-device-wrap">
+          <div class="smartphone-chassis">
+            <div class="phone-island">
+              <div class="phone-camera"></div>
+              <div style="width: 24px; height: 3px; background: #1F2937; border-radius: 2px;"></div>
+            </div>
+
+            <div class="phone-screen-content">
+              <div class="phone-top-bar">
+                <span>09:41</span>
+                <span class="phone-offline-badge" id="phoneOfflineTag">● OFFLINE READY</span>
+              </div>
+
+              <!-- Header inside phone -->
+              <div style="padding: 10px 16px; background: #FFFFFF; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <div style="width: 24px; height: 24px; background: #0F172A; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                    <img src="assets/branding/tr-monogram-white.svg" alt="tr" style="width: 14px; height: 14px;">
+                  </div>
+                  <span style="font-size: 13px; font-weight: 800; color: #0F172A;">TRUNOVA LAPANGAN</span>
+                </div>
+                <span style="font-size: 10px; font-weight: 700; color: #64748B;">SHIFT 1</span>
+              </div>
+
+              <div class="phone-form-body">
+                <div class="phone-card-white">
+                  <div style="font-size: 10px; font-weight: 800; color: #2563EB; text-transform: uppercase;">IAC-04 Burning Zone</div>
+                  <div style="font-size: 14px; font-weight: 800; color: #0F172A; margin: 2px 0;">Bricking Magnesite Ring 32</div>
+                  <div style="font-size: 11px; color: #64748B;">STA 18.2m - 20.4m · 35 Bata/Ring</div>
+                </div>
+
+                <div class="phone-card-white">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 12px; font-weight: 700; color: #334155;">Progres Fisik Kumulatif</span>
+                    <span style="font-size: 18px; font-weight: 900; color: #10B981;" id="phoneSliderDisplay">88.0%</span>
+                  </div>
+                  
+                  <input type="range" min="0" max="100" value="88" class="slider-interactive-track" id="phoneProgressSlider">
+
+                  <div style="font-size: 10px; color: #2563EB; display: flex; align-items: center; gap: 4px; font-weight: 700; margin-top: 4px;">
+                    <i data-lucide="lock" style="width: 10px; height: 10px;"></i>
+                    <span id="antiMiskeyPhoneNote">Anti-Miskeying: Batas Minimal 88.0%</span>
+                  </div>
+                </div>
+
+                <div class="phone-card-white" style="display: flex; align-items: center; gap: 10px;">
+                  <img src="assets/audit-during.jpg" alt="Foto Ring 32" style="width: 44px; height: 44px; border-radius: 8px; object-fit: cover;">
+                  <div style="flex: 1;">
+                    <div style="font-size: 11px; font-weight: 700; color: #0F172A;">IMG_RING32_BRICK.JPG</div>
+                    <div style="font-size: 10px; color: #64748B;">Audit Foto Tahap 2 · GPS Checked</div>
+                  </div>
+                  <i data-lucide="check-circle-2" style="width: 18px; height: 18px; color: #10B981;"></i>
+                </div>
+
+                <button type="button" class="phone-submit-action" id="btnPhoneSubmit">
+                  <i data-lucide="send" style="width: 14px; height: 14px;"></i>
+                  <span id="btnPhoneSubmitText">KIRIM LAPORAN LAPANGAN 🚀</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ACT 3: 4 INVARIANT PILLARS INTERACTIVE LAB -->
+  <section id="pillars">
+    <div style="text-align: center; max-width: 800px; margin: 0 auto;">
+      <div class="badge-eyebrow">
+        <span class="pulse-dot amber"></span>
+        <span>BABAK III // 4 PILAR INTEGRITAS REKAYASA</span>
+      </div>
+      <h2 class="headline-monumental" style="font-size: clamp(2rem, 4vw, 3.25rem);">
+        Dibangun untuk Lingkungan Keras.<br>
+        <span class="headline-gradient-fire">Tanpa Celah Kesalahan Manusia.</span>
+      </h2>
+      <p class="lead-p" style="margin: 0 auto 36px auto;">
+        Klik setiap pilar di bawah ini untuk melihat laboratorium interaktif bagaimana algoritma pengaman Trunova beroperasi di lapangan.
+      </p>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="tab-pills-bar" style="justify-content: center;">
+      <button type="button" class="tab-pill active" onclick="switchPillarTab('tab-miskeying')">
+        <i data-lucide="shield-alert" style="width: 16px; height: 16px;"></i>
+        <span>1. Anti-Miskeying Monotonic Guard</span>
+      </button>
+      <button type="button" class="tab-pill" onclick="switchPillarTab('tab-offline')">
+        <i data-lucide="wifi-off" style="width: 16px; height: 16px;"></i>
+        <span>2. Blind-Spot Offline Queue</span>
+      </button>
+      <button type="button" class="tab-pill" onclick="switchPillarTab('tab-qc')">
+        <i data-lucide="camera" style="width: 16px; height: 16px;"></i>
+        <span>3. Audit Foto 3-Tahap</span>
+      </button>
+      <button type="button" class="tab-pill" onclick="switchPillarTab('tab-scurve')">
+        <i data-lucide="line-chart" style="width: 16px; height: 16px;"></i>
+        <span>4. Real-Time EVM Engine</span>
+      </button>
+    </div>
+
+    <!-- PANEL 1: ANTI-MISKEYING SLIDER EXPERIMENT -->
+    <div class="tab-content-panel active doppelrand-shell" id="tab-miskeying">
+      <div class="doppelrand-core" style="padding: 40px;">
+        <div style="max-width: 700px; margin: 0 auto; text-align: center;">
+          <h3 style="font-size: 24px; font-weight: 800; color: var(--text-white); margin-bottom: 12px;">
+            Coba Turunkan Progres Lapangan di Bawah Milestone 88.0%
+          </h3>
+          <p style="font-size: 14px; color: var(--text-ash); margin-bottom: 24px;">
+            Dalam pengerjaan refraktori kiln, batu yang sudah dipasang tidak mungkin hilang begitu saja. Geser slider di bawah ke arah kiri (misal ke 50%) untuk memicu deteksi pengaman integritas.
+          </p>
+
+          <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--bezel-outer); border-radius: 20px; padding: 28px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+              <span style="font-family: var(--font-mono); font-size: 13px; color: var(--text-ash);">Simulasi Input Lapangan:</span>
+              <span style="font-family: var(--font-mono); font-size: 28px; font-weight: 800; color: var(--flame-amber);" id="labSliderVal">88.0%</span>
+            </div>
+
+            <input type="range" min="0" max="100" value="88" style="width: 100%; accent-color: var(--flame-amber); cursor: pointer;" id="labSlider">
+
+            <div id="labSecurityAlert" style="margin-top: 18px; padding: 12px 16px; border-radius: 12px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #FCA5A5; font-size: 13px; font-weight: 600; display: none; align-items: center; gap: 10px;">
+              <i data-lucide="shield-x" style="width: 20px; height: 20px; flex-shrink: 0; color: #EF4444;"></i>
+              <span>ANTI-MISKEYING INTERCEPT: Percobaan penurunan data ke <strong id="attemptedVal">0%</strong> diblokir! Progres kumulatif refraktori bersifat monotonik naik (>= 88.0%).</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL 2: OFFLINE QUEUE SIMULATOR -->
+    <div class="tab-content-panel doppelrand-shell" id="tab-offline">
+      <div class="doppelrand-core" style="padding: 40px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center;">
+          <div>
+            <h3 style="font-size: 24px; font-weight: 800; color: var(--text-white); margin-bottom: 12px;">
+              Simulasi Blind-Spot Kiln: Putus &amp; Sambung Sinyal
+            </h3>
+            <p style="font-size: 14px; color: var(--text-ash); margin-bottom: 24px;">
+              Shell baja rotary kiln bertindak sebagai sangkar Faraday yang memblokir 100% gelombang radio 4G dan Wi-Fi. Trunova memanfaatkan antrean mutasi IndexedDB lokal yang tidak bergantung pada koneksi internet sama sekali.
+            </p>
+
+            <button type="button" class="btn-ghost-cta" id="btnToggleNetworkState" style="border-radius: 14px; padding: 12px 24px;">
+              <i data-lucide="wifi" id="netStateIcon" style="width: 18px; height: 18px; color: #10B981;"></i>
+              <span id="netStateLabel">Status Jaringan: ONLINE (Klik untuk Matikan)</span>
+            </button>
+          </div>
+
+          <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--bezel-outer); border-radius: 20px; padding: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <span style="font-family: var(--font-mono); font-size: 12px; color: var(--text-ash);">ANTREAN MUTASI LOKAL (INDEXEDDB)</span>
+              <span class="compare-tag tag-secure" id="queueStatusTag">0 ANTRIAN</span>
+            </div>
+
+            <div id="queueListContainer" style="display: flex; flex-direction: column; gap: 10px; min-height: 120px; justify-content: center; text-align: center; color: var(--text-muted); font-size: 13px;">
+              Semua telemetri telah tersinkronisasi ke server pusat.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL 3: 3-STAGE QC LOUPE SLIDER -->
+    <div class="tab-content-panel doppelrand-shell" id="tab-qc">
+      <div class="doppelrand-core" style="padding: 40px;">
+        <div style="text-align: center; max-width: 700px; margin: 0 auto 32px auto;">
+          <h3 style="font-size: 24px; font-weight: 800; color: var(--text-white); margin-bottom: 8px;">
+            Dokumentasi Visual 3-Tahap Terverifikasi
+          </h3>
+          <p style="font-size: 14px; color: var(--text-ash);">
+            Bandingkan foto nyata pelaksanaan overhaul kiln Tuban Line 4 dari pembongkaran awal hingga penguncian akhir.
+          </p>
+        </div>
+
+        <div class="loupe-container">
+          <!-- Stage 1: Before -->
+          <div class="loupe-photo-card">
+            <span class="loupe-badge" style="background: rgba(239, 68, 68, 0.8);">TAHAP 1: BEFORE</span>
+            <img src="assets/audit-before.jpg" alt="Tahap Sebelum Pembongkaran">
+            <div class="loupe-meta">
+              <div style="font-size: 14px; font-weight: 700; color: var(--text-white);">Pembongkaran Bata Aus</div>
+              <div style="font-size: 12px; color: var(--text-ash);">Kondisi shell sebelum pemasangan refractory baru.</div>
+            </div>
+          </div>
+
+          <!-- Stage 2: During -->
+          <div class="loupe-photo-card">
+            <span class="loupe-badge" style="background: rgba(245, 158, 11, 0.8);">TAHAP 2: DURING</span>
+            <img src="assets/audit-during.jpg" alt="Tahap Selama Pemasangan">
+            <div class="loupe-meta">
+              <div style="font-size: 14px; font-weight: 700; color: var(--text-white);">Pemasangan Bata Spinel</div>
+              <div style="font-size: 12px; color: var(--text-ash);">Proses penyusunan batu magnesite dengan ring jack.</div>
+            </div>
+          </div>
+
+          <!-- Stage 3: After -->
+          <div class="loupe-photo-card">
+            <span class="loupe-badge" style="background: rgba(16, 185, 129, 0.8);">TAHAP 3: AFTER</span>
+            <img src="assets/audit-after.jpg" alt="Tahap Kunci Bata Selesai">
+            <div class="loupe-meta">
+              <div style="font-size: 14px; font-weight: 700; color: var(--text-white);">Key Brick Terkunci Rapat</div>
+              <div style="font-size: 12px; color: var(--text-ash);">Verifikasi celah ekspansi &amp; siap uji pembakaran.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL 4: S-CURVE FORMULA BREAKDOWN -->
+    <div class="tab-content-panel doppelrand-shell" id="tab-scurve">
+      <div class="doppelrand-core" style="padding: 40px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
+          <div>
+            <h3 style="font-size: 24px; font-weight: 800; color: var(--text-white); margin-bottom: 12px;">
+              Formula Matematis EVM Terbuka &amp; Teruji
+            </h3>
+            <p style="font-size: 14px; color: var(--text-ash); margin-bottom: 20px;">
+              Trunova menghitung deviasi jadwal menggunakan metodologi Earned Value Management (EVM) standar internasional:
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+              <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--bezel-outer); border-radius: 12px; padding: 14px;">
+                <div style="font-family: var(--font-mono); font-size: 12px; color: #60A5FA;">SCHEDULE VARIANCE (SV) = EV - PV</div>
+                <div style="font-size: 12px; color: var(--text-ash); margin-top: 4px;">Deviasi jadwal terukur langsung dalam persentase absolut terhadap target firing.</div>
+              </div>
+
+              <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--bezel-outer); border-radius: 12px; padding: 14px;">
+                <div style="font-family: var(--font-mono); font-size: 12px; color: #34D399;">SCHEDULE PERFORMANCE INDEX (SPI) = EV / PV</div>
+                <div style="font-size: 12px; color: var(--text-ash); margin-top: 4px;">Indeks efisiensi: Nilai &gt; 1.0 menandakan pekerjaan lebih cepat dari rencana.</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--bezel-outer); border-radius: 18px; padding: 24px;">
+            <div style="font-family: var(--font-mono); font-size: 12px; color: var(--text-ash); margin-bottom: 16px;">LIVE CALCULATION SIMULATOR:</div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 13px;">
+              <span>Planned Value (Target Hari ke-10):</span>
+              <strong style="font-family: var(--font-mono);">81.8%</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 13px;">
+              <span>Earned Value (Aktual Lapangan):</span>
+              <strong style="font-family: var(--font-mono); color: #34D399;">86.8%</strong>
+            </div>
+            <hr style="border: none; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 12px 0;">
+            <div style="display: flex; justify-content: space-between; font-size: 14px;">
+              <span style="font-weight: 700;">Status Proyek Overhaul:</span>
+              <strong style="color: #34D399; font-family: var(--font-mono);">ACCELERATED (SPI 1.06)</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ACT 5: EXECUTIVE COMMAND DECK (CTA) -->
+  <section id="deck">
+    <div class="cta-deck-card">
+      <div class="badge-eyebrow" style="background: rgba(37, 99, 235, 0.2); border-color: rgba(37, 99, 235, 0.4); color: #93C5FD;">
+        <span class="pulse-dot blue"></span>
+        <span>SIAP UNTUK SHUTDOWN BERIKUTNYA</span>
+      </div>
+
+      <h2 class="headline-monumental" style="margin-bottom: 18px;">
+        Kendalikan Shutdown Kiln Anda<br>
+        <span class="headline-gradient-cyber">Tanpa Kompromi Integritas.</span>
+      </h2>
+
+      <p class="lead-p" style="margin: 0 auto; max-width: 680px;">
+        Bergabunglah dengan tim overhaul terkemuka yang telah mengeliminasi risiko kesalahan ketik spreadsheet dan memastikan firing tepat waktu.
+      </p>
+
+      <div class="cta-button-group">
+        <button type="button" class="btn-massive-cta" onclick="openDemoModal()">
+          <i data-lucide="calendar" style="width: 18px; height: 18px;"></i>
+          <span>Jadwalkan Sesi Demo Teknis</span>
+        </button>
+        <a href="landing.html" class="btn-ghost-cta">
+          <i data-lucide="book-open" style="width: 18px; height: 18px;"></i>
+          <span>Pelajari Dokumen Lengkap</span>
+        </a>
+      </div>
+
+      <div style="margin-top: 40px; font-family: var(--font-mono); font-size: 12px; color: var(--text-ash); display: flex; justify-content: center; gap: 24px; flex-wrap: wrap;">
+        <span>✓ 0 Data Loss di Blind-Spot</span>
+        <span>✓ Verifikasi QC 3-Tahap</span>
+        <span>✓ S-Curve Standar EVM</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEMO BOOKING MODAL -->
+  <div class="modal-backdrop" id="demoModal">
+    <div class="modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <img src="assets/branding/tr-monogram-white.svg" alt="Trunova" style="width: 20px; height: 20px;">
+          <h4 style="font-size: 18px; font-weight: 800; color: var(--text-white);">Jadwalkan Demo Trunova</h4>
+        </div>
+        <button type="button" onclick="closeDemoModal()" style="background: none; border: none; color: var(--text-ash); cursor: pointer;">
+          <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+        </button>
+      </div>
+
+      <p style="font-size: 13px; color: var(--text-ash); margin-bottom: 20px;">
+        Pilih tanggal dan isi kontak tim teknis pabrik semen Anda untuk sesi demo interaktif komprehensif.
+      </p>
+
+      <form onsubmit="handleDemoSubmit(event)">
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-size: 12px; color: var(--text-ash); margin-bottom: 4px;">Nama Lengkap &amp; Jabatan</label>
+          <input type="text" required placeholder="Contoh: Bpk. Dani (Plant Maintenance Manager)" style="width: 100%; background: #070B14; border: 1px solid var(--bezel-outer); border-radius: 10px; padding: 10px 14px; color: white; font-size: 13px;">
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-size: 12px; color: var(--text-ash); margin-bottom: 4px;">Pabrik Semen / Unit Kiln</label>
+          <input type="text" required placeholder="Contoh: PT Semen Indonesia - Tuban Line 4" style="width: 100%; background: #070B14; border: 1px solid var(--bezel-outer); border-radius: 10px; padding: 10px 14px; color: white; font-size: 13px;">
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-size: 12px; color: var(--text-ash); margin-bottom: 4px;">Email Kerja / WhatsApp</label>
+          <input type="text" required placeholder="dani@semenindonesia.com / 081234567890" style="width: 100%; background: #070B14; border: 1px solid var(--bezel-outer); border-radius: 10px; padding: 10px 14px; color: white; font-size: 13px;">
+        </div>
+
+        <button type="submit" class="btn-massive-cta" style="width: 100%; justify-content: center;">
+          <span>Konfirmasi Permintaan Demo 🚀</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC & MOTION ENGINE -->
+  <script>
+    // 1. Initialize Smooth Scroll via Lenis
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      smoothTouch: false
+    });
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    // 2. Initialize Lucide Icons
+    lucide.createIcons();
+
+    // 3. Audio Atmosphere Synthesizer (Zero asset 404 risk)
+    let audioCtx = null;
+    let isSoundOn = false;
+
+    function playTone(freq, type = 'sine', duration = 0.15, vol = 0.1) {
+      if (!isSoundOn) return;
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        console.warn('Audio tone muted', e);
+      }
+    }
+
+    const soundBtn = document.getElementById('soundToggleBtn');
+    soundBtn.addEventListener('click', () => {
+      isSoundOn = !isSoundOn;
+      soundBtn.classList.toggle('active', isSoundOn);
+      if (isSoundOn) {
+        playTone(587.33, 'sine', 0.2, 0.15); // D5 chime
+      }
+    });
+
+    // 4. Chart.js Engine for Simulator Desktop
+    let simChart = null;
+    const ctx = document.getElementById('simCurveCanvas').getContext('2d');
+    
+    const chartLabels = ['H-1', 'H-3', 'H-5', 'H-7', 'H-9', 'H-11', 'H-13', 'H-15'];
+    const plannedData = [5.0, 18.0, 38.0, 62.0, 78.0, 89.0, 96.0, 100.0];
+    let actualData = [4.5, 17.5, 40.0, 65.0, 84.2, null, null, null];
+
+    simChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: chartLabels,
+        datasets: [
+          {
+            label: 'Planned Target (PV)',
+            data: plannedData,
+            borderColor: 'rgba(148, 163, 184, 0.6)',
+            borderDash: [5, 5],
+            borderWidth: 2,
+            pointRadius: 0,
+            tension: 0.4
+          },
+          {
+            label: 'Actual Progress (EV)',
+            data: actualData,
+            borderColor: '#3B82F6',
+            backgroundColor: 'rgba(59, 130, 246, 0.12)',
+            borderWidth: 3,
+            fill: true,
+            pointBackgroundColor: '#60A5FA',
+            pointRadius: 4,
+            tension: 0.35
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            labels: { color: '#94A3B8', font: { family: 'JetBrains Mono', size: 10 } }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+            ticks: { color: '#64748B', font: { family: 'JetBrains Mono', size: 10 } }
+          },
+          y: {
+            min: 0,
+            max: 100,
+            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+            ticks: { 
+              color: '#64748B', 
+              font: { family: 'JetBrains Mono', size: 10 },
+              callback: (v) => v + '%'
+            }
+          }
+        }
+      }
+    });
+
+    // 5. Twin-Engine Simulation Execution
+    const btnRunSim = document.getElementById('btnRunSimulation');
+    const phoneSlider = document.getElementById('phoneProgressSlider');
+    const phoneSliderDisplay = document.getElementById('phoneSliderDisplay');
+    const btnPhoneSubmit = document.getElementById('btnPhoneSubmit');
+    const btnPhoneSubmitText = document.getElementById('btnPhoneSubmitText');
+    const telemetryBeam = document.getElementById('telemetryBeam');
+    const deskEvmTotal = document.getElementById('deskEvmTotal');
+    const deskEvmStatus = document.getElementById('deskEvmStatus');
+    const deskRing32Val = document.getElementById('deskRing32Val');
+    const deskRing32Status = document.getElementById('deskRing32Status');
+    const deskTonaseVal = document.getElementById('deskTonaseVal');
+
+    let isSimulating = false;
+
+    function executeTwinSimulation() {
+      if (isSimulating) return;
+      isSimulating = true;
+      playTone(440, 'triangle', 0.1);
+
+      // Phase 1: Slider moves on phone from 88 to 100
+      let curVal = 88;
+      const interval = setInterval(() => {
+        curVal += 1;
+        phoneSlider.value = curVal;
+        phoneSliderDisplay.textContent = curVal.toFixed(1) + '%';
+        playTone(300 + curVal * 5, 'sine', 0.04, 0.03);
+
+        if (curVal >= 100) {
+          clearInterval(interval);
+          phoneSliderDisplay.textContent = '100.0% ✓';
+          
+          // Phase 2: Tap submit
+          setTimeout(() => {
+            btnPhoneSubmit.style.background = '#10B981';
+            btnPhoneSubmitText.textContent = '✓ LAPORAN TERSIMPAN • SYNCING';
+            playTone(880, 'sine', 0.2, 0.15);
+
+            // Phase 3: Telemetry Beam Fires
+            telemetryBeam.style.opacity = '1';
+            telemetryBeam.style.animation = 'beamPulse 0.6s infinite alternate';
+
+            setTimeout(() => {
+              telemetryBeam.style.opacity = '0';
+              
+              // Phase 4: Desktop Recalculates
+              deskRing32Val.textContent = '100.0% ✓';
+              deskRing32Val.style.color = '#34D399';
+              deskRing32Status.textContent = 'Selesai & Terverifikasi';
+              deskEvmTotal.textContent = '86.8%';
+              deskEvmStatus.textContent = '▲ +2.6% Accelerated';
+              deskTonaseVal.textContent = '165.0 T';
+
+              // Update Chart
+              actualData[4] = 86.8;
+              simChart.update();
+              playTone(1046.5, 'sine', 0.3, 0.2); // C6 chime
+
+              confetti({
+                particleCount: 50,
+                spread: 60,
+                origin: { y: 0.7 }
+              });
+
+              btnPhoneSubmitText.textContent = 'KIRIM LAPORAN LAPANGAN 🚀';
+              btnPhoneSubmit.style.background = 'var(--cyber-cobalt)';
+              isSimulating = false;
+            }, 700);
+
+          }, 400);
+        }
+      }, 35);
+    }
+
+    btnRunSim.addEventListener('click', executeTwinSimulation);
+    btnPhoneSubmit.addEventListener('click', executeTwinSimulation);
+
+    // Phone manual slider input guard
+    phoneSlider.addEventListener('input', (e) => {
+      let val = parseFloat(e.target.value);
+      if (val < 88.0) {
+        val = 88.0;
+        e.target.value = 88.0;
+        playTone(150, 'sawtooth', 0.2, 0.15);
+      } else {
+        playTone(300 + val * 4, 'sine', 0.03, 0.02);
+      }
+      phoneSliderDisplay.textContent = val.toFixed(1) + '%';
+    });
+
+    // 6. Anti-Miskeying Tab Experiment
+    const labSlider = document.getElementById('labSlider');
+    const labSliderVal = document.getElementById('labSliderVal');
+    const labSecurityAlert = document.getElementById('labSecurityAlert');
+    const attemptedVal = document.getElementById('attemptedVal');
+
+    labSlider.addEventListener('input', (e) => {
+      let v = parseFloat(e.target.value);
+      labSliderVal.textContent = v.toFixed(1) + '%';
+      if (v < 88.0) {
+        attemptedVal.textContent = v.toFixed(1) + '%';
+        labSecurityAlert.style.display = 'flex';
+        labSliderVal.style.color = '#EF4444';
+        playTone(180, 'sawtooth', 0.15, 0.12);
+      } else {
+        labSecurityAlert.style.display = 'none';
+        labSliderVal.style.color = 'var(--flame-amber)';
+        playTone(400 + v * 3, 'sine', 0.03, 0.02);
+      }
+    });
+
+    // Tab Switcher
+    window.switchPillarTab = function(tabId) {
+      playTone(600, 'sine', 0.05, 0.05);
+      document.querySelectorAll('.tab-pill').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content-panel').forEach(p => p.classList.remove('active'));
+      
+      const targetPanel = document.getElementById(tabId);
+      if (targetPanel) targetPanel.classList.add('active');
+      
+      const activeBtn = Array.from(document.querySelectorAll('.tab-pill')).find(b => b.getAttribute('onclick').includes(tabId));
+      if (activeBtn) activeBtn.classList.add('active');
+    };
+
+    // 7. Offline Network Toggle Simulation
+    let isOffline = false;
+    const btnToggleNet = document.getElementById('btnToggleNetworkState');
+    const netStateIcon = document.getElementById('netStateIcon');
+    const netStateLabel = document.getElementById('netStateLabel');
+    const queueStatusTag = document.getElementById('queueStatusTag');
+    const queueListContainer = document.getElementById('queueListContainer');
+
+    btnToggleNet.addEventListener('click', () => {
+      isOffline = !isOffline;
+      if (isOffline) {
+        playTone(220, 'square', 0.2, 0.1);
+        netStateIcon.setAttribute('data-lucide', 'wifi-off');
+        netStateIcon.style.color = '#EF4444';
+        netStateLabel.textContent = 'Status Jaringan: OFFLINE (Masuk Kiln)';
+        queueStatusTag.textContent = '3 ANTREAN TERSIMPAN';
+        queueStatusTag.className = 'compare-tag tag-danger';
+        queueListContainer.innerHTML = `
+          <div style="background: rgba(255,255,255,0.04); border-radius: 8px; padding: 8px; text-align: left; display: flex; justify-content: space-between;">
+            <span>Mutasi #1: Ring 32 Progress -> 92%</span>
+            <span style="color: var(--flame-amber); font-family: var(--font-mono);">PENDING</span>
+          </div>
+          <div style="background: rgba(255,255,255,0.04); border-radius: 8px; padding: 8px; text-align: left; display: flex; justify-content: space-between;">
+            <span>Mutasi #2: Foto Audit Tahap 2 Diunggah</span>
+            <span style="color: var(--flame-amber); font-family: var(--font-mono);">PENDING</span>
+          </div>
+          <div style="background: rgba(255,255,255,0.04); border-radius: 8px; padding: 8px; text-align: left; display: flex; justify-content: space-between;">
+            <span>Mutasi #3: Ring 32 Progress -> 100%</span>
+            <span style="color: var(--flame-amber); font-family: var(--font-mono);">PENDING</span>
+          </div>
+        `;
+      } else {
+        playTone(880, 'sine', 0.3, 0.15);
+        netStateIcon.setAttribute('data-lucide', 'wifi');
+        netStateIcon.style.color = '#10B981';
+        netStateLabel.textContent = 'Status Jaringan: ONLINE (Klik untuk Matikan)';
+        queueStatusTag.textContent = 'FLUSHING SYNC...';
+        queueStatusTag.className = 'compare-tag tag-secure';
+        setTimeout(() => {
+          queueStatusTag.textContent = '0 ANTRIAN';
+          queueListContainer.innerHTML = 'Semua telemetri telah otomatis tersinkronisasi ke server pusat tanpa ada data yang hilang.';
+          playTone(1046.5, 'sine', 0.2, 0.1);
+        }, 800);
+      }
+      lucide.createIcons();
+    });
+
+    // 8. Modal Handlers
+    window.openDemoModal = function() {
+      playTone(659.25, 'sine', 0.15, 0.1);
+      document.getElementById('demoModal').style.display = 'flex';
+    };
+
+    window.closeDemoModal = function() {
+      document.getElementById('demoModal').style.display = 'none';
+    };
+
+    window.handleDemoSubmit = function(e) {
+      e.preventDefault();
+      playTone(880, 'sine', 0.25, 0.2);
+      confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+      alert('Terima kasih! Permintaan demo teknis Trunova telah dikonfirmasi. Tim rekayasa kami akan segera menghubungi Anda.');
+      closeDemoModal();
+    };
+
+    // Close on outside click
+    document.getElementById('demoModal').addEventListener('click', (e) => {
+      if (e.target.id === 'demoModal') closeDemoModal();
+    });
+  </script>
+</body>
+</html>

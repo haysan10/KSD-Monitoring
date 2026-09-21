@@ -1,0 +1,63 @@
+name: KSD Monitor CI & Quality Assurance Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  audit-and-integrity:
+    name: Brand Invariants & Repository Integrity Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Verify Brand Invariant (Picture1.svg Protection)
+        run: |
+          echo "🛡️ Verifying Picture1.svg existence and non-empty status..."
+          if [ ! -f "Picture1.svg" ]; then
+            echo "❌ CRITICAL ERROR: Picture1.svg is missing! Brand invariant violated."
+            exit 1
+          fi
+          FILE_SIZE=$(wc -c < "Picture1.svg")
+          if [ "$FILE_SIZE" -lt 1000 ]; then
+            echo "❌ CRITICAL ERROR: Picture1.svg appears corrupted or truncated ($FILE_SIZE bytes)."
+            exit 1
+          fi
+          echo "✅ Picture1.svg is intact ($FILE_SIZE bytes)."
+
+      - name: Verify Webroot Mirror Consistency (pb_public sync)
+        run: |
+          echo "🔍 Checking synchronization between root and pb_public webroots..."
+          diff -q index.html pb_public/index.html || { echo "❌ Error: pb_public/index.html is not synced with root index.html"; exit 1; }
+          diff -q landing.html pb_public/landing.html || { echo "❌ Error: pb_public/landing.html is not synced with root landing.html"; exit 1; }
+          diff -q launch.html pb_public/launch.html || { echo "❌ Error: pb_public/launch.html is not synced with root launch.html"; exit 1; }
+          echo "✅ All public webroot assets are 100% mirrored and synchronized!"
+
+      - name: Audit Repository for Forbidden Heavy Artifacts
+        run: |
+          echo "🧹 Checking for accidental leaks of node_modules, database journals, or logs..."
+          FORBIDDEN_FILES=$(find . -not -path "*/.*" -name "node_modules" -o -name "*.log" -o -name "*.db-wal" -o -name "*.db-shm" || true)
+          # Ensure git tracked files do not contain forbidden patterns
+          GIT_TRACKED_FORBIDDEN=$(git ls-files | grep -E "(node_modules|\.log$|\.db-wal$|\.db-shm$)" || true)
+          if [ ! -z "$GIT_TRACKED_FORBIDDEN" ]; then
+            echo "❌ ERROR: Forbidden heavy/runtime files are tracked in git:"
+            echo "$GIT_TRACKED_FORBIDDEN"
+            exit 1
+          fi
+          echo "✅ Repository is clean of forbidden runtime artifacts."
+
+      - name: Validate Core HTML Documents Syntax
+        run: |
+          echo "🌐 Checking HTML document structure..."
+          for file in index.html landing.html launch.html; do
+            if grep -q "<!DOCTYPE html>" "$file" && grep -q "</html>" "$file"; then
+              echo "✅ $file valid HTML5 structure verified."
+            else
+              echo "❌ Error: $file is missing valid HTML5 doctype or closing tag."
+              exit 1
+            fi
+          done

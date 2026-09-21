@@ -1,0 +1,534 @@
+{
+  "metadata": {
+    "projectName": "TRUNOVA Launch Video",
+    "projectVersion": "1.0.0",
+    "fps": 30,
+    "totalFrames": 1800,
+    "durationSeconds": 60,
+    "bpm": 120,
+    "framesPerBeat": 15,
+    "masterAspectRatio": "16:9",
+    "resolution": {
+      "width": 1920,
+      "height": 1080
+    },
+    "safeArea": {
+      "titleSafeMarginX": 100,
+      "titleSafeMarginY": 60,
+      "vertical9x16SafeWidth": 608
+    },
+    "visualTheme": "Clean Modern & Light",
+    "colors": {
+      "canvas": "#FAF7F2",
+      "surfaceWhite": "#FFFFFF",
+      "surfaceSlate": "#F8FAFC",
+      "primaryDark": "#0F172A",
+      "accentCobalt": "#2563EB",
+      "accentAmber": "#F59E0B",
+      "signalGreen": "#10B981",
+      "signalRed": "#DC2626",
+      "muted": "#64748B",
+      "border": "#E2E8F0"
+    },
+    "language": "en"
+  },
+  "scenes": [
+    {
+      "sceneNumber": 1,
+      "id": "scene1_hook",
+      "name": "Kiln Reality & Total Signal Blackout",
+      "frameStart": 0,
+      "frameEnd": 240,
+      "durationFrames": 240,
+      "narrative": "Establish the claustrophobic reality of a cement rotary kiln shutdown where signals drop to zero.",
+      "text": {
+        "badge": "KILN OVERHAUL REALITY",
+        "phase1": "INSIDE THE STEEL KILN.",
+        "phase2": "ZERO NETWORK SIGNAL.",
+        "subtitle": "Deep inside the heavy steel shell of a rotary kiln, all telecommunication signals are completely cut off."
+      },
+      "camera": {
+        "type": "push_in_with_impact_shake",
+        "scaleStart": 1.0,
+        "scaleEnd": 1.08,
+        "shakeFrame": 120,
+        "shakeAmplitude": 12
+      },
+      "audioCues": [
+        { "frame": 0, "type": "ambient_drone", "file": "audio/bgm-upbeat.wav", "volume": 0.35 },
+        { "frame": 120, "type": "beat_impact_cut", "file": "audio/sfx-whoosh.wav", "volume": 0.7 },
+        { "frame": 225, "type": "transition_whoosh", "file": "audio/sfx-whoosh.wav", "volume": 0.5 }
+      ],
+      "elements": [
+        {
+          "id": "hero_kiln_video",
+          "name": "Real Kiln Footage",
+          "type": "video",
+          "assetPath": "videos/hero-kiln.mp4",
+          "zIndex": 1,
+          "animations": [
+            { "property": "scale", "startFrame": 0, "endFrame": 120, "startValue": 1.0, "endValue": 1.08, "easing": "linear" }
+          ]
+        },
+        {
+          "id": "telemetry_hud",
+          "name": "HUD Kiln Telemetry Brackets",
+          "type": "svg_overlay",
+          "zIndex": 10,
+          "animations": [
+            { "property": "opacity", "startFrame": 10, "endFrame": 30, "startValue": 0.0, "endValue": 1.0, "easing": "cubic-bezier(0.16, 1, 0.3, 1)" }
+          ]
+        },
+        {
+          "id": "headline_phase1",
+          "name": "Text: Inside the Steel Kiln",
+          "type": "kinetic_typography",
+          "zIndex": 20,
+          "animations": [
+            { "property": "translateY", "startFrame": 15, "endFrame": 45, "startValue": 40, "endValue": 0, "easing": "spring_rigid" },
+            { "property": "opacity", "startFrame": 15, "endFrame": 35, "startValue": 0.0, "endValue": 1.0, "easing": "linear" }
+          ]
+        },
+        {
+          "id": "amber_snap_cover",
+          "name": "Solid Flame Amber Cutover",
+          "type": "solid_fill",
+          "color": "#F59E0B",
+          "zIndex": 30,
+          "animations": [
+            { "property": "opacity", "startFrame": 120, "endFrame": 120, "startValue": 0.0, "endValue": 1.0, "easing": "instant" }
+          ]
+        },
+        {
+          "id": "crossed_signal_icon",
+          "name": "Red Crossed 3D Signal Mark",
+          "type": "vector_icon",
+          "zIndex": 35,
+          "animations": [
+            { "property": "scale", "startFrame": 120, "endFrame": 140, "startValue": 0.0, "endValue": 1.0, "easing": "spring_snappy" }
+          ]
+        },
+        {
+          "id": "headline_phase2",
+          "name": "Text: Zero Network Signal",
+          "type": "kinetic_typography",
+          "zIndex": 35,
+          "animations": [
+            { "property": "letterSpacing", "startFrame": 125, "endFrame": 165, "startValue": -0.05, "endValue": 0.08, "easing": "cubic-bezier(0.16, 1, 0.3, 1)" }
+          ]
+        }
+      ]
+    },
+    {
+      "sceneNumber": 2,
+      "id": "scene2_problem",
+      "name": "Legacy Chaos & Costly Overhaul Slips",
+      "frameStart": 240,
+      "frameEnd": 450,
+      "durationFrames": 210,
+      "narrative": "Show the operational chaos of manual spreadsheets and WhatsApp reports.",
+      "text": {
+        "badge": "OPERATIONAL FRICTION",
+        "headline": "LEGACY TOOLS RISK COSTLY SLIPS.",
+        "subtext": "Corrupted spreadsheet formulas, blind-spot communication lag, and unseen downtime.",
+        "subtitle": "Conventional methods carry extreme risks of spreadsheet formula corruption and expensive overhaul delays."
+      },
+      "camera": {
+        "type": "3d_isometric_pan",
+        "rotateY": 6,
+        "scaleStart": 0.98,
+        "scaleEnd": 1.05
+      },
+      "audioCues": [
+        { "frame": 240, "type": "scene_whoosh", "file": "audio/sfx-whoosh.wav", "volume": 0.5 },
+        { "frame": 260, "type": "card_pop_1", "file": "audio/sfx-pop.wav", "volume": 0.55 },
+        { "frame": 285, "type": "card_pop_2", "file": "audio/sfx-pop.wav", "volume": 0.55 },
+        { "frame": 310, "type": "card_pop_3", "file": "audio/sfx-pop.wav", "volume": 0.65 }
+      ],
+      "elements": [
+        {
+          "id": "problem_card_1",
+          "name": "Card: Formula Syntax Error",
+          "type": "ui_card",
+          "zIndex": 20,
+          "animations": [
+            { "property": "translateY", "startFrame": 260, "endFrame": 285, "startValue": 80, "endValue": 0, "easing": "spring_snappy" },
+            { "property": "scale", "startFrame": 260, "endFrame": 285, "startValue": 0.85, "endValue": 1.0, "easing": "spring_snappy" }
+          ]
+        },
+        {
+          "id": "problem_card_2",
+          "name": "Card: 36h Reporting Lag",
+          "type": "ui_card",
+          "zIndex": 21,
+          "animations": [
+            { "property": "translateY", "startFrame": 285, "endFrame": 310, "startValue": 80, "endValue": 0, "easing": "spring_snappy" },
+            { "property": "scale", "startFrame": 285, "endFrame": 310, "startValue": 0.85, "endValue": 1.0, "easing": "spring_snappy" }
+          ]
+        },
+        {
+          "id": "problem_card_3",
+          "name": "Card: $12.5k / Hour Downtime Cost",
+          "type": "ui_card",
+          "zIndex": 22,
+          "animations": [
+            { "property": "translateY", "startFrame": 310, "endFrame": 335, "startValue": 80, "endValue": 0, "easing": "spring_snappy" },
+            { "property": "scale", "startFrame": 310, "endFrame": 335, "startValue": 0.85, "endValue": 1.0, "easing": "spring_snappy" }
+          ]
+        }
+      ]
+    },
+    {
+      "sceneNumber": 3,
+      "id": "scene3_pwa_offline",
+      "name": "Offline-First PWA in the Kiln Blind-Spot",
+      "frameStart": 450,
+      "frameEnd": 720,
+      "durationFrames": 270,
+      "narrative": "Foreman logs physical progress inside the kiln with zero signal; local IndexedDB guarantees safety.",
+      "text": {
+        "badge": "PWA BLIND-SPOT ENGINE",
+        "headline": "WORK KEEPS MOVING.",
+        "subtext": "100% operational in steel kiln blind spots without cellular connectivity.",
+        "actionLabel": "Input Pasang Bata: +12.5 m",
+        "queueAlert": "KILN OFFLINE MODE ACTIVE",
+        "queueSub": "3 Queued Mutations Safe in Local Storage",
+        "subtitle": "Trunova keeps running flawlessly inside the kiln shell blind-spot without requiring an internet connection."
+      },
+      "camera": {
+        "type": "3d_phone_focus",
+        "rotateY": -4,
+        "scaleStart": 0.95,
+        "scaleEnd": 1.08
+      },
+      "audioCues": [
+        { "frame": 505, "type": "touch_tap", "file": "audio/sfx-click.wav", "volume": 0.6 },
+        { "frame": 515, "type": "toast_pop", "file": "audio/sfx-pop.wav", "volume": 0.6 },
+        { "frame": 560, "type": "queue_chime", "file": "audio/sfx-chime.wav", "volume": 0.65 }
+      ],
+      "elements": [
+        {
+          "id": "phone_mockup",
+          "name": "3D Mobile Phone Mockup",
+          "type": "device_mockup",
+          "assetPath": "captures/mobile-01-input-progress.png",
+          "zIndex": 20,
+          "animations": [
+            { "property": "translateY", "startFrame": 450, "endFrame": 485, "startValue": 250, "endValue": 0, "easing": "spring_rigid" }
+          ]
+        },
+        {
+          "id": "touch_ripple",
+          "name": "Finger Tap Feedback",
+          "type": "ripple_fx",
+          "zIndex": 25,
+          "animations": [
+            { "property": "scale", "startFrame": 505, "endFrame": 525, "startValue": 0.2, "endValue": 1.8, "easing": "cubic-bezier(0.16, 1, 0.3, 1)" },
+            { "property": "opacity", "startFrame": 505, "endFrame": 525, "startValue": 1.0, "endValue": 0.0, "easing": "linear" }
+          ]
+        },
+        {
+          "id": "offline_queue_card",
+          "name": "Local IndexedDB Queue Banner",
+          "type": "ui_banner",
+          "zIndex": 30,
+          "animations": [
+            { "property": "scale", "startFrame": 560, "endFrame": 590, "startValue": 0.85, "endValue": 1.0, "easing": "spring_snappy" },
+            { "property": "opacity", "startFrame": 560, "endFrame": 580, "startValue": 0.0, "endValue": 1.0, "easing": "linear" }
+          ]
+        }
+      ]
+    },
+    {
+      "sceneNumber": 4,
+      "id": "scene4_instant_sync",
+      "name": "Instant Reconnection & 3D Flight Convergence",
+      "frameStart": 720,
+      "frameEnd": 960,
+      "durationFrames": 240,
+      "narrative": "Worker steps out of the kiln; 4G returns and queued data packet launches in 3D into desktop browser.",
+      "text": {
+        "badge": "SIGNAL RESTORED • 4G ONLINE",
+        "headline": "INSTANT RECONNECTION.",
+        "subtext": "Zero data loss guaranteed with SSE real-time socket synchronization.",
+        "packetLabel": "MUTATION_SYNC_PACKET • +12.5m Bricking",
+        "desktopToast": "✓ SINKRONISASI BERHASIL • 3 DATA MASUK KE SERVER",
+        "subtitle": "As soon as workers exit the kiln, all field inspection records instantly synchronize to the central database."
+      },
+      "camera": {
+        "type": "tracking_pan_and_dutch_tilt",
+        "tiltZ": 4,
+        "scaleStart": 0.98,
+        "scaleEnd": 1.06
+      },
+      "audioCues": [
+        { "frame": 725, "type": "signal_online", "file": "audio/sfx-chime.wav", "volume": 0.7 },
+        { "frame": 765, "type": "flight_whoosh", "file": "audio/sfx-whoosh.wav", "volume": 0.65 },
+        { "frame": 810, "type": "sync_confirmed", "file": "audio/sfx-check.wav", "volume": 0.75 }
+      ],
+      "elements": [
+        {
+          "id": "data_packet_3d",
+          "name": "Flying Parabolic 3D Data Packet",
+          "type": "3d_packet",
+          "zIndex": 40,
+          "animations": [
+            { "property": "translateX", "startFrame": 765, "endFrame": 810, "startValue": -450, "endValue": 420, "easing": "cubic-bezier(0.25, 0.1, 0.25, 1)" },
+            { "property": "translateY", "startFrame": 765, "endFrame": 810, "startValue": 100, "endValue": 0, "easing": "cubic-bezier(0.4, 0, 0.2, 1)" },
+            { "property": "scale", "startFrame": 765, "endFrame": 810, "startValue": 0.6, "endValue": 0.9, "easing": "linear" }
+          ]
+        },
+        {
+          "id": "browser_desktop",
+          "name": "Desktop Browser Mockup",
+          "type": "device_mockup",
+          "assetPath": "captures/desktop-01-dashboard.png",
+          "zIndex": 10,
+          "animations": [
+            { "property": "scale", "startFrame": 810, "endFrame": 825, "startValue": 0.98, "endValue": 1.0, "easing": "spring_rigid" }
+          ]
+        }
+      ]
+    },
+    {
+      "sceneNumber": 5,
+      "id": "scene5_qc_audit",
+      "name": "3-Stage Authenticated Photo Audit Pipeline",
+      "frameStart": 960,
+      "frameEnd": 1230,
+      "durationFrames": 270,
+      "narrative": "Three real overhaul inspection photos stamped with official green approval seals.",
+      "text": {
+        "badge": "3-STAGE QC VERIFICATION",
+        "headline": "AUTHENTICATED FIELD PROOF.",
+        "subtext": "Complete visual documentation across every critical overhaul milestone.",
+        "stage1": "STAGE 1 // Before Tearing • KM 18.2 - 24.5",
+        "stage2": "STAGE 2 // During Bricking • KM 24.5 - 32.0",
+        "stage3": "STAGE 3 // After Key Jacking • KM 32.0 - 37.0",
+        "subtitle": "Rigorous three-stage quality control with official Before, During, and After photo verification."
+      },
+      "camera": {
+        "type": "card_sequence_parallax",
+        "scaleStart": 0.98,
+        "scaleEnd": 1.05
+      },
+      "audioCues": [
+        { "frame": 980, "type": "camera_shutter_1", "file": "audio/sfx-shutter.wav", "volume": 0.6 },
+        { "frame": 1005, "type": "stamp_slap_1", "file": "audio/sfx-check.wav", "volume": 0.65 },
+        { "frame": 1030, "type": "camera_shutter_2", "file": "audio/sfx-shutter.wav", "volume": 0.6 },
+        { "frame": 1055, "type": "stamp_slap_2", "file": "audio/sfx-check.wav", "volume": 0.65 },
+        { "frame": 1080, "type": "camera_shutter_3", "file": "audio/sfx-shutter.wav", "volume": 0.7 },
+        { "frame": 1105, "type": "stamp_slap_3", "file": "audio/sfx-check.wav", "volume": 0.75 }
+      ],
+      "elements": [
+        {
+          "id": "photo_card_before",
+          "name": "Photo Card 1: Before Tearing",
+          "type": "photo_card",
+          "assetPath": "photos/audit-before.jpg",
+          "zIndex": 20,
+          "animations": [
+            { "property": "translateY", "startFrame": 980, "endFrame": 1005, "startValue": 150, "endValue": 0, "easing": "spring_snappy" }
+          ]
+        },
+        {
+          "id": "stamp_inspected",
+          "name": "Stamp Seal: INSPECTED",
+          "type": "stamp_seal",
+          "zIndex": 30,
+          "animations": [
+            { "property": "scale", "startFrame": 1005, "endFrame": 1020, "startValue": 2.2, "endValue": 1.0, "easing": "spring_snappy" }
+          ]
+        },
+        {
+          "id": "photo_card_during",
+          "name": "Photo Card 2: During Bricking",
+          "type": "photo_card",
+          "assetPath": "photos/audit-during.jpg",
+          "zIndex": 21,
+          "animations": [
+            { "property": "translateY", "startFrame": 1030, "endFrame": 1055, "startValue": 150, "endValue": 0, "easing": "spring_snappy" }
+          ]
+        },
+        {
+          "id": "stamp_verified",
+          "name": "Stamp Seal: VERIFIED",
+          "type": "stamp_seal",
+          "zIndex": 30,
+          "animations": [
+            { "property": "scale", "startFrame": 1055, "endFrame": 1070, "startValue": 2.2, "endValue": 1.0, "easing": "spring_snappy" }
+          ]
+        },
+        {
+          "id": "photo_card_after",
+          "name": "Photo Card 3: After Key Jacking",
+          "type": "photo_card",
+          "assetPath": "photos/audit-after.jpg",
+          "zIndex": 22,
+          "animations": [
+            { "property": "translateY", "startFrame": 1080, "endFrame": 1105, "startValue": 150, "endValue": 0, "easing": "spring_snappy" }
+          ]
+        },
+        {
+          "id": "stamp_approved",
+          "name": "Stamp Seal: APPROVED",
+          "type": "stamp_seal",
+          "zIndex": 30,
+          "animations": [
+            { "property": "scale", "startFrame": 1105, "endFrame": 1120, "startValue": 2.5, "endValue": 1.0, "easing": "spring_snappy" }
+          ]
+        }
+      ]
+    },
+    {
+      "sceneNumber": 6,
+      "id": "scene6_scurve_matrix",
+      "name": "Real-Time S-Curve & EVM Trajectory Engine",
+      "frameStart": 1230,
+      "frameEnd": 1500,
+      "durationFrames": 270,
+      "narrative": "Live mathematical vector S-Curve draws dynamically past the planned baseline to 88% ahead.",
+      "text": {
+        "badge": "EARNED VALUE MANAGEMENT",
+        "headline": "REAL-TIME S-CURVE MATRIX.",
+        "subtext": "Predictive firing restart right on schedule.",
+        "counterProgress": "88%",
+        "varianceText": "+2.4% Ahead of Schedule",
+        "spiIndex": "SPI: 1.03",
+        "subtitle": "The S-Curve engine projects schedule variance and estimated restart completion in real-time."
+      },
+      "camera": {
+        "type": "trajectory_push_in",
+        "scaleStart": 0.98,
+        "scaleEnd": 1.06
+      },
+      "audioCues": [
+        { "frame": 1285, "type": "curve_draw_start", "file": "audio/sfx-pop.wav", "volume": 0.5 },
+        { "frame": 1380, "type": "metric_locked", "file": "audio/sfx-chime.wav", "volume": 0.7 }
+      ],
+      "elements": [
+        {
+          "id": "scurve_vector_canvas",
+          "name": "Dedicated SVG S-Curve Chart",
+          "type": "svg_canvas",
+          "zIndex": 20,
+          "animations": [
+            { "property": "actualPathProgress", "startFrame": 1285, "endFrame": 1380, "startValue": 0.0, "endValue": 0.88, "easing": "cubic-bezier(0.4, 0, 0.2, 1)" },
+            { "property": "counterValue", "startFrame": 1285, "endFrame": 1380, "startValue": 64, "endValue": 88, "easing": "linear" }
+          ]
+        },
+        {
+          "id": "variance_card",
+          "name": "Schedule Variance Card",
+          "type": "metric_card",
+          "zIndex": 25,
+          "animations": [
+            { "property": "scale", "startFrame": 1380, "endFrame": 1405, "startValue": 0.85, "endValue": 1.0, "easing": "spring_snappy" }
+          ]
+        }
+      ]
+    },
+    {
+      "sceneNumber": 7,
+      "id": "scene7_pillars_climax",
+      "name": "The 3 Core Pillars Climax",
+      "frameStart": 1500,
+      "frameEnd": 1650,
+      "durationFrames": 150,
+      "narrative": "Three rapid-fire, high-energy full-color cuts reinforcing the core pillars every 50 frames.",
+      "text": {
+        "pillar1": "01 // OFFLINE-FIRST PWA",
+        "pillar2": "02 // 3-STAGE QC AUDIT",
+        "pillar3": "03 // PRECISE S-CURVE",
+        "subtitle": "Offline-first resilience, certified 3-stage quality, and mathematically precise progress control."
+      },
+      "camera": {
+        "type": "continuous_forward_momentum",
+        "scaleStart": 0.95,
+        "scaleEnd": 1.12
+      },
+      "audioCues": [
+        { "frame": 1500, "type": "beat_cut_1", "file": "audio/sfx-whoosh.wav", "volume": 0.6 },
+        { "frame": 1550, "type": "beat_cut_2", "file": "audio/sfx-pop.wav", "volume": 0.65 },
+        { "frame": 1600, "type": "beat_cut_3", "file": "audio/sfx-pop.wav", "volume": 0.7 }
+      ],
+      "elements": [
+        {
+          "id": "pillar_slide_1",
+          "name": "Slide 1: Offline PWA (Cream)",
+          "type": "color_slide",
+          "color": "#FAF7F2",
+          "startFrame": 1500,
+          "endFrame": 1550,
+          "zIndex": 10
+        },
+        {
+          "id": "pillar_slide_2",
+          "name": "Slide 2: 3-Stage QC (Flame Amber)",
+          "type": "color_slide",
+          "color": "#F59E0B",
+          "startFrame": 1550,
+          "endFrame": 1600,
+          "zIndex": 20
+        },
+        {
+          "id": "pillar_slide_3",
+          "name": "Slide 3: Precise S-Curve (Midnight Navy)",
+          "type": "color_slide",
+          "color": "#0F172A",
+          "startFrame": 1600,
+          "endFrame": 1650,
+          "zIndex": 30
+        }
+      ]
+    },
+    {
+      "sceneNumber": 8,
+      "id": "scene8_grand_finale",
+      "name": "Grand Brand Finale & Actionable Call-to-Action",
+      "frameStart": 1650,
+      "frameEnd": 1800,
+      "durationFrames": 150,
+      "narrative": "Pull back to the illuminated brand mark and provide a clear call to action.",
+      "text": {
+        "logoWordmark": "trunova",
+        "tagline": "Kiln Shutdown & Overhaul Intelligence",
+        "cta": "Launch Trunova Today →",
+        "url": "trunova.app",
+        "subtitle": "Experience the single command platform for rotary kiln shutdown and overhaul operations."
+      },
+      "camera": {
+        "type": "majestic_pull_back",
+        "scaleStart": 1.04,
+        "scaleEnd": 0.98
+      },
+      "audioCues": [
+        { "frame": 1650, "type": "finale_chime", "file": "audio/sfx-chime.wav", "volume": 0.8 },
+        { "frame": 1705, "type": "button_pop", "file": "audio/sfx-pop.wav", "volume": 0.65 },
+        { "frame": 1770, "type": "audio_fade_out", "volume": 0.0 }
+      ],
+      "elements": [
+        {
+          "id": "brand_logo_master",
+          "name": "Trunova Master SVG Logo",
+          "type": "brand_vector",
+          "assetPath": "branding/trunova-logo-brand.svg",
+          "zIndex": 20,
+          "animations": [
+            { "property": "scale", "startFrame": 1650, "endFrame": 1680, "startValue": 0.75, "endValue": 1.0, "easing": "spring_rigid" }
+          ]
+        },
+        {
+          "id": "cta_button",
+          "name": "Launch CTA Button",
+          "type": "action_button",
+          "zIndex": 25,
+          "animations": [
+            { "property": "scale", "startFrame": 1705, "endFrame": 1730, "startValue": 0.6, "endValue": 1.0, "easing": "spring_snappy" },
+            { "property": "pulseLoop", "startFrame": 1735, "endFrame": 1800, "startValue": 1.0, "endValue": 1.04, "easing": "sine" }
+          ]
+        }
+      ]
+    }
+  ]
+}

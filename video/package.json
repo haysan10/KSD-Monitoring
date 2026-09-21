@@ -1,0 +1,36 @@
+{
+  "name": "trunova-video-motion",
+  "version": "1.0.0",
+  "description": "Programmatic Motion Graphics and Launch Video for Trunova Kiln Shutdown Intelligence",
+  "main": "src/index.ts",
+  "scripts": {
+    "preview": "remotion preview src/index.ts",
+    "render:teaser": "remotion render src/index.ts TrunovaAdminTeaserDesktop out/trunova-admin-teaser-desktop.mp4 --codec=h264",
+    "still:teaser": "remotion still src/index.ts TrunovaAdminTeaserDesktop out/teaser-frame.png",
+    "render:16x9": "remotion render src/index.ts TrunovaLaunch16x9 out/trunova-launch-16x9.mp4 --codec=h264",
+    "render:9x16": "remotion render src/index.ts TrunovaLaunch9x16 out/trunova-launch-9x16.mp4 --codec=h264",
+    "render:preview": "remotion render src/index.ts TrunovaLaunch16x9 out/preview-16x9.mp4 --frames=0-90 --codec=h264",
+    "still:thumbnail": "remotion still src/index.ts TrunovaLaunch16x9 out/thumbnail-16x9.png --frame=60"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.260",
+    "@remotion/google-fonts": "^4.0.526",
+    "@remotion/motion-blur": "^4.0.526",
+    "@remotion/noise": "^4.0.526",
+    "@remotion/paths": "^4.0.526",
+    "@remotion/player": "^4.0.260",
+    "@remotion/transitions": "^4.0.526",
+    "lucide-react": "^1.16.0",
+    "motion": "^12.4.7",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.260"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.4",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "playwright": "^1.63.0",
+    "typescript": "^5.7.3"
+  }
+}

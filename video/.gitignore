@@ -1,0 +1,12 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Remotion render output & cache
+out/
+.cache/
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+*.log
